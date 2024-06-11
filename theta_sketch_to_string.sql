@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE FUNCTION test.theta_sketch_to_string(base64 BYTES, seed INT64) RETURNS STRING LANGUAGE js
+CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_to_string(base64 BYTES, seed INT64) RETURNS STRING LANGUAGE js
 OPTIONS (library=["gs://datasketches/theta_sketch.js"]) AS R"""
 try {
   const default_seed = BigInt(9001);

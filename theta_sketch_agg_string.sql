@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE AGGREGATE FUNCTION test.theta_sketch_agg_string(str STRING, seed INT64 NOT AGGREGATE) RETURNS BYTES LANGUAGE js
+CREATE OR REPLACE AGGREGATE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(str STRING, seed INT64 NOT AGGREGATE) RETURNS BYTES LANGUAGE js
 OPTIONS (library=["gs://datasketches/theta_sketch.mjs"]) AS R"""
 import ModuleFactory from "gs://datasketches/theta_sketch.mjs";
 var Module = await ModuleFactory();

@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE FUNCTION test.theta_sketch_a_not_b(sketch1 BYTES, sketch2 BYTES, seed INT64) RETURNS BYTES LANGUAGE js
+CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_a_not_b(sketch1 BYTES, sketch2 BYTES, seed INT64) RETURNS BYTES LANGUAGE js
 OPTIONS (library=["gs://datasketches/theta_sketch.js"]) AS R"""
 const default_seed = BigInt(9001);
 var a_not_b = new Module.theta_a_not_b(seed ? BigInt(seed) : default_seed);
