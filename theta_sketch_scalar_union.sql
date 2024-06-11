@@ -19,12 +19,16 @@ CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_scalar_union(s
 OPTIONS (library=["$GCS_BUCKET/theta_sketch.js"]) AS R"""
 const default_lg_k = 12;
 const default_seed = BigInt(9001);
-var union = new Module.theta_union(lg_k ? lg_k : default_lg_k, seed ? BigInt(seed) : default_seed);
 try {
-  union.updateWithB64(sketch1, seed ? BigInt(seed) : default_seed)
-  union.updateWithB64(sketch2, seed ? BigInt(seed) : default_seed)
-  return union.getResultB64Compressed();
-} finally {
-  union.delete();
+  var union = new Module.theta_union(lg_k ? lg_k : default_lg_k, seed ? BigInt(seed) : default_seed);
+  try {
+    union.updateWithB64(sketch1, seed ? BigInt(seed) : default_seed)
+    union.updateWithB64(sketch2, seed ? BigInt(seed) : default_seed)
+    return union.getResultB64Compressed();
+  } finally {
+    union.delete();
+  }
+} catch (e) {
+  throw new Error(Module.getExceptionMessage(e));
 }
 """;

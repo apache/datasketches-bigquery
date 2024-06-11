@@ -17,8 +17,8 @@
 
 CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_to_string(base64 BYTES, seed INT64) RETURNS STRING LANGUAGE js
 OPTIONS (library=["$GCS_BUCKET/theta_sketch.js"]) AS R"""
+const default_seed = BigInt(9001);
 try {
-  const default_seed = BigInt(9001);
   var sketch = Module.compact_theta_sketch.deserializeFromB64(base64, seed ? BigInt(seed) : default_seed);
   try {
     return sketch.toString();
