@@ -25,3 +25,13 @@
 Please visit the main [Apache DataSketches website](https://datasketches.apache.org) for more information about DataSketches library.
 
 If you are interested in making contributions to this project please see our [Community](https://datasketches.apache.org/docs/Community/) page for how to contact us.
+
+## Example
+
+select test.theta_sketch_get_estimate(test.theta_sketch_scalar_union(
+  (select test.theta_sketch_agg_string(value, null) from unnest(["1", "2", "3"]) as value),
+  (select test.theta_sketch_agg_string(value, null) from unnest(["3", "4", "5"]) as value),
+  14, null
+), null);
+
+result: 5
