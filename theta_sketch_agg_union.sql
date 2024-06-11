@@ -16,8 +16,8 @@
 # under the License.
 
 CREATE OR REPLACE AGGREGATE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_union(sketch BYTES, lg_k INT64 NOT AGGREGATE) RETURNS BYTES LANGUAGE js
-OPTIONS (library=["gs://datasketches/theta_sketch.mjs"]) AS R"""
-import ModuleFactory from "gs://datasketches/theta_sketch.mjs";
+OPTIONS (library=["$GCS_BUCKET/theta_sketch.mjs"]) AS R"""
+import ModuleFactory from "$GCS_BUCKET/theta_sketch.mjs";
 var Module = await ModuleFactory();
 const default_lg_k = 12;
 const default_seed = BigInt(9001);

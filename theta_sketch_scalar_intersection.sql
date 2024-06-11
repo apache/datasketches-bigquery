@@ -16,7 +16,7 @@
 # under the License.
 
 CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_scalar_intersection(sketchBytes1 BYTES, sketchBytes2 BYTES, seed INT64) RETURNS BYTES LANGUAGE js
-OPTIONS (library=["gs://datasketches/theta_sketch.js"]) AS R"""
+OPTIONS (library=["$GCS_BUCKET/theta_sketch.js"]) AS R"""
 const default_seed = BigInt(9001);
 var intersection = new Module.theta_intersection(seed ? BigInt(seed) : default_seed);
 try {

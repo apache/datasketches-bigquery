@@ -16,7 +16,7 @@
 # under the License.
 
 CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_scalar_union(sketch1 BYTES, sketch2 BYTES, lg_k INT64, seed INT64) RETURNS BYTES LANGUAGE js
-OPTIONS (library=["gs://datasketches/theta_sketch.js"]) AS R"""
+OPTIONS (library=["$GCS_BUCKET/theta_sketch.js"]) AS R"""
 const default_lg_k = 12;
 const default_seed = BigInt(9001);
 var union = new Module.theta_union(lg_k ? lg_k : default_lg_k, seed ? BigInt(seed) : default_seed);

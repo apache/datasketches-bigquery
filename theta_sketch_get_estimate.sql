@@ -16,7 +16,7 @@
 # under the License.
 
 CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_get_estimate(base64 BYTES, seed INT64) RETURNS INT64 LANGUAGE js
-OPTIONS (library=["gs://datasketches/theta_sketch.js"]) AS R"""
+OPTIONS (library=["$GCS_BUCKET/theta_sketch.js"]) AS R"""
 const default_seed = BigInt(9001);
 try {
   var sketch = Module.compact_theta_sketch.deserializeFromB64(base64, seed ? BigInt(seed) : default_seed);
