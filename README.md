@@ -28,8 +28,8 @@ If you are interested in making contributions to this project please see our [Co
 
 ## Building
 
-Requires Emscripten (emcc compiler)
-Requires a link to [datasketches-cpp](https://github.com/apache/datasketches-cpp) in this directory
+- Requires [Emscripten (emcc compiler)](https://emscripten.org/)
+- Requires a link to [datasketches-cpp](https://github.com/apache/datasketches-cpp) in this directory
 
 ## Example
 
