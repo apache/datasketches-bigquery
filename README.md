@@ -26,12 +26,19 @@ Please visit the main [Apache DataSketches website](https://datasketches.apache.
 
 If you are interested in making contributions to this project please see our [Community](https://datasketches.apache.org/docs/Community/) page for how to contact us.
 
+## Building
+
+Requires Emscripten (emcc compiler)
+Requires a link to [datasketches-cpp](https://github.com/apache/datasketches-cpp) in this directory
+
 ## Example
 
-	select `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_get_estimate(`$BQ_PROJECT.$BQ_DATASET`.theta_sketch_scalar_union(
-	  (select `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(value, null) from unnest(["1", "2", "3"]) as value),
-	  (select `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(value, null) from unnest(["3", "4", "5"]) as value),
-	  14, null
-	), null);
+	select `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_get_estimate(
+	  `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_scalar_union(
+	    (select `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(value, null) from unnest(["1", "2", "3"]) as value),
+	    (select `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(value, null) from unnest(["3", "4", "5"]) as value),
+	    14, null
+	  ), null
+	);
 	
 	result: 5
