@@ -15,13 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_get_estimate(base64 BYTES, seed INT64) RETURNS FLOAT64 LANGUAGE js
+CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_get_estimate(base64 BYTES, num_std_devs INT, seed INT64) RETURNS FLOAT64 LANGUAGE js
 OPTIONS (library=["$GCS_BUCKET/theta_sketch.js"]) AS R"""
 const default_seed = BigInt(9001);
 try {
   var sketch = Module.compact_theta_sketch.deserializeFromB64(base64, seed ? BigInt(seed) : default_seed);
   try {
-    return sketch.getEstimate();
+    return [sketch.getEstimate(), sketch.getLowerBound(num_std_devs), sketch.getUpperBound(num_std_devs)];
   } finally {
     sketch.delete();
   }

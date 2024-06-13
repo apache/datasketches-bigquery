@@ -44,6 +44,9 @@ EMSCRIPTEN_BINDINGS(theta_sketch) {
   using vector_bytes = compact_theta_sketch::vector_bytes;
 
   emscripten::class_<update_theta_sketch>("update_theta_sketch")
+    .constructor(emscripten::optional_override([](uint8_t lg_k) {
+      return new update_theta_sketch(update_theta_sketch::builder().set_lg_k(lg_k).build());
+    }))
     .constructor(emscripten::optional_override([](uint8_t lg_k, uint64_t seed) {
       return new update_theta_sketch(update_theta_sketch::builder().set_lg_k(lg_k).set_seed(seed).build());
     }))
@@ -93,6 +96,12 @@ EMSCRIPTEN_BINDINGS(theta_sketch) {
     }), emscripten::allow_raw_pointers())
     .function("getEstimate", emscripten::optional_override([](const compact_theta_sketch& self) {
       return self.get_estimate();
+    }))
+    .function("getLowerBound", emscripten::optional_override([](const compact_theta_sketch& self, uint8_t num_std_devs) {
+      return self.get_lower_bound(num_std_devs);
+    }))
+    .function("getUpperBound", emscripten::optional_override([](const compact_theta_sketch& self, uint8_t num_std_devs) {
+      return self.get_upper_bound(num_std_devs);
     }))
     .function("toString", emscripten::optional_override([](const compact_theta_sketch& self) {
       return std::string(self.to_string());
