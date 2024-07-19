@@ -15,11 +15,11 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE AGGREGATE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(str STRING, seed INT64 NOT AGGREGATE) RETURNS BYTES LANGUAGE js
+CREATE OR REPLACE AGGREGATE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(str STRING, params STRUCT<lg_k INT, seed INT64> NOT AGGREGATE) RETURNS BYTES LANGUAGE js
 OPTIONS (library=["$GCS_BUCKET/theta_sketch.mjs"]) AS R"""
 import ModuleFactory from "$GCS_BUCKET/theta_sketch.mjs";
 var Module = await ModuleFactory();
-const default_lg_k = 12;
+const default_lg_k = Number(12);
 const default_seed = BigInt(9001);
 
 function destroyState(state) {
@@ -37,13 +37,12 @@ function destroyState(state) {
 // UDAF interface
 export function initialState(seed) {
   var state = {
-    lg_k: default_lg_k,
-    seed: seed == null ? default_seed : seed,
+    lg_k: params.lg_k == null ? default_lg_k : Number(params.lg_k),
+    seed: params.seed == null ? default_seed : BigInt(params.seed),
     sketch: null,
     union: null,
     serialized: null
   };
-  if (state.seed == null) state.seed = default_seed;
   state.sketch = new Module.update_theta_sketch(state.lg_k, state.seed);
   return state;
 }
