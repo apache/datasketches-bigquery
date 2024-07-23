@@ -35,7 +35,7 @@ function destroyState(state) {
 }
 
 // UDAF interface
-export function initialState(seed) {
+export function initialState(params) {
   var state = {
     lg_k: params.lg_k == null ? default_lg_k : Number(params.lg_k),
     seed: params.seed == null ? default_seed : BigInt(params.seed),
