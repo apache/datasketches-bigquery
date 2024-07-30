@@ -22,15 +22,33 @@ var Module = await ModuleFactory();
 const default_lg_k = 12;
 const default_seed = BigInt(9001);
 
+var buffer = {ptr: 0, size: 0};
+
+function reserveBuffer(size) {
+  if (buffer.size < size) {
+    if (buffer.ptr != 0) {
+      Module._free(buffer.ptr);
+    }
+    buffer.ptr = Module._malloc(size);
+    buffer.size = size;
+  }
+}
+
 // ensures we have a theta_union
 // if there is a compact_theta_sketch, add it to the union and destroy it
 function ensureUnion(state) {
-  if (state.union == null) {
-    state.union = new Module.theta_union(state.lg_k, state.seed);
-  }
-  if (state.serialized != null) {
-    state.union.updateWithBytes(state.serialized, state.seed);
-    state.serialized = null;
+  try {
+    if (state.union == null) {
+      state.union = new Module.theta_union(state.lg_k, state.seed);
+    }
+    if (state.serialized != null) {
+      reserveBuffer(state.serialized.length);
+      Module.HEAPU8.subarray(buffer.ptr, buffer.ptr + state.serialized.length).set(state.serialized);
+      state.union.updateWithBuffer(buffer.ptr, state.serialized.length, state.seed);
+      state.serialized = null;
+    }
+  } catch (e) {
+    throw new Error(Module.getExceptionMessage(e));
   }
 }
 
@@ -41,13 +59,16 @@ export function initialState(lg_k) {
     union: null,
     serialized: null
   };
+  reserveBuffer(Module.compact_theta_sketch.getMaxSerializedSizeBytes(state.lg_k));
 }
 
 export function aggregate(state, sketch) {
   if (sketch != null) {
     ensureUnion(state);
     try {
-      state.union.updateWithBytes(sketch, state.seed);
+      reserveBuffer(sketch.length);
+      Module.HEAPU8.subarray(buffer.ptr, buffer.ptr + sketch.length).set(sketch);
+      state.union.updateWithBuffer(buffer.ptr, sketch.length, state.seed);
     } catch (e) {
       throw new Error(Module.getExceptionMessage(e));
     }
@@ -55,15 +76,21 @@ export function aggregate(state, sketch) {
 }
 
 export function serialize(state) {
-  ensureUnion(state);
   try {
+    ensureUnion(state);
+    reserveBuffer(Module.compact_theta_sketch.getMaxSerializedSizeBytes(state.lg_k));
+    var size = state.union.getResultStreamCompressed(buffer.ptr, buffer.size);
     return {
       lg_k: state.lg_k,
       seed: state.seed,
-      bytes: state.union.getResultAsUint8ArrayCompressed()
+      bytes: Module.HEAPU8.slice(buffer.ptr, buffer.ptr + size)
     };
+  } catch (e) {
+    throw new Error(Module.getExceptionMessage(e));
   } finally {
-    state.union.delete();
+    if (state.union != null) {
+      state.union.delete();
+    }
     state.union = null;
   }
 }
@@ -78,13 +105,28 @@ export function deserialize(serialized) {
 }
 
 export function merge(state, other_state) {
-  ensureUnion(state);
+  reserveBuffer(Module.compact_theta_sketch.getMaxSerializedSizeBytes(state.lg_k));
   if (other_state.union) {
     throw new Error("Did not expect union in other state");
   }
-  if (other_state.serialized) {
+  if (state.union == null) {
+    state.union = new Module.theta_union(state.lg_k, state.seed);
+  }
+  if (state.serialized != null) {
     try {
-      state.union.updateWithBytes(other_state.serialized, state.seed);
+      reserveBuffer(state.serialized.length);
+      Module.HEAPU8.subarray(buffer.ptr, buffer.ptr + state.serialized.length).set(state.serialized);
+      state.union.updateWithBuffer(buffer.ptr, state.serialized.length, state.seed);
+      state.serialized = null;
+    } catch (e) {
+      throw new Error(Module.getExceptionMessage(e));
+    }
+  }
+  if (other_state.serialized != null) {
+    try {
+      reserveBuffer(other_state.serialized.length);
+      Module.HEAPU8.subarray(buffer.ptr, buffer.ptr + other_state.serialized.length).set(other_state.serialized);
+      state.union.updateWithBuffer(buffer.ptr, other_state.serialized.length, other_state.seed);
       other_state.serialized = null;
     } catch (e) {
       throw new Error(Module.getExceptionMessage(e));

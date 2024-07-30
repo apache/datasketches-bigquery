@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <strstream>
 #include <emscripten/bind.h>
 
 #include <theta_sketch.hpp>
@@ -109,6 +110,7 @@ EMSCRIPTEN_BINDINGS(theta_sketch) {
     .function("serialize", emscripten::optional_override([](const compact_theta_sketch& self) {
       return self.serialize_compressed();
     }))
+    .class_function("getMaxSerializedSizeBytes", &compact_theta_sketch::get_max_serialized_size_bytes)
     ;
 
   emscripten::class_<wrapped_compact_theta_sketch>("wrapped_compact_theta_sketch")
@@ -153,8 +155,16 @@ EMSCRIPTEN_BINDINGS(theta_sketch) {
       b64_decode(b64.data(), b64.size(), bytes.data());
       self.update(wrapped_compact_theta_sketch::wrap(bytes.data(), bytes.size(), seed));
     }), emscripten::allow_raw_pointers())
+    .function("updateWithBuffer", emscripten::optional_override([](theta_union& self, intptr_t bytes, size_t size, uint64_t seed) {
+      self.update(wrapped_compact_theta_sketch::wrap(reinterpret_cast<void*>(bytes), size, seed));
+    }))
     .function("getResultSerialized", emscripten::optional_override([](theta_union& self) {
       return self.get_result().serialize_compressed();
+    }))
+    .function("getResultStreamCompressed", emscripten::optional_override([](theta_union& self, intptr_t bytes, size_t size) {
+      std::strstream stream(reinterpret_cast<char*>(bytes), size);
+      self.get_result().serialize_compressed(stream);
+      return (int) stream.tellp();
     }))
     .function("getResultAsUint8Array", emscripten::optional_override([](theta_union& self) {
       auto bytes = self.get_result().serialize();
