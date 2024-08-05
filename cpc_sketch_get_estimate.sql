@@ -15,31 +15,17 @@
 # specific language governing permissions and limitations
 # under the License.
 
-EMCC=emcc
-EMCFLAGS=-Idatasketches-cpp/common/include \
-	-Idatasketches-cpp/theta/include \
-	-Idatasketches-cpp/cpc/include \
-	--no-entry \
-	-sWASM_BIGINT=1 \
-	-sEXPORTED_FUNCTIONS=[_malloc,_free] \
-	-sENVIRONMENT=shell \
-	-sTOTAL_MEMORY=1024MB \
-	-O3 \
-	--bind
-
-all: theta_sketch.mjs theta_sketch.js theta_sketch.wasm cpc_sketch.mjs cpc_sketch.js cpc_sketch.wasm
-
-%.mjs: %.cpp
-	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o $@
-
-# this rule creates a non-es6 loadable library
-%.js: %.cpp
-	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o $@
-
-%.wasm: %.cpp
-	$(EMCC) $< $(EMCFLAGS) -sSTANDALONE_WASM=1 -o $@
-
-clean:
-	$(RM) *.mjs *.js *.wasm
-
-.PHONY: clean
+CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.cpc_sketch_get_estimate(base64 BYTES, seed INT64) RETURNS FLOAT64 LANGUAGE js
+OPTIONS (library=["gs://$GCS_BUCKET/cpc_sketch.js"]) AS R"""
+const default_seed = BigInt(9001);
+try {
+  var sketch = Module.cpc_sketch.deserializeFromB64(base64, seed ? BigInt(seed) : default_seed);
+  try {
+    return sketch.getEstimate();
+  } finally {
+    sketch.delete();
+  }
+} catch (e) {
+  throw new Error(Module.getExceptionMessage(e));
+}
+""";
