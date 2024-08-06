@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_get_estimate_and_bounds(base64 BYTES, num_std_devs INT, seed INT64) RETURNS FLOAT64 LANGUAGE js
+CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_get_estimate_and_bounds(base64 BYTES, num_std_devs INT, seed INT64) RETURNS ARRAY<FLOAT64> LANGUAGE js
 OPTIONS (library=["$GCS_BUCKET/theta_sketch.js"]) AS R"""
 const default_seed = BigInt(9001);
 try {
