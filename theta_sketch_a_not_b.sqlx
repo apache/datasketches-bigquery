@@ -15,15 +15,25 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_to_string(base64 BYTES, seed INT64) RETURNS STRING LANGUAGE js
-OPTIONS (library=["$GCS_BUCKET/theta_sketch.js"]) AS R"""
+CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_a_not_b(sketch1 BYTES, sketch2 BYTES, seed INT64)
+RETURNS BYTES
+LANGUAGE js
+OPTIONS (
+  library=["$GCS_BUCKET/theta_sketch.js"],
+  description = '''Computes a sketch that represents the scalar set difference: sketch1 and not sketch2.
+Param sketch1: the first sketch "a" as bytes.
+Param sketch2: the second sketch "b" as bytes.
+Param seed: This is used to confirm that the given sketches were configured with the correct seed.
+Returns a Compact, Compressed Theta Sketch, as bytes, from which the set difference cardinality can be obtained.
+For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
+) AS R"""
 const default_seed = BigInt(9001);
 try {
-  var sketch = Module.compact_theta_sketch.deserializeFromB64(base64, seed ? BigInt(seed) : default_seed);
+  var a_not_b = new Module.theta_a_not_b(seed ? BigInt(seed) : default_seed);
   try {
-    return sketch.toString();
+    return a_not_b.computeWithB64ReturnB64Compressed(sketch1, sketch2, seed ? BigInt(seed) : default_seed);
   } finally {
-    sketch.delete();
+    a_not_b.delete();
   }
 } catch (e) {
   throw new Error(Module.getExceptionMessage(e));

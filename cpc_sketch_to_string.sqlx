@@ -15,18 +15,24 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.cpc_sketch_scalar_union(sketch1 BYTES, sketch2 BYTES, lg_k INT, seed INT64) RETURNS BYTES LANGUAGE js
-OPTIONS (library=["gs://$GCS_BUCKET/cpc_sketch.js"]) AS R"""
-const default_lg_k = 12;
+CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.cpc_sketch_to_string(base64 BYTES, seed INT64)
+RETURNS STRING
+LANGUAGE js
+OPTIONS (
+  library=["gs://$GCS_BUCKET/cpc_sketch.js"],
+  description = '''Returns a summary string that represents the state of the given sketch.
+Param base64 the given sketch as base64 encoded bytes.
+Param seed: This is used to confirm that the given sketch was configured with the correct seed.
+Returns a string that represents the state of the given sketch.
+For more details: https://datasketches.apache.org/docs/CPC/CPC.html'''
+) AS R"""
 const default_seed = BigInt(9001);
 try {
-  var union = new Module.cpc_union(lg_k ? lg_k : default_lg_k, seed ? BigInt(seed) : default_seed);
+  var sketch = Module.cpc_sketch.deserializeFromB64(base64, seed ? BigInt(seed) : default_seed);
   try {
-    union.updateWithB64(sketch1, seed ? BigInt(seed) : default_seed)
-    union.updateWithB64(sketch2, seed ? BigInt(seed) : default_seed)
-    return union.getResultB64();
+    return sketch.toString();
   } finally {
-    union.delete();
+    sketch.delete();
   }
 } catch (e) {
   throw new Error(Module.getExceptionMessage(e));
