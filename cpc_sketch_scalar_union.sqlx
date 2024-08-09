@@ -15,8 +15,19 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.cpc_sketch_scalar_union(sketch1 BYTES, sketch2 BYTES, lg_k INT, seed INT64) RETURNS BYTES LANGUAGE js
-OPTIONS (library=["gs://$GCS_BUCKET/cpc_sketch.js"]) AS R"""
+CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.cpc_sketch_scalar_union(sketch1 BYTES, sketch2 BYTES, lg_k INT, seed INT64)
+RETURNS BYTES
+LANGUAGE js
+OPTIONS (
+  library=["gs://$GCS_BUCKET/cpc_sketch.js"],
+  description = '''Computes a sketch that represents the scalar union of the two given sketches.
+Param sketch1: the first sketch as bytes.
+Param sketch2: the second sketch as bytes.
+Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 26].
+Param seed: This is used to confirm that the given sketches were configured with the correct seed.
+Returns a Compact, Compressed Theta Sketch, as bytes, from which the union cardinality can be obtained.
+For more details: https://datasketches.apache.org/docs/CPC/CPC.html'''
+) AS R"""
 const default_lg_k = 12;
 const default_seed = BigInt(9001);
 try {

@@ -23,6 +23,7 @@ OPTIONS (
   description = '''Computes a sketch that represents the scalar union of the two given sketches.
 Param sketch1: the first sketch as bytes.
 Param sketch2: the second sketch as bytes.
+Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 26].
 Param seed: This is used to confirm that the given sketches were configured with the correct seed.
 Returns a Compact, Compressed Theta Sketch, as bytes, from which the union cardinality can be obtained.
 For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
