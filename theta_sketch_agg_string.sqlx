@@ -15,8 +15,18 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE AGGREGATE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(str STRING, params STRUCT<lg_k INT, seed INT64> NOT AGGREGATE) RETURNS BYTES LANGUAGE js
-OPTIONS (library=["$GCS_BUCKET/theta_sketch.mjs"]) AS R"""
+CREATE OR REPLACE AGGREGATE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(str STRING, params STRUCT<lg_k INT, seed INT64> NOT AGGREGATE)
+RETURNS BYTES 
+LANGUAGE js
+OPTIONS (
+  library=["$GCS_BUCKET/theta_sketch.mjs"],
+  description = '''Creates a sketch that represents the cardinality of the given STRING column.
+Param str: the STRING column of identifiers.
+Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 26].
+Param seed: the seed to be used by the underlying hash function.
+Returns a Compact, Compressed Theta Sketch, as bytes, from which the cardinality can be obtained. 
+For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
+) AS R"""
 import ModuleFactory from "$GCS_BUCKET/theta_sketch.mjs";
 var Module = await ModuleFactory();
 const default_lg_k = Number(12);

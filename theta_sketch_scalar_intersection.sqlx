@@ -15,8 +15,18 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_scalar_intersection(sketchBytes1 BYTES, sketchBytes2 BYTES, seed INT64) RETURNS BYTES LANGUAGE js
-OPTIONS (library=["$GCS_BUCKET/theta_sketch.js"]) AS R"""
+CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_scalar_intersection(sketchBytes1 BYTES, sketchBytes2 BYTES, seed INT64)
+RETURNS BYTES
+LANGUAGE js
+OPTIONS (
+  library=["$GCS_BUCKET/theta_sketch.js"],
+  description = '''Computes a sketch that represents the scalar intersection of the two given sketches.
+Param sketchBytes1: the first sketch as bytes.
+Param sketchBytes2: the second sketch as bytes.
+Param seed: This is used to confirm that the given sketch was configured with the correct seed.
+Returns a Compact, Compressed Theta Sketch, as bytes, from which the intersection cardinality can be obtained.
+For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
+) AS R"""
 const default_seed = BigInt(9001);
 try {
   var intersection = new Module.theta_intersection(seed ? BigInt(seed) : default_seed);

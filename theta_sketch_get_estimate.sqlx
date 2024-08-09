@@ -15,18 +15,24 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_scalar_union(sketch1 BYTES, sketch2 BYTES, lg_k INT64, seed INT64) RETURNS BYTES LANGUAGE js
-OPTIONS (library=["$GCS_BUCKET/theta_sketch.js"]) AS R"""
-const default_lg_k = 12;
+CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_get_estimate(base64 BYTES, seed INT64)
+RETURNS FLOAT64
+LANGUAGE js
+OPTIONS (
+  library=["$GCS_BUCKET/theta_sketch.js"],
+  description = '''Gets cardinality estimate and bounds from given sketch.
+Param base64: The given sketch to query as bytes.
+Param seed: This is used to confirm that the given sketch was configured with the correct seed.
+Returns a FLOAT64 value as the cardinality estimate.
+For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
+) AS R"""
 const default_seed = BigInt(9001);
 try {
-  var union = new Module.theta_union(lg_k ? lg_k : default_lg_k, seed ? BigInt(seed) : default_seed);
+  var sketch = Module.compact_theta_sketch.deserializeFromB64(base64, seed ? BigInt(seed) : default_seed);
   try {
-    union.updateWithB64(sketch1, seed ? BigInt(seed) : default_seed)
-    union.updateWithB64(sketch2, seed ? BigInt(seed) : default_seed)
-    return union.getResultB64Compressed();
+    return sketch.getEstimate();
   } finally {
-    union.delete();
+    sketch.delete();
   }
 } catch (e) {
   throw new Error(Module.getExceptionMessage(e));
