@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE AGGREGATE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_union(sketch BYTES, lg_k INT64 NOT AGGREGATE)
+CREATE OR REPLACE AGGREGATE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_union(sketch BYTES, params STRUCT<lg_k INT, seed INT64> NOT AGGREGATE)
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
@@ -29,7 +29,7 @@ For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramewor
 ) AS R"""
 import ModuleFactory from "$GCS_BUCKET/theta_sketch.mjs";
 var Module = await ModuleFactory();
-const default_lg_k = 12;
+const default_lg_k = Number(12);
 const default_seed = BigInt(9001);
 
 var buffer = {ptr: 0, size: 0};
@@ -62,14 +62,15 @@ function ensureUnion(state) {
   }
 }
 
-export function initialState(lg_k) {
-  return {
-    lg_k: lg_k == null ? Number(default_lg_k) : Number(lg_k),
-    seed: default_seed,
+export function initialState(params) {
+  var state = {
+    lg_k: params.lg_k == null ? default_lg_k : Number(params.lg_k),
+    seed: params.seed == null ? default_seed : BigInt(params.seed),
     union: null,
     serialized: null
   };
   reserveBuffer(Module.compact_theta_sketch.getMaxSerializedSizeBytes(state.lg_k));
+  return state;
 }
 
 export function aggregate(state, sketch) {
