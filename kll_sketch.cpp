@@ -33,6 +33,9 @@ EMSCRIPTEN_BINDINGS(kll_sketch_float) {
     return std::string(reinterpret_cast<std::exception*>(ptr)->what());
   }));
 
+  emscripten::register_vector<float>("VectorFloat");
+  emscripten::register_vector<double>("VectorDouble");
+
   emscripten::class_<kll_sketch_float>("kll_sketch_float")
     .constructor(emscripten::optional_override([](uint16_t k) {
       return new kll_sketch_float(k);
@@ -58,6 +61,9 @@ EMSCRIPTEN_BINDINGS(kll_sketch_float) {
     }), emscripten::allow_raw_pointers())
     .function("getRank", &kll_sketch_float::get_rank)
     .function("getQuantile", &kll_sketch_float::get_quantile)
+    .function("getPMF", emscripten::optional_override([](const kll_sketch_float& self, const std::vector<float>& split_points, bool inclusive) {
+      return self.get_PMF(split_points.data(), split_points.size(), inclusive);
+    }))
     .function("toString", emscripten::optional_override([](const kll_sketch_float& self) {
       return std::string(self.to_string());
     }))
