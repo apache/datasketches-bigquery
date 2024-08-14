@@ -31,7 +31,7 @@ try {
   var sketch = Module.kll_sketch_float.deserializeFromB64(sketch);
   try {
     if (sketch.isEmpty()) return null;
-    return sketch.getRank(rank, inclusive);
+    return sketch.getQuantile(rank, inclusive);
   } finally {
     sketch.delete();
   }
