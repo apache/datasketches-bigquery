@@ -1,0 +1,50 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.kll_sketch_float_get_pmf(sketch BYTES, split_points ARRAY<FLOAT64>, inclusive BOOL)
+RETURNS ARRAY<FLOAT64>
+LANGUAGE js
+OPTIONS (
+  library=["gs://$GCS_BUCKET/kll_sketch.js"],
+  description = '''Returns an approximation to the Probability Mass Function (PMF) of the input stream  given a set of split points.
+Param sketch: the given sketch in serialized form.
+Param split_points: an array of M unique, monotonically increasing values that divide the input domain into M+1 consecutive disjoint intervals (bins).
+Param inclusive: if true the rank of a value includes its own weight, and therefore
+if the sketch contains values equal to a slit point, then in PMF such values are
+included into the interval to the left of split point. Otherwise they are included into the interval to the right of split point.
+Returns an array of M+1 values each of which is an approximation
+to the fraction of the input stream values (the mass) that fall into one of those intervals.
+For more details: https://datasketches.apache.org/docs/KLL/KLLSketch.html'''
+) AS R"""
+try {
+  var sketchObject = null;
+  var vectorFloat = new Module.VectorFloat();
+  split_points.forEach(value => vectorFloat.push_back(value));
+  try {
+    sketchObject = Module.kll_sketch_float.deserializeFromB64(sketch);
+    if (sketchObject.isEmpty()) return null;
+    var pmf = sketchObject.getPMF(vectorFloat, inclusive);
+    var array = [];
+    for (let i = 0; i < pmf.size(); i++) array.push(pmf.get(i));
+    return array;
+  } finally {
+    if (sketchObject != null) sketchObject.delete();
+  }
+} catch (e) {
+  throw new Error(Module.getExceptionMessage(e));
+}
+""";
