@@ -32,10 +32,10 @@ For more details: https://datasketches.apache.org/docs/KLL/KLLSketch.html'''
 ) AS R"""
 try {
   var sketchObject = null;
-  var vectorFloat = new Module.VectorFloat();
-  split_points.forEach(value => vectorFloat.push_back(value));
   try {
     sketchObject = Module.kll_sketch_float.deserializeFromB64(sketch);
+    var vectorFloat = new Module.VectorFloat();
+    split_points.forEach(value => vectorFloat.push_back(value));
     if (sketchObject.isEmpty()) return null;
     var pmf = sketchObject.getPMF(vectorFloat, inclusive);
     var array = [];
