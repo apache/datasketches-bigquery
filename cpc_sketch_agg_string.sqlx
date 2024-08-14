@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE AGGREGATE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.cpc_sketch_agg_string`(str STRING, params STRUCT<lg_k INT, seed INT64> NOT AGGREGATE)
+CREATE OR REPLACE AGGREGATE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.cpc_sketch_agg_string(str STRING, params STRUCT<lg_k INT, seed INT64> NOT AGGREGATE)
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
