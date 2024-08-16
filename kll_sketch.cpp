@@ -21,6 +21,7 @@
 #include <emscripten/bind.h>
 
 #include <kll_sketch.hpp>
+#include <kolmogorov_smirnov.hpp>
 
 #include "base64.hpp"
 
@@ -72,4 +73,16 @@ EMSCRIPTEN_BINDINGS(kll_sketch_float) {
       return std::string(self.to_string());
     }))
     ;
+
+  emscripten::function("kolmogorovSmirnovTest", emscripten::optional_override([](const std::string& sketch1_b64, const std::string& sketch2_b64, double pvalue) {
+    std::vector<char> bytes1(b64_dec_len(sketch1_b64.data(), sketch1_b64.size()));
+    b64_decode(sketch1_b64.data(), sketch1_b64.size(), bytes1.data());
+    std::vector<char> bytes2(b64_dec_len(sketch2_b64.data(), sketch2_b64.size()));
+    b64_decode(sketch2_b64.data(), sketch2_b64.size(), bytes2.data());
+    return datasketches::kolmogorov_smirnov::test(
+      kll_sketch_float::deserialize(bytes1.data(), bytes1.size()),
+      kll_sketch_float::deserialize(bytes2.data(), bytes2.size()),
+      pvalue
+    );
+  }));
 }
