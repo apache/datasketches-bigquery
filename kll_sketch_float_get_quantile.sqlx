@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.kll_sketch_float_get_quantile(sketch BYTES, rank FLOAT64, inclusive BOOL)
+CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, rank FLOAT64, inclusive BOOL)
 RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (

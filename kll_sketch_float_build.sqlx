@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE AGGREGATE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.kll_sketch_float_build(value FLOAT64, k INT NOT AGGREGATE)
+CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(value FLOAT64, k INT NOT AGGREGATE)
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
