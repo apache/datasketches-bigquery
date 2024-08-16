@@ -59,6 +59,7 @@ EMSCRIPTEN_BINDINGS(kll_sketch_float) {
       b64_decode(b64.data(), b64.size(), bytes.data());
       return new kll_sketch_float(kll_sketch_float::deserialize(bytes.data(), bytes.size()));
     }), emscripten::allow_raw_pointers())
+    .function("getN", &kll_sketch_float::get_n)
     .function("getRank", &kll_sketch_float::get_rank)
     .function("getQuantile", &kll_sketch_float::get_quantile)
     .function("getPMF", emscripten::optional_override([](const kll_sketch_float& self, const std::vector<float>& split_points, bool inclusive) {
