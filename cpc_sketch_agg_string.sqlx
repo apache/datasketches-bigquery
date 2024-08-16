@@ -72,7 +72,7 @@ export function serialize(state) {
       try {
         u.updateWithSketch(state.sketch);
         u.updateWithBytes(state.serialized, state.seed);
-        state.serialized = u.getResultAsUint8ArrayCompressed();
+        state.serialized = u.getResultAsUint8Array();
       } finally {
         u.delete();
       }
