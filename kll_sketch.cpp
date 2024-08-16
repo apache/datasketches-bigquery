@@ -64,6 +64,9 @@ EMSCRIPTEN_BINDINGS(kll_sketch_float) {
     .function("getPMF", emscripten::optional_override([](const kll_sketch_float& self, const std::vector<float>& split_points, bool inclusive) {
       return self.get_PMF(split_points.data(), split_points.size(), inclusive);
     }))
+    .function("getCDF", emscripten::optional_override([](const kll_sketch_float& self, const std::vector<float>& split_points, bool inclusive) {
+      return self.get_CDF(split_points.data(), split_points.size(), inclusive);
+    }))
     .function("toString", emscripten::optional_override([](const kll_sketch_float& self) {
       return std::string(self.to_string());
     }))
