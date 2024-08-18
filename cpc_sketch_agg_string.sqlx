@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE AGGREGATE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.cpc_sketch_agg_string`(str STRING, params STRUCT<lg_k INT, seed INT64> NOT AGGREGATE)
+CREATE OR REPLACE AGGREGATE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.cpc_sketch_agg_string(str STRING, params STRUCT<lg_k INT64, seed INT64> NOT AGGREGATE)
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
@@ -108,20 +108,20 @@ export function merge(state, other_state) {
     state.union = new Module.cpc_union(state.lg_k, state.seed);
   }
   if (state.sketch || other_state.sketch) {
-    throw new Error("sketch is not expected in merge");
+    throw new Error("sketch is not expected during merge()");
   }
   if (other_state.union) {
-    throw new Error("other_state should not have union in merge");
+    throw new Error("other_state should not have union during merge()");
   }
   if (state.serialized) {
     state.union.updateWithBytes(state.serialized, state.seed);
     state.serialized = null;
   }
   if (other_state.serialized) {
-    state.union.updateWithBytes(other_state.serialized, other_state.seed);
+    state.union.updateWithBytes(other_state.serialized, state.seed);
     other_state.serialized = null;
   } else {
-    throw new Error("other_state should have serialized sketch in merge");
+    throw new Error("other_state should have serialized sketch during merge");
   }
 }
 

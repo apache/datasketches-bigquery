@@ -15,8 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-CREATE OR REPLACE AGGREGATE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(str STRING, params STRUCT<lg_k INT, seed INT64> NOT AGGREGATE)
-RETURNS BYTES 
+CREATE OR REPLACE AGGREGATE FUNCTION `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(str STRING, params STRUCT<lg_k INT64, seed INT64> NOT AGGREGATE)
+RETURNS BYTES
 LANGUAGE js
 OPTIONS (
   library=["$GCS_BUCKET/theta_sketch.mjs"],
@@ -108,7 +108,7 @@ export function merge(state, other_state) {
     state.union = new Module.theta_union(state.lg_k, state.seed);
   }
   if (state.sketch || other_state.sketch) {
-    throw new Error("update_theta_sketch not expected during merge()");
+    throw new Error("update_theta_sketch is not expected during merge()");
   }
   if (other_state.union) {
     throw new Error("other_state should not have union during merge()");
