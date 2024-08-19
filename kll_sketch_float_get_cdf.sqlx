@@ -1,0 +1,55 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, split_points ARRAY<FLOAT64>, inclusive BOOL)
+RETURNS ARRAY<FLOAT64>
+LANGUAGE js
+OPTIONS (
+  library=["gs://$GCS_BUCKET/kll_sketch.js"],
+  description = '''Returns an approximation to the Cumulative Distribution Function (CDF), which is the cumulative analog of the PMF,
+of the input stream given a set of split points.
+Param sketch: the given sketch in serialized form.
+Param split_points: an array of M unique, monotonically increasing values
+that divide the input domain into M+1 consecutive disjoint intervals.
+Param inclusive: if true the rank of a value includes its own weight,
+and therefore if the sketch contains values equal to a slit point,
+then in CDF such values are included into the interval to the left of split point.
+Otherwise they are included into the interval to the right of split point.
+Returns an array of M+1 values which are a consecutive approximation to the CDF
+of the input stream given the split_points. The value at array position j of the returned
+CDF array is the sum of the returned values in positions 0 through j of the PMF array.
+This can be viewed as array of ranks of the given split points plus one more value that is always 1.
+For more details: https://datasketches.apache.org/docs/KLL/KLLSketch.html'''
+) AS R"""
+try {
+  var sketchObject = null;
+  try {
+    sketchObject = Module.kll_sketch_float.deserializeFromB64(sketch);
+    var vectorFloat = new Module.VectorFloat();
+    split_points.forEach(value => vectorFloat.push_back(value));
+    if (sketchObject.isEmpty()) return null;
+    var cdf = sketchObject.getCDF(vectorFloat, inclusive);
+    var array = [];
+    for (let i = 0; i < cdf.size(); i++) array.push(cdf.get(i));
+    return array;
+  } finally {
+    if (sketchObject != null) sketchObject.delete();
+  }
+} catch (e) {
+  throw new Error(Module.getExceptionMessage(e));
+}
+""";
