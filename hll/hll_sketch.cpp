@@ -22,7 +22,7 @@
 
 #include <hll.hpp>
 
-#include "base64.hpp"
+#include "../base64.hpp"
 
 const emscripten::val Uint8Array = emscripten::val::global("Uint8Array");
 
