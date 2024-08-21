@@ -27,7 +27,7 @@ OPTIONS (
   description = '''Gets cardinality estimate and bounds from given sketch.
 Param sketch: The given sketch to query as bytes.
 Param seed: This is used to confirm that the given sketch was configured with the correct seed.
-Returns a FLOAT64 value as the cardinality estimate.
+Returns: a FLOAT64 value as the cardinality estimate.
 For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
 ) AS R"""
 const default_seed = BigInt(9001);

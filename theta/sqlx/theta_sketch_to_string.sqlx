@@ -27,7 +27,7 @@ OPTIONS (
   description = '''Returns a summary string that represents the state of the given sketch.
 Param sketch: the given sketch as bytes.
 Param seed: This is used to confirm that the given sketch was configured with the correct seed.
-Returns a string that represents the state of the given sketch.
+Returns: a string that represents the state of the given sketch.
 For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
 ) AS R"""
 const default_seed = BigInt(9001);

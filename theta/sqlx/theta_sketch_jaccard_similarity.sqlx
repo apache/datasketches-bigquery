@@ -31,7 +31,7 @@ A Jaccard of .95 means the overlap between the two sets is 95% of the union of t
 Param sketchA: the first sketch as bytes.
 Param sketchB: the second sketch as bytes.
 Param seed: This is used to confirm that the given sketches were configured with the correct seed.
-Returns an array of 3 floating-point values {LowerBound, Estimate, UpperBound} of the Jaccard index.
+Returns: an array of 3 floating-point values {LowerBound, Estimate, UpperBound} of the Jaccard index.
 For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
 ) AS R"""
 const default_seed = BigInt(9001);
