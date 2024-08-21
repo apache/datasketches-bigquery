@@ -27,7 +27,7 @@ OPTIONS (
   description = '''Creates a sketch that represents the cardinality of the given STRING column.
 Param str: the STRING column of identifiers.
 Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 26].
-Param tgt_type: The HLL type to use, if or when the sketch reaches that state
+Param tgt_type: The HLL type to use, if or when the sketch reaches that state.
 Returns: an HLL Sketch, as bytes, from which the cardinality can be obtained.
 For more details: https://datasketches.apache.org/docs/HLL/HLL.html'''
 ) AS R"""

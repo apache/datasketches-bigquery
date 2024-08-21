@@ -1,0 +1,62 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+config { hasOutput: true }
+
+CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES, lg_k BYTEINT, tgt_type STRING)
+RETURNS BYTES
+LANGUAGE js
+OPTIONS (
+  library=["gs://$GCS_BUCKET/hll_sketch.js"],
+  description = '''Computes a sketch that represents the union of the two given sketches.
+Param sketchA: the first sketch as bytes.
+Param sketchB: the second sketch as bytes.
+Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 26].
+Param tgt_type: The HLL type to use, if or when the sketch reaches that state.
+Returns an HLL Sketch, as bytes, from which the union cardinality can be obtained.
+For more details: https://datasketches.apache.org/docs/HLL/HLL.html'''
+) AS R"""
+const default_lg_k = 12;
+const default_tgt_type = Module.TargetHllType.HLL_4;
+try {
+  var type;
+  if (tgt_type == null) {
+    type = default_tgt_type;
+  } else if (tgt_type == "HLL_4") {
+    type = Module.TargetHllType.HLL_4;
+  } else if (tgt_type == "HLL_6") {
+    type = Module.TargetHllType.HLL_6;
+  } else if (tgt_type == "HLL_8") {
+    type = Module.TargetHllType.HLL_8;
+  } else {
+    throw new Error("unrecognized HLL type " + tgt_type);
+  }
+  var union = null;
+  try {
+    union = new Module.hll_union(lg_k ? lg_k : default_lg_k);
+    union.updateWithB64(sketchA)
+    union.updateWithB64(sketchB)
+    return union.getResultB64(type);
+  } finally {
+    if (union != null) union.delete();
+  }
+} catch (e) {
+  throw new Error(Module.getExceptionMessage(e));
+}
+""";
