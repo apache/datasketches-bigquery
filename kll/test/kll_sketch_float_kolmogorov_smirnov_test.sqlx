@@ -27,8 +27,8 @@ OPTIONS (
   description = '''Performs the Kolmogorov-Smirnov Test between two KLL sketches.
 Note: if the given sketches have insufficient data or if the sketch sizes are too small,
 this will return false.
-Param sketchA: sketch 1 in serialized form.
-Param sketchB: sketch 2 in serialized form.
+Param sketchA: sketch A in serialized form.
+Param sketchB: sketch B in serialized form.
 Param pvalue: Target p-value. Typically 0.001 to 0.1, e.g. 0.05.
 Returns: boolean indicating whether we can reject the null hypothesis (that the sketches
 reflect the same underlying distribution) using the provided p-value.
