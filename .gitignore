@@ -1,0 +1,11 @@
+# Eclipse project files 
+.project
+.settings/
+
+# OSX files
+**/.DS_Store
+
+# Emscripten files
+**/*.js
+**/*.mjs
+**/*.wasm
