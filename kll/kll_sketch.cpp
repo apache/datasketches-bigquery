@@ -17,13 +17,12 @@
  * under the License.
  */
 
-#include <strstream>
 #include <emscripten/bind.h>
 
 #include <kll_sketch.hpp>
 #include <kolmogorov_smirnov.hpp>
 
-#include "base64.hpp"
+#include "../base64.hpp"
 
 using kll_sketch_float = datasketches::kll_sketch<float>;
 

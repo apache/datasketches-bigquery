@@ -23,7 +23,7 @@
 #include <cpc_sketch.hpp>
 #include <cpc_union.hpp>
 
-#include "base64.hpp"
+#include "../base64.hpp"
 
 const emscripten::val Uint8Array = emscripten::val::global("Uint8Array");
 
@@ -75,11 +75,11 @@ EMSCRIPTEN_BINDINGS(cpc_sketch) {
     .function("updateWithBuffer", emscripten::optional_override([](datasketches::cpc_union& self, intptr_t bytes, size_t size, uint64_t seed) {
       self.update(datasketches::cpc_sketch::deserialize(reinterpret_cast<void*>(bytes), size, seed));
     }))
-    .function("getResultStream", emscripten::optional_override([](datasketches::cpc_union& self, intptr_t bytes, size_t size) {
-      std::strstream stream(reinterpret_cast<char*>(bytes), size);
-      self.get_result().serialize(stream);
-      return (int) stream.tellp();
-    }))
+//    .function("getResultStream", emscripten::optional_override([](datasketches::cpc_union& self, intptr_t bytes, size_t size) {
+//      std::strstream stream(reinterpret_cast<char*>(bytes), size);
+//      self.get_result().serialize(stream);
+//      return (int) stream.tellp();
+//    }))
     .function("getResultAsUint8Array", emscripten::optional_override([](datasketches::cpc_union& self) {
       auto bytes = self.get_result().serialize();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));

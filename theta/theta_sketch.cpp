@@ -26,7 +26,7 @@
 #include <theta_a_not_b.hpp>
 #include <theta_jaccard_similarity.hpp>
 
-#include "base64.hpp"
+#include "../base64.hpp"
 
 using datasketches::update_theta_sketch;
 using datasketches::compact_theta_sketch;

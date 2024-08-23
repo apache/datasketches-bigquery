@@ -16,8 +16,8 @@
 # under the License.
 
 EMCC=emcc
-EMCFLAGS=-Idatasketches-cpp/common/include \
-	-Idatasketches-cpp/kll/include \
+EMCFLAGS=-I../datasketches-cpp/common/include \
+	-I../datasketches-cpp/kll/include \
 	--no-entry \
 	-sWASM_BIGINT=1 \
 	-sEXPORTED_FUNCTIONS=[_malloc,_free] \
@@ -41,4 +41,4 @@ all: kll_sketch.mjs kll_sketch.js kll_sketch.wasm
 clean:
 	$(RM) *.mjs *.js *.wasm
 
-.PHONY: clean
+.PHONY: all clean

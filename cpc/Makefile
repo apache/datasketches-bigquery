@@ -16,8 +16,8 @@
 # under the License.
 
 EMCC=emcc
-EMCFLAGS=-Idatasketches-cpp/common/include \
-	-Idatasketches-cpp/cpc/include \
+EMCFLAGS=-I../datasketches-cpp/common/include \
+	-I../datasketches-cpp/cpc/include \
 	--no-entry \
 	-sWASM_BIGINT=1 \
 	-sEXPORTED_FUNCTIONS=[_malloc,_free] \
@@ -41,4 +41,4 @@ all: cpc_sketch.mjs cpc_sketch.js cpc_sketch.wasm
 clean:
 	$(RM) *.mjs *.js *.wasm
 
-.PHONY: clean
+.PHONY: all clean

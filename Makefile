@@ -15,4 +15,19 @@
 # specific language governing permissions and limitations
 # under the License.
 
+MODULES := theta cpc hll kll
 
+$(MODULES):
+	$(MAKE) -C $@
+
+.PHONY: all clean $(MODULES)
+.DEFAULT_GOAL := all
+
+all: $(MODULES)
+
+MODCLEAN = $(addsuffix .clean, $(MODULES))
+
+$(MODCLEAN): %.clean:
+	$(MAKE) -C $* clean
+
+clean: $(MODCLEAN)

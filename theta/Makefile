@@ -16,8 +16,8 @@
 # under the License.
 
 EMCC=emcc
-EMCFLAGS=-Idatasketches-cpp/common/include \
-	-Idatasketches-cpp/theta/include \
+EMCFLAGS=-I../datasketches-cpp/common/include \
+	-I../datasketches-cpp/theta/include \
 	--no-entry \
 	-sWASM_BIGINT=1 \
 	-sEXPORTED_FUNCTIONS=[_malloc,_free] \
@@ -26,7 +26,7 @@ EMCFLAGS=-Idatasketches-cpp/common/include \
 	-O3 \
 	--bind
 
-all: theta_sketch.mjs theta_sketch.js theta_sketch.wasm \
+all: theta_sketch.mjs theta_sketch.js theta_sketch.wasm
 
 %.mjs: %.cpp
 	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o $@
@@ -41,4 +41,4 @@ all: theta_sketch.mjs theta_sketch.js theta_sketch.wasm \
 clean:
 	$(RM) *.mjs *.js *.wasm
 
-.PHONY: clean
+.PHONY: all clean

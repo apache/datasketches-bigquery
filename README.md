@@ -29,16 +29,4 @@ If you are interested in making contributions to this project please see our [Co
 ## Building
 
 - Requires [Emscripten (emcc compiler)](https://emscripten.org/)
-- Requires a link to [datasketches-cpp](https://github.com/apache/datasketches-cpp) in this directory
-
-## Example
-
-	select `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_get_estimate(
-	  `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_scalar_union(
-	    (select `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(value, struct<int, int64>(null, null)) from unnest(["1", "2", "3"]) as value),
-	    (select `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(value, struct<int, int64>(null, null)) from unnest(["3", "4", "5"]) as value),
-	    null, null
-	  ), null
-	);
-	
-	result: 5
+- Requires make utility
