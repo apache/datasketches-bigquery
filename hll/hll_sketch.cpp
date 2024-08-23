@@ -82,11 +82,11 @@ EMSCRIPTEN_BINDINGS(hll_sketch) {
     .function("updateWithBuffer", emscripten::optional_override([](datasketches::hll_union& self, intptr_t bytes, size_t size) {
       self.update(datasketches::hll_sketch::deserialize(reinterpret_cast<void*>(bytes), size));
     }))
-    .function("getResultStream", emscripten::optional_override([](datasketches::hll_union& self, intptr_t bytes, size_t size, datasketches::target_hll_type tgt_type) {
-      std::strstream stream(reinterpret_cast<char*>(bytes), size);
-      self.get_result(tgt_type).serialize_compact(stream);
-      return (int) stream.tellp();
-    }))
+//    .function("getResultStream", emscripten::optional_override([](datasketches::hll_union& self, intptr_t bytes, size_t size, datasketches::target_hll_type tgt_type) {
+//      std::strstream stream(reinterpret_cast<char*>(bytes), size);
+//      self.get_result(tgt_type).serialize_compact(stream);
+//      return (int) stream.tellp();
+//    }))
     .function("getResultAsUint8Array", emscripten::optional_override([](datasketches::hll_union& self, datasketches::target_hll_type tgt_type) {
       auto bytes = self.get_result(tgt_type).serialize_compact();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
