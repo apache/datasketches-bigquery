@@ -17,6 +17,7 @@
  * under the License.
  */
 
+# expected 5
 select t.cpc_sketch_get_estimate(
   t.cpc_sketch_scalar_union(
     (select t.cpc_sketch_agg_string(str, struct<int, int>(null, null)) from unnest(["a", "b", "c"]) as str),
@@ -34,6 +35,7 @@ insert into t.cpc_sketch
 insert into t.cpc_sketch
 (select t.cpc_sketch_agg_string(cast(value as string), struct<int, int>(null, null)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
+# expected estimate about 20000
 select t.cpc_sketch_to_string(
   t.cpc_sketch_agg_union(sketch, struct<int, int>(null, null)),
   null
