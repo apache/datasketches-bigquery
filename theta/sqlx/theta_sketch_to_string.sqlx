@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, seed INT64)
 RETURNS STRING
 LANGUAGE js
 OPTIONS (
-  library=["$GCS_BUCKET/theta_sketch.js"],
+  library=["gs://$GCS_BUCKET/theta_sketch.js"],
   description = '''Returns a summary string that represents the state of the given sketch.
 Param sketch: the given sketch as bytes.
 Param seed: This is used to confirm that the given sketch was configured with the correct seed.

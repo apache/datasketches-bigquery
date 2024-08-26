@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES, seed INT64)
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
-  library=["$GCS_BUCKET/theta_sketch.js"],
+  library=["gs://$GCS_BUCKET/theta_sketch.js"],
   description = '''Computes a sketch that represents the scalar set difference: sketchA and not sketchB.
 Param sketchA: the first sketch "A" as bytes.
 Param sketchB: the second sketch "B" as bytes.

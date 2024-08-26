@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES, lg_k BYTEINT,
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
-  library=["$GCS_BUCKET/theta_sketch.js"],
+  library=["gs://$GCS_BUCKET/theta_sketch.js"],
   description = '''Computes a sketch that represents the scalar union of the two given sketches.
 Param sketchA: the first sketch as bytes.
 Param sketchB: the second sketch as bytes.

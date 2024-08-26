@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, seed INT64)
 RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (
-  library=["$GCS_BUCKET/theta_sketch.js"],
+  library=["gs://$GCS_BUCKET/theta_sketch.js"],
   description = '''Gets cardinality estimate and bounds from given sketch.
 Param sketch: The given sketch to query as bytes.
 Param seed: This is used to confirm that the given sketch was configured with the correct seed.
