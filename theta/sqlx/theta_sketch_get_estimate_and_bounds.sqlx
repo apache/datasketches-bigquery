@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, num_std_devs BYTEINT, seed IN
 RETURNS ARRAY<FLOAT64>
 LANGUAGE js
 OPTIONS (
-  library=["$GCS_BUCKET/theta_sketch.js"],
+  library=["gs://$GCS_BUCKET/theta_sketch.js"],
   description = '''Gets cardinality estimate and bounds from given sketch.
 Param sketch: The given sketch to query as bytes.
 Param num_std_devs: The returned bounds will be based on the statistical confidence interval determined by the given number of standard deviations

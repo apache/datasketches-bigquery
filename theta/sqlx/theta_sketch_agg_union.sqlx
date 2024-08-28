@@ -23,7 +23,7 @@ CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(sketch BYTES, params STRUCT<lg_k 
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
-  library=["$GCS_BUCKET/theta_sketch.mjs"],
+  library=["gs://$GCS_BUCKET/theta_sketch.mjs"],
   description = '''Creates a sketch that represents the union of the given column of sketches.
 Param sketch: the column of sketches. Each as bytes.
 Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 26].
@@ -31,7 +31,7 @@ Param seed: This is used to confirm that the given sketches were configured with
 Returns: a Compact, Compressed Theta Sketch, as bytes, from which the union cardinality can be obtained.
 For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
 ) AS R"""
-import ModuleFactory from "$GCS_BUCKET/theta_sketch.mjs";
+import ModuleFactory from "gs://$GCS_BUCKET/theta_sketch.mjs";
 var Module = await ModuleFactory();
 const default_lg_k = Number(12);
 const default_seed = BigInt(9001);
