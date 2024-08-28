@@ -24,11 +24,22 @@ insert into t.kll_sketch
 insert into t.kll_sketch
 (select t.kll_sketch_float_build(value, null) from unnest([11,12,13,14,15,16,17,18,19,20]) as value);
 
+select t.kll_sketch_float_to_string(sketch) from t.kll_sketch;
+
 # expected 0.5
 select t.kll_sketch_float_get_rank(t.kll_sketch_float_merge(sketch, null), 10, true) from t.kll_sketch;
 
 # expected 10
 select t.kll_sketch_float_get_quantile(t.kll_sketch_float_merge(sketch, null), 0.5, true) from t.kll_sketch;
+
+# expected 20
+select t.kll_sketch_float_get_n(t.kll_sketch_float_merge(sketch, null)) from t.kll_sketch;
+
+# expected 0.5, 0.5
+select t.kll_sketch_float_get_pmf(t.kll_sketch_float_merge(sketch, null), [10.0], true) from t.kll_sketch;
+
+# expected 0.5, 1
+select t.kll_sketch_float_get_cdf(t.kll_sketch_float_merge(sketch, null), [10.0], true) from t.kll_sketch;
 
 drop table t.kll_sketch;
 

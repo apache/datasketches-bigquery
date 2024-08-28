@@ -20,9 +20,16 @@
 create or replace table t.theta_sketch(sketch bytes);
 
 insert into t.theta_sketch
-(select t.theta_sketch_agg_string(cast(value as string), struct<int, int>(null, null)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+(select t.theta_sketch_agg_string(cast(value as string), struct<int, int>(14, null)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
 insert into t.theta_sketch
-(select t.theta_sketch_agg_string(cast(value as string), struct<int, int>(null, null)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+(select t.theta_sketch_agg_string(cast(value as string), struct<int, int>(14, null)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+
+# expected about 20000
+select t.theta_sketch_get_estimate_and_bounds(
+  t.theta_sketch_agg_union(sketch, struct<int, int>(10, null)),
+  2,
+  null
+) from t.theta_sketch;
 
 # expected estimate about 20000
 select t.theta_sketch_to_string(

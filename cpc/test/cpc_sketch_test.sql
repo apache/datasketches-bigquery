@@ -35,9 +35,17 @@ insert into t.cpc_sketch
 insert into t.cpc_sketch
 (select t.cpc_sketch_agg_string(cast(value as string), struct<int, int>(null, null)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
-# expected estimate about 20000
-select t.cpc_sketch_to_string(
+select t.cpc_sketch_to_string(sketch, null) from t.cpc_sketch;
+
+# expected about 20000
+select t.cpc_sketch_get_estimate(
   t.cpc_sketch_agg_union(sketch, struct<int, int>(null, null)),
+  null
+) from t.cpc_sketch;
+
+select t.cpc_sketch_get_estimate_and_bounds(
+  t.cpc_sketch_agg_union(sketch, struct<int, int>(14, null)),
+  3,
   null
 ) from t.cpc_sketch;
 
