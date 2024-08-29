@@ -44,4 +44,4 @@ MODTEST = $(addsuffix .test, $(MODULES))
 $(MODTEST): %.test:
 	$(MAKE) -C $* test
 
-install: $(MODTEST)
+test: $(MODTEST)
