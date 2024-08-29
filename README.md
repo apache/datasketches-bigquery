@@ -30,3 +30,8 @@ If you are interested in making contributions to this project please see our [Co
 
 - Requires [Emscripten (emcc compiler)](https://emscripten.org/)
 - Requires make utility
+
+## Installing and testing
+
+- Requires [Google Cloud CLI](https://cloud.google.com/sdk/docs/install)
+- Requires setting environment variables GCS\_BUCKET (to upload artifacts) and BQ\_DATASET (to create functions and run tests)

@@ -17,33 +17,33 @@
  * under the License.
  */
 
-create or replace table t.theta_sketch(sketch bytes);
+create or replace table $BQ_DATASET.theta_sketch(sketch bytes);
 
-insert into t.theta_sketch
-(select t.theta_sketch_agg_string(cast(value as string), struct<int, int>(14, null)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
-insert into t.theta_sketch
-(select t.theta_sketch_agg_string(cast(value as string), struct<int, int>(14, null)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+insert into $BQ_DATASET.theta_sketch
+(select $BQ_DATASET.theta_sketch_agg_string(cast(value as string), struct<int, int>(14, null)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+insert into $BQ_DATASET.theta_sketch
+(select $BQ_DATASET.theta_sketch_agg_string(cast(value as string), struct<int, int>(14, null)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
 # expected about 20000
-select t.theta_sketch_get_estimate_and_bounds(
-  t.theta_sketch_agg_union(sketch, struct<int, int>(10, null)),
+select $BQ_DATASET.theta_sketch_get_estimate_and_bounds(
+  $BQ_DATASET.theta_sketch_agg_union(sketch, struct<int, int>(10, null)),
   2,
   null
-) from t.theta_sketch;
+) from $BQ_DATASET.theta_sketch;
 
 # expected estimate about 20000
-select t.theta_sketch_to_string(
-  t.theta_sketch_agg_union(sketch, struct<int, int>(null, null)),
+select $BQ_DATASET.theta_sketch_to_string(
+  $BQ_DATASET.theta_sketch_agg_union(sketch, struct<int, int>(null, null)),
   null
-) from t.theta_sketch;
+) from $BQ_DATASET.theta_sketch;
 
-drop table t.theta_sketch;
+drop table $BQ_DATASET.theta_sketch;
 
 # expected 5
-select t.theta_sketch_get_estimate(
-  t.theta_sketch_scalar_union(
-    (select t.theta_sketch_agg_string(str, struct<int, int>(null, null)) from unnest(["a", "b", "c"]) as str),
-    (select t.theta_sketch_agg_string(str, STRUCT<int, int>(null, null)) from unnest(["c", "d", "e"]) as str),
+select $BQ_DATASET.theta_sketch_get_estimate(
+  $BQ_DATASET.theta_sketch_scalar_union(
+    (select $BQ_DATASET.theta_sketch_agg_string(str, struct<int, int>(null, null)) from unnest(["a", "b", "c"]) as str),
+    (select $BQ_DATASET.theta_sketch_agg_string(str, STRUCT<int, int>(null, null)) from unnest(["c", "d", "e"]) as str),
     null,
     null
   ),
@@ -51,28 +51,28 @@ select t.theta_sketch_get_estimate(
 );
 
 # expected 1
-select t.theta_sketch_get_estimate(
-  t.theta_sketch_scalar_intersection(
-    (select t.theta_sketch_agg_string(str, struct<int, int>(null, null)) from unnest(["a", "b", "c"]) as str),
-    (select t.theta_sketch_agg_string(str, STRUCT<int, int>(null, null)) from unnest(["c", "d", "e"]) as str),
+select $BQ_DATASET.theta_sketch_get_estimate(
+  $BQ_DATASET.theta_sketch_scalar_intersection(
+    (select $BQ_DATASET.theta_sketch_agg_string(str, struct<int, int>(null, null)) from unnest(["a", "b", "c"]) as str),
+    (select $BQ_DATASET.theta_sketch_agg_string(str, STRUCT<int, int>(null, null)) from unnest(["c", "d", "e"]) as str),
     null
   ),
   null
 );
 
 # expected 2
-select t.theta_sketch_get_estimate(
-  t.theta_sketch_a_not_b(
-    (select t.theta_sketch_agg_string(str, struct<int, int>(null, null)) from unnest(["a", "b", "c"]) as str),
-    (select t.theta_sketch_agg_string(str, STRUCT<int, int>(null, null)) from unnest(["c", "d", "e"]) as str),
+select $BQ_DATASET.theta_sketch_get_estimate(
+  $BQ_DATASET.theta_sketch_a_not_b(
+    (select $BQ_DATASET.theta_sketch_agg_string(str, struct<int, int>(null, null)) from unnest(["a", "b", "c"]) as str),
+    (select $BQ_DATASET.theta_sketch_agg_string(str, STRUCT<int, int>(null, null)) from unnest(["c", "d", "e"]) as str),
     null
   ),
   null
 );
 
 # expected 0.2
-select t.theta_sketch_jaccard_similarity(
-  (select t.theta_sketch_agg_string(str, struct<int, int>(null, null)) from unnest(["a", "b", "c"]) as str),
-  (select t.theta_sketch_agg_string(str, STRUCT<int, int>(null, null)) from unnest(["c", "d", "e"]) as str),
+select $BQ_DATASET.theta_sketch_jaccard_similarity(
+  (select $BQ_DATASET.theta_sketch_agg_string(str, struct<int, int>(null, null)) from unnest(["a", "b", "c"]) as str),
+  (select $BQ_DATASET.theta_sketch_agg_string(str, STRUCT<int, int>(null, null)) from unnest(["c", "d", "e"]) as str),
   null
 );

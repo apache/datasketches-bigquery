@@ -31,3 +31,17 @@ $(MODCLEAN): %.clean:
 	$(MAKE) -C $* clean
 
 clean: $(MODCLEAN)
+
+MODINSTALL = $(addsuffix .install, $(MODULES))
+
+$(MODINSTALL): %.install:
+	$(MAKE) -C $* install
+
+install: $(MODINSTALL)
+
+MODTEST = $(addsuffix .test, $(MODULES))
+
+$(MODTEST): %.test:
+	$(MAKE) -C $* test
+
+install: $(MODTEST)
