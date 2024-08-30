@@ -26,7 +26,9 @@ EMCFLAGS=-I../datasketches-cpp/common/include \
 	-O3 \
 	--bind
 
-all: hll_sketch.mjs hll_sketch.js hll_sketch.wasm
+ARTIFACTS=hll_sketch.mjs hll_sketch.js hll_sketch.wasm
+
+all: $(ARTIFACTS)
 
 %.mjs: %.cpp
 	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o $@
@@ -39,6 +41,23 @@ all: hll_sketch.mjs hll_sketch.js hll_sketch.wasm
 	$(EMCC) $< $(EMCFLAGS) -sSTANDALONE_WASM=1 -o $@
 
 clean:
-	$(RM) *.mjs *.js *.wasm
+	$(RM) $(ARTIFACTS)
 
-.PHONY: clean
+upload: all
+	@for file in $(ARTIFACTS); do \
+	  gcloud storage cp $$file gs://$(GCS_BUCKET)/ ; \
+	done
+
+create:
+	@for file in $(wildcard sqlx/*.sqlx); do \
+	  ../substitute_and_run.sh $$file ; \
+	done
+
+install: upload create
+
+test:
+	@for file in $(wildcard test/*sql); do \
+	  ../substitute_and_run.sh $$file ; \
+	done
+
+.PHONY: all clean install upload create test

@@ -18,35 +18,35 @@
  */
 
 # expected 5
-select t.cpc_sketch_get_estimate(
-  t.cpc_sketch_scalar_union(
-    (select t.cpc_sketch_agg_string(str, struct<int, int>(null, null)) from unnest(["a", "b", "c"]) as str),
-    (select t.cpc_sketch_agg_string(str, struct<int, int>(null, null)) from unnest(["c", "d", "e"]) as str),
+select $BQ_DATASET.cpc_sketch_get_estimate(
+  $BQ_DATASET.cpc_sketch_scalar_union(
+    (select $BQ_DATASET.cpc_sketch_agg_string(str, struct<int, int>(null, null)) from unnest(["a", "b", "c"]) as str),
+    (select $BQ_DATASET.cpc_sketch_agg_string(str, struct<int, int>(null, null)) from unnest(["c", "d", "e"]) as str),
     null,
     null
   ),
   null
 );
 
-create or replace table t.cpc_sketch(sketch bytes);
+create or replace table $BQ_DATASET.cpc_sketch(sketch bytes);
 
-insert into t.cpc_sketch
-(select t.cpc_sketch_agg_string(cast(value as string), struct<int, int>(null, null)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
-insert into t.cpc_sketch
-(select t.cpc_sketch_agg_string(cast(value as string), struct<int, int>(null, null)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+insert into $BQ_DATASET.cpc_sketch
+(select $BQ_DATASET.cpc_sketch_agg_string(cast(value as string), struct<int, int>(null, null)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+insert into $BQ_DATASET.cpc_sketch
+(select $BQ_DATASET.cpc_sketch_agg_string(cast(value as string), struct<int, int>(null, null)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
-select t.cpc_sketch_to_string(sketch, null) from t.cpc_sketch;
+select $BQ_DATASET.cpc_sketch_to_string(sketch, null) from $BQ_DATASET.cpc_sketch;
 
 # expected about 20000
-select t.cpc_sketch_get_estimate(
-  t.cpc_sketch_agg_union(sketch, struct<int, int>(null, null)),
+select $BQ_DATASET.cpc_sketch_get_estimate(
+  $BQ_DATASET.cpc_sketch_agg_union(sketch, struct<int, int>(null, null)),
   null
-) from t.cpc_sketch;
+) from $BQ_DATASET.cpc_sketch;
 
-select t.cpc_sketch_get_estimate_and_bounds(
-  t.cpc_sketch_agg_union(sketch, struct<int, int>(14, null)),
+select $BQ_DATASET.cpc_sketch_get_estimate_and_bounds(
+  $BQ_DATASET.cpc_sketch_agg_union(sketch, struct<int, int>(14, null)),
   3,
   null
-) from t.cpc_sketch;
+) from $BQ_DATASET.cpc_sketch;
 
-drop table t.cpc_sketch;
+drop table $BQ_DATASET.cpc_sketch;
