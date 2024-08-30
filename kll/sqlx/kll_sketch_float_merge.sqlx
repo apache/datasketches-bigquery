@@ -32,7 +32,7 @@ For more details: https://datasketches.apache.org/docs/KLL/KLLSketch.html'''
 ) AS R"""
 import ModuleFactory from "gs://$GCS_BUCKET/kll_sketch.mjs";
 var Module = await ModuleFactory();
-const default_k = Number(200);
+const default_k = Number(Module.DEFAULT_K);
 
 // UDAF interface
 export function initialState(k) {

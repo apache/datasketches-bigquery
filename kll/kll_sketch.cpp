@@ -36,6 +36,8 @@ EMSCRIPTEN_BINDINGS(kll_sketch_float) {
   emscripten::register_vector<float>("VectorFloat");
   emscripten::register_vector<double>("VectorDouble");
 
+  emscripten::constant("DEFAULT_K", datasketches::kll_constants::DEFAULT_K);
+
   emscripten::class_<kll_sketch_float>("kll_sketch_float")
     .constructor(emscripten::optional_override([](uint16_t k) {
       return new kll_sketch_float(k);

@@ -34,7 +34,7 @@ Param seed: This is used to confirm that the given sketches were configured with
 Returns: an array of 3 floating-point values {LowerBound, Estimate, UpperBound} of the Jaccard index.
 For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
 ) AS R"""
-const default_seed = BigInt(9001);
+const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
   const jaccard = Module.thetaJaccardSimilarity(sketchA, sketchB, seed == null ? default_seed : BigInt(seed));
   return [jaccard.get(0), jaccard.get(1), jaccard.get(2)];

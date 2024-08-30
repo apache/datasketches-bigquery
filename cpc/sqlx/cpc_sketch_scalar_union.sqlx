@@ -33,7 +33,7 @@ Returns a CPC Sketch, as bytes, from which the union cardinality can be obtained
 For more details: https://datasketches.apache.org/docs/CPC/CPC.html'''
 ) AS R"""
 const default_lg_k = 12;
-const default_seed = BigInt(9001);
+const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
   var union = new Module.cpc_union(lg_k ? lg_k : default_lg_k, seed ? BigInt(seed) : default_seed);
   try {
