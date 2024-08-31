@@ -33,8 +33,8 @@ For more details: https://datasketches.apache.org/docs/CPC/CPC.html'''
 ) AS R"""
 import ModuleFactory from "gs://$GCS_BUCKET/cpc_sketch.mjs";
 var Module = await ModuleFactory();
-const default_lg_k = Number(12);
-const default_seed = BigInt(9001);
+const default_lg_k = Number(Module.DEFAULT_LG_K);
+const default_seed = BigInt(Module.DEFAULT_SEED);
 
 // ensures we have a union
 // if there is a serialized sketch, add it to the union and destroy it

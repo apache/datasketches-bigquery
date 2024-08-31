@@ -33,6 +33,9 @@ EMSCRIPTEN_BINDINGS(cpc_sketch) {
     return std::string(reinterpret_cast<std::exception*>(ptr)->what());
   }));
 
+  emscripten::constant("DEFAULT_LG_K", datasketches::cpc_constants::DEFAULT_LG_K);
+  emscripten::constant("DEFAULT_SEED", datasketches::DEFAULT_SEED);
+
   emscripten::class_<datasketches::cpc_sketch>("cpc_sketch")
     .constructor(emscripten::optional_override([](uint8_t lg_k, uint64_t seed) {
       return new datasketches::cpc_sketch(lg_k, seed);

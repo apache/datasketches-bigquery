@@ -44,6 +44,9 @@ EMSCRIPTEN_BINDINGS(theta_sketch) {
     return std::string(reinterpret_cast<std::exception*>(ptr)->what());
   }));
 
+  emscripten::constant("DEFAULT_LG_K", datasketches::theta_constants::DEFAULT_LG_K);
+  emscripten::constant("DEFAULT_SEED", datasketches::DEFAULT_SEED);
+
   emscripten::class_<update_theta_sketch>("update_theta_sketch")
     .constructor(emscripten::optional_override([](uint8_t lg_k) {
       return new update_theta_sketch(update_theta_sketch::builder().set_lg_k(lg_k).build());

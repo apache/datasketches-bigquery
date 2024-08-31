@@ -30,7 +30,7 @@ Param seed: This is used to confirm that the given sketch was configured with th
 Returns: a FLOAT64 value as the cardinality estimate.
 For more details: https://datasketches.apache.org/docs/CPC/CPC.html'''
 ) AS R"""
-const default_seed = BigInt(9001);
+const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
   var sketch = Module.cpc_sketch.deserializeFromB64(sketch, seed ? BigInt(seed) : default_seed);
   try {
