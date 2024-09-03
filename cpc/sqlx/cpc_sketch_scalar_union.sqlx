@@ -35,13 +35,14 @@ For more details: https://datasketches.apache.org/docs/CPC/CPC.html'''
 const default_lg_k = 12;
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
-  var union = new Module.cpc_union(lg_k ? lg_k : default_lg_k, seed ? BigInt(seed) : default_seed);
+  var union = null;
   try {
+    union = new Module.cpc_union(lg_k ? lg_k : default_lg_k, seed ? BigInt(seed) : default_seed);
     union.updateWithB64(sketchA, seed ? BigInt(seed) : default_seed)
     union.updateWithB64(sketchB, seed ? BigInt(seed) : default_seed)
     return union.getResultB64();
   } finally {
-    union.delete();
+    if (union != null) union.delete();
   }
 } catch (e) {
   throw new Error(Module.getExceptionMessage(e));

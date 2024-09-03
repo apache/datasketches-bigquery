@@ -30,11 +30,12 @@ Returns: stream length
 For more details: https://datasketches.apache.org/docs/KLL/KLLSketch.html'''
 ) AS R"""
 try {
-  var sketch = Module.kll_sketch_float.deserializeFromB64(sketch);
+  var sketchObject = null;
   try {
-    return sketch.getN();
+    sketchObject = Module.kll_sketch_float.deserializeFromB64(sketch);
+    return sketchObject.getN();
   } finally {
-    sketch.delete();
+    if (sketchObject != null) sketchObject.delete();
   }
 } catch (e) {
   throw new Error(Module.getExceptionMessage(e));
