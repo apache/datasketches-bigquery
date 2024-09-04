@@ -33,11 +33,12 @@ For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramewor
 ) AS R"""
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
-  var a_not_b = new Module.theta_a_not_b(seed ? BigInt(seed) : default_seed);
+  var a_not_b = null;
   try {
+    a_not_b = new Module.theta_a_not_b(seed ? BigInt(seed) : default_seed);
     return a_not_b.computeWithB64ReturnB64Compressed(sketchA, sketchB, seed ? BigInt(seed) : default_seed);
   } finally {
-    a_not_b.delete();
+    if (a_not_b != null) a_not_b.delete();
   }
 } catch (e) {
   throw new Error(Module.getExceptionMessage(e));

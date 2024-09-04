@@ -32,12 +32,13 @@ Returns: an approximate rank of the given value.
 For more details: https://datasketches.apache.org/docs/KLL/KLLSketch.html'''
 ) AS R"""
 try {
-  var sketch = Module.kll_sketch_float.deserializeFromB64(sketch);
+  var sketchObject = null;
   try {
-    if (sketch.isEmpty()) return null;
-    return sketch.getRank(value, inclusive);
+    sketchObject = Module.kll_sketch_float.deserializeFromB64(sketch);
+    if (sketchObject.isEmpty()) return null;
+    return sketchObject.getRank(value, inclusive);
   } finally {
-    sketch.delete();
+    if (sketchObject != null) sketchObject.delete();
   }
 } catch (e) {
   throw new Error(Module.getExceptionMessage(e));

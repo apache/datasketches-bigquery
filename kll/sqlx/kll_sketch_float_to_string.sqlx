@@ -30,11 +30,12 @@ Returns: a string that represents the state of the given sketch.
 For more details: https://datasketches.apache.org/docs/KLL/KLLSketch.html'''
 ) AS R"""
 try {
-  var sketch = Module.kll_sketch_float.deserializeFromB64(sketch);
+  var sketchObject = null;
   try {
-    return sketch.toString();
+    sketchObject = Module.kll_sketch_float.deserializeFromB64(sketch);
+    return sketchObject.toString();
   } finally {
-    sketch.delete();
+    if (sketchObject != null) sketchObject.delete();
   }
 } catch (e) {
   throw new Error(Module.getExceptionMessage(e));
