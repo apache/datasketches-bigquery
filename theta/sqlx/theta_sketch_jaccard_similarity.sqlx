@@ -20,7 +20,7 @@
 config { hasOutput: true }
 
 CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES, seed INT64)
-RETURNS ARRAY<FLOAT64>
+RETURNS STRUCT<lower_bound FLOAT64, estimate FLOAT64, upper_bound FLOAT64>
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/theta_sketch.js"],
@@ -31,13 +31,17 @@ A Jaccard of .95 means the overlap between the two sets is 95% of the union of t
 Param sketchA: the first sketch as bytes.
 Param sketchB: the second sketch as bytes.
 Param seed: This is used to confirm that the given sketches were configured with the correct seed.
-Returns: an array of 3 floating-point values {LowerBound, Estimate, UpperBound} of the Jaccard index.
+Returns: a struct with 3 floating-point values {lower_bound, estimate, upper_bound} of the Jaccard index.
 For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
 ) AS R"""
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
   const jaccard = Module.thetaJaccardSimilarity(sketchA, sketchB, seed == null ? default_seed : BigInt(seed));
-  return [jaccard.get(0), jaccard.get(1), jaccard.get(2)];
+  return {
+    lower_bound: jaccard.get(0),
+    estimate: jaccard.get(1),
+    upper_bound: jaccard.get(2)
+  };
 } catch (e) {
   throw new Error(Module.getExceptionMessage(e));
 }
