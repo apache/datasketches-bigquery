@@ -20,7 +20,7 @@
 config { hasOutput: true }
 
 CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, num_std_devs BYTEINT)
-RETURNS ARRAY<FLOAT64>
+RETURNS STRUCT<estimate FLOAT64, lower_bound FLOAT64, upper_bound FLOAT64>
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/hll_sketch.js"],
@@ -29,14 +29,18 @@ Param sketch: The given sketch to query as bytes.
 Param num_std_devs: The returned bounds will be based on the statistical confidence interval determined by the given number of standard deviations
 from the returned estimate. This number may be one of {1,2,3}, where 1 represents 68% confidence, 2 represents 95% confidence and 3 represents 99.7% confidence.
 For example, if the given num_std_devs = 2 and the returned values are {1000, 990, 1010} that means that with 95% confidence, the true value lies within the range [990, 1010].
-Returns: an array of 3 FLOAT64 values as {estimate, lowerBound, upperBound}.
+Returns: a struct with 3 FLOAT64 values as {estimate, lower_bound, upper_bound}.
 For more details: https://datasketches.apache.org/docs/HLL/HLL.html'''
 ) AS R"""
 try {
   var sketchObject = null;
   try {
     sketchObject = Module.hll_sketch.deserializeFromB64(sketch);
-    return [sketchObject.getEstimate(), sketchObject.getLowerBound(num_std_devs), sketchObject.getUpperBound(num_std_devs)];
+    return {
+      estimate: sketchObject.getEstimate(),
+      lower_bound: sketchObject.getLowerBound(num_std_devs),
+      upper_bound: sketchObject.getUpperBound(num_std_devs)
+    };
   } finally {
     if (sketchObject != null) sketchObject.delete();
   }
