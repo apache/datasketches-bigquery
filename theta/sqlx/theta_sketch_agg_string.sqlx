@@ -19,7 +19,7 @@
 
 config { hasOutput: true }
 
-CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(str STRING, params STRUCT<lg_k BYTEINT, seed INT64> NOT AGGREGATE)
+CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(str STRING, params STRUCT<lg_k BYTEINT, seed INT64, p FLOAT64> NOT AGGREGATE)
 RETURNS BYTES 
 LANGUAGE js
 OPTIONS (
@@ -28,6 +28,9 @@ OPTIONS (
 Param str: the STRING column of identifiers.
 Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 26].
 Param seed: the seed to be used by the underlying hash function.
+Param p: sampling probability (initial theta). The default is 1, so the sketch retains
+all entries until it reaches the limit, at which point it goes into the estimation mode
+and reduces the effective sampling probability (theta) as necessary.
 Returns: a Compact, Compressed Theta Sketch, as bytes, from which the cardinality can be obtained. 
 For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
 ) AS R"""
@@ -35,6 +38,7 @@ import ModuleFactory from "gs://$GCS_BUCKET/theta_sketch.mjs";
 var Module = await ModuleFactory();
 const default_lg_k = Number(Module.DEFAULT_LG_K);
 const default_seed = BigInt(Module.DEFAULT_SEED);
+const default_p = 1.0;
 
 function destroyState(state) {
   if (state.sketch) {
@@ -53,83 +57,74 @@ export function initialState(params) {
   var state = {
     lg_k: params.lg_k == null ? default_lg_k : Number(params.lg_k),
     seed: params.seed == null ? default_seed : BigInt(params.seed),
-    sketch: null,
-    union: null,
-    serialized: null
+    p: params.p == null ? default_p : params.p
   };
-  state.sketch = new Module.update_theta_sketch(state.lg_k, state.seed);
+  state.sketch = new Module.update_theta_sketch(state.lg_k, state.seed, state.p);
   return state;
 }
 
 export function aggregate(state, str) {
   if (state.sketch == null) {
-    state.sketch = new Module.update_theta_sketch(state.lg_k, state.seed);
+    state.sketch = new Module.update_theta_sketch(state.lg_k, state.seed, state.p);
   }
   state.sketch.updateString(str);
 }
 
 export function serialize(state) {
+  if (state.sketch == null) return state; // for transition deserialize-serialize
   try {
+    // for prior transition deserialize-aggregate
+    // merge aggregated and serialized state
     if (state.sketch != null && state.serialized != null) {
-      // merge aggregated and serialized state
-      var u = new Module.theta_union(state.lg_k, state.seed);
+      var u = null;
       try {
+        u = new Module.theta_union(state.lg_k, state.seed);
         u.updateWithUpdateSketch(state.sketch);
         u.updateWithBytes(state.serialized, state.seed);
         state.serialized = u.getResultAsUint8ArrayCompressed();
       } finally {
-        u.delete();
+        if (u != null) u.delete();
       }
     } else if (state.sketch != null) {
       state.serialized = state.sketch.serializeAsUint8ArrayCompressed();
     } else if (state.union != null) {
       state.serialized = state.union.getResultAsUint8ArrayCompressed();
-    } else if (state.serialized == null) {
-      throw new Error("Unexpected state in serialization " + JSON.stringify(state));
     }
     return {
       lg_k: state.lg_k,
       seed: state.seed,
-      bytes: state.serialized
+      serialized: state.serialized
     };
+  } catch (e) {
+    throw new Error(Module.getExceptionMessage(e));
   } finally {
     destroyState(state);
   }
 }
 
-export function deserialize(serialized) {
-  return {
-    sketch: null,
-    union: null,
-    serialized: serialized.bytes,
-    lg_k: serialized.lg_k,
-    seed: serialized.seed
-  };
+export function deserialize(state) {
+  return state;
 }
 
 export function merge(state, other_state) {
-  if (!state.union) {
-    state.union = new Module.theta_union(state.lg_k, state.seed);
-  }
-  if (state.sketch || other_state.sketch) {
-    throw new Error("update_theta_sketch not expected during merge()");
-  }
-  if (other_state.union) {
-    throw new Error("other_state should not have union during merge()");
-  }
-  if (state.serialized) {
-    state.union.updateWithBytes(state.serialized, state.seed);
-    state.serialized = null;
-  }
-  if (other_state.serialized) {
-    state.union.updateWithBytes(other_state.serialized, state.seed);
-    other_state.serialized = null;
-  } else {
-    throw new Error("other_state should have serialized sketch during merge");
+  try {
+    if (!state.union) {
+      state.union = new Module.theta_union(state.lg_k, state.seed);
+    }
+    if (state.serialized) {
+      state.union.updateWithBytes(state.serialized, state.seed);
+      state.serialized = null;
+    }
+    if (other_state.serialized) {
+      state.union.updateWithBytes(other_state.serialized, state.seed);
+      other_state.serialized = null;
+    }
+  } catch (e) {
+    throw new Error(Module.getExceptionMessage(e));
   }
 }
 
 export function finalize(state) {
-  return serialize(state).bytes
+  return serialize(state).serialized
 }
 """;
