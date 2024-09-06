@@ -19,112 +19,13 @@
 
 config { hasOutput: true }
 
-CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(str STRING, params STRUCT<lg_k BYTEINT, seed INT64, p FLOAT64> NOT AGGREGATE)
-RETURNS BYTES 
-LANGUAGE js
+CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(str STRING)
+RETURNS BYTES
 OPTIONS (
-  library=["gs://$GCS_BUCKET/theta_sketch.mjs"],
   description = '''Creates a sketch that represents the cardinality of the given STRING column.
 Param str: the STRING column of identifiers.
-Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 26].
-Param seed: the seed to be used by the underlying hash function.
-Param p: sampling probability (initial theta). The default is 1, so the sketch retains
-all entries until it reaches the limit, at which point it goes into the estimation mode
-and reduces the effective sampling probability (theta) as necessary.
 Returns: a Compact, Compressed Theta Sketch, as bytes, from which the cardinality can be obtained. 
 For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
-) AS R"""
-import ModuleFactory from "gs://$GCS_BUCKET/theta_sketch.mjs";
-var Module = await ModuleFactory();
-const default_lg_k = Number(Module.DEFAULT_LG_K);
-const default_seed = BigInt(Module.DEFAULT_SEED);
-const default_p = 1.0;
-
-function destroyState(state) {
-  if (state.sketch) {
-    state.sketch.delete();
-    state.sketch = null;
-  }
-  if (state.union) {
-    state.union.delete();
-    state.union = null;
-  }
-  state.serialized = null;
-}
-
-// UDAF interface
-export function initialState(params) {
-  var state = {
-    lg_k: params.lg_k == null ? default_lg_k : Number(params.lg_k),
-    seed: params.seed == null ? default_seed : BigInt(params.seed),
-    p: params.p == null ? default_p : params.p
-  };
-  state.sketch = new Module.update_theta_sketch(state.lg_k, state.seed, state.p);
-  return state;
-}
-
-export function aggregate(state, str) {
-  if (state.sketch == null) {
-    state.sketch = new Module.update_theta_sketch(state.lg_k, state.seed, state.p);
-  }
-  state.sketch.updateString(str);
-}
-
-export function serialize(state) {
-  if (state.sketch == null) return state; // for transition deserialize-serialize
-  try {
-    // for prior transition deserialize-aggregate
-    // merge aggregated and serialized state
-    if (state.sketch != null && state.serialized != null) {
-      var u = null;
-      try {
-        u = new Module.theta_union(state.lg_k, state.seed);
-        u.updateWithUpdateSketch(state.sketch);
-        u.updateWithBytes(state.serialized, state.seed);
-        state.serialized = u.getResultAsUint8ArrayCompressed();
-      } finally {
-        if (u != null) u.delete();
-      }
-    } else if (state.sketch != null) {
-      state.serialized = state.sketch.serializeAsUint8ArrayCompressed();
-    } else if (state.union != null) {
-      state.serialized = state.union.getResultAsUint8ArrayCompressed();
-    }
-    return {
-      lg_k: state.lg_k,
-      seed: state.seed,
-      serialized: state.serialized
-    };
-  } catch (e) {
-    throw new Error(Module.getExceptionMessage(e));
-  } finally {
-    destroyState(state);
-  }
-}
-
-export function deserialize(state) {
-  return state;
-}
-
-export function merge(state, other_state) {
-  try {
-    if (!state.union) {
-      state.union = new Module.theta_union(state.lg_k, state.seed);
-    }
-    if (state.serialized) {
-      state.union.updateWithBytes(state.serialized, state.seed);
-      state.serialized = null;
-    }
-    if (other_state.serialized) {
-      state.union.updateWithBytes(other_state.serialized, state.seed);
-      other_state.serialized = null;
-    }
-  } catch (e) {
-    throw new Error(Module.getExceptionMessage(e));
-  }
-}
-
-export function finalize(state) {
-  return serialize(state).serialized
-}
-""";
+) AS (
+  $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(str, STRUCT<BYTEINT, INT64, FLOAT64>(null, null, null))
+);
