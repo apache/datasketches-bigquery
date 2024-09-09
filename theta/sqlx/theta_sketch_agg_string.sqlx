@@ -24,6 +24,9 @@ RETURNS BYTES
 OPTIONS (
   description = '''Creates a sketch that represents the cardinality of the given STRING column.
 Param str: the STRING column of identifiers.
+Param lg_k: 12 (assume default)
+Param seed: 9001 (assume default)
+Param p: 1.0 (assume default)
 Returns: a Compact, Compressed Theta Sketch, as bytes, from which the cardinality can be obtained. 
 For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
 ) AS (
