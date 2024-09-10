@@ -23,12 +23,21 @@ CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(str STRING)
 RETURNS BYTES
 OPTIONS (
   description = '''Creates a sketch that represents the cardinality of the given STRING column.
+  
 Param str: the STRING column of identifiers.
-Param lg_k: 12 (assume default)
-Param seed: 9001 (assume default)
-Param p: 1.0 (assume default)
-Returns: a Compact, Compressed Theta Sketch, as bytes, from which the cardinality can be obtained. 
-For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
+Param lg_k: assume default = 12
+Param seed: assume default = 9001
+Param p: assume default = 1.0
+Returns: a Compact, Compressed Theta Sketch, as BYTES. 
+
+For more information:
+ - https://datasketches.apache.org/docs/Theta/ThetaAccuracy.html
+ - https://datasketches.apache.org/docs/Theta/ThetaAccuracyPlots.html
+ - https://datasketches.apache.org/docs/Theta/ThetaErrorTable.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSize.html
+ - https://datasketches.apache.org/docs/Theta/ThetaPSampling.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
+ '''
 ) AS (
-  $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(str, STRUCT<BYTEINT, INT64, FLOAT64>(null, null, null))
+  $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(str, STRUCT<BYTEINT, INT64, FLOAT64>(NULL, NULL, NULL))
 );
