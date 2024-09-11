@@ -28,11 +28,15 @@ OPTIONS (
 J(A,B) = (A ^ B)/(A U B) is used to measure how similar the two sketches are to each other.
 If J = 1.0, the sketches are considered equal. If J = 0, the two sketches are disjoint.
 A Jaccard of .95 means the overlap between the two sets is 95% of the union of the two sets.
+
 Param sketchA: the first sketch as bytes.
 Param sketchB: the second sketch as bytes.
 Param seed: This is used to confirm that the given sketches were configured with the correct seed.
-Returns: a struct with 3 floating-point values {lower_bound, estimate, upper_bound} of the Jaccard index.
-For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
+Returns: a STRUCT with three FLOAT64 values {lower_bound, estimate, upper_bound} of the Jaccard index.
+
+For more information:
+ - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
+ '''
 ) AS R"""
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {

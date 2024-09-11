@@ -25,11 +25,21 @@ LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/theta_sketch.js"],
   description = '''Computes a sketch that represents the scalar intersection of the two given sketches.
-Param sketchA: the first sketch as bytes.
-Param sketchB: the second sketch as bytes.
+
+Param sketchA: the first sketch as BYTES.
+Param sketchB: the second sketch as BYTES.
 Param seed: This is used to confirm that the given sketches were configured with the correct seed.
-Returns: a Compact, Compressed Theta Sketch, as bytes, from which the intersection cardinality can be obtained.
-For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
+Returns: a Compact, Compressed Theta Sketch, as BYTES.
+
+For more information:
+ - https://datasketches.apache.org/docs/Theta/ThetaSketchSetOps.html
+ - https://datasketches.apache.org/docs/Theta/ThetaAccuracy.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketchSetOpsAccuracy.html
+ - https://datasketches.apache.org/docs/Theta/ThetaAccuracyPlots.html
+ - https://datasketches.apache.org/docs/Theta/ThetaErrorTable.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSize.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
+'''
 ) AS R"""
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {

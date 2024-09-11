@@ -25,11 +25,19 @@ LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/theta_sketch.mjs"],
   description = '''Creates a sketch that represents the union of the given column of sketches.
-Param sketch: the column of sketches. Each as bytes.
-Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 26].
+
+Param sketch: the column of sketches. Each as BYTES.
+Param lg_k: the sketch accuracy/size parameter as a BYTEINT in the range [4, 26].
 Param seed: This is used to confirm that the given sketches were configured with the correct seed.
-Returns: a Compact, Compressed Theta Sketch, as bytes, from which the union cardinality can be obtained.
-For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
+Returns: a Compact, Compressed Theta Sketch, as BYTES.
+
+For more information:
+ - https://datasketches.apache.org/docs/Theta/ThetaAccuracy.html
+ - https://datasketches.apache.org/docs/Theta/ThetaAccuracyPlots.html
+ - https://datasketches.apache.org/docs/Theta/ThetaErrorTable.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSize.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
+'''
 ) AS R"""
 import ModuleFactory from "gs://$GCS_BUCKET/theta_sketch.mjs";
 var Module = await ModuleFactory();

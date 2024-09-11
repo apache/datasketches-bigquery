@@ -25,12 +25,20 @@ LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/theta_sketch.js"],
   description = '''Computes a sketch that represents the scalar union of the two given sketches.
-Param sketchA: the first sketch as bytes.
-Param sketchB: the second sketch as bytes.
+
+Param sketchA: the first sketch as BYTES.
+Param sketchB: the second sketch as BYTES.
 Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 26].
 Param seed: This is used to confirm that the given sketches were configured with the correct seed.
-Returns: a Compact, Compressed Theta Sketch, as bytes, from which the union cardinality can be obtained.
-For more details: https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html'''
+Returns: a Compact, Compressed Theta Sketch, as BYTES.
+
+For more information:
+ - https://datasketches.apache.org/docs/Theta/ThetaAccuracy.html
+ - https://datasketches.apache.org/docs/Theta/ThetaAccuracyPlots.html
+ - https://datasketches.apache.org/docs/Theta/ThetaErrorTable.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSize.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
+'''
 ) AS R"""
 const default_lg_k = Number(Module.DEFAULT_LG_K);
 const default_seed = BigInt(Module.DEFAULT_SEED);
