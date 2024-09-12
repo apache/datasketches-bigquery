@@ -25,10 +25,15 @@ LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/kll_sketch.mjs"],
   description = '''Merges sketches from the given column.
+
 Param sketch: the column of values.
 Param k: the sketch accuracy/size parameter as an integer in the range [8, 65535].
-Returns: a serialized KLL sketch as bytes.
-For more details: https://datasketches.apache.org/docs/KLL/KLLSketch.html'''
+Returns: a serialized KLL sketch as BYTES.
+
+For more information:
+ - https://datasketches.apache.org/docs/KLL/KLLSketch.html
+ - https://datasketches.apache.org/docs/KLL/KLLAccuracyAndSize.html
+'''
 ) AS R"""
 import ModuleFactory from "gs://$GCS_BUCKET/kll_sketch.mjs";
 var Module = await ModuleFactory();

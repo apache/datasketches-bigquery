@@ -24,15 +24,18 @@ RETURNS BOOL
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/kll_sketch.js"],
-  description = '''Performs the Kolmogorov-Smirnov Test between two KLL sketches.
-Note: if the given sketches have insufficient data or if the sketch sizes are too small,
-this will return false.
+  description = '''Performs the Kolmogorov-Smirnov Test between two KLL sketches of type FLOAT64.
+If the given sketches have insufficient data or if the sketch sizes are too small, this will return false.
+
 Param sketchA: sketch A in serialized form.
 Param sketchB: sketch B in serialized form.
 Param pvalue: Target p-value. Typically 0.001 to 0.1, e.g. 0.05.
 Returns: boolean indicating whether we can reject the null hypothesis (that the sketches
-reflect the same underlying distribution) using the provided p-value.
-For more details: https://datasketches.apache.org/docs/KLL/KLLSketch.html'''
+  reflect the same underlying distribution) using the provided p-value.
+
+For more information:
+ - https://datasketches.apache.org/docs/KLL/KLLSketch.html
+'''
 ) AS R"""
 try {
   return Module.kolmogorovSmirnovTest(sketchA, sketchB, pvalue);

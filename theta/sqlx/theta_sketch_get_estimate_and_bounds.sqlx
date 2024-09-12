@@ -27,9 +27,12 @@ OPTIONS (
   description = '''Gets cardinality estimate and bounds from given sketch.
 
 Param sketch: The given sketch to query as BYTES.
-Param num_std_devs: The returned bounds will be based on the statistical confidence interval determined by the given number of standard deviations
-from the returned estimate. This number may be one of {1,2,3}, where 1 represents 68% confidence, 2 represents 95% confidence and 3 represents 99.7% confidence.
-For example, if the given num_std_devs = 2 and the returned values are {1000, 990, 1010} that means that with 95% confidence, the true value lies within the range [990, 1010].
+Param num_std_devs: The returned bounds will be based on the statistical confidence interval
+  determined by the given number of standard deviations from the returned estimate.
+  This number may be one of {1,2,3}, where 1 represents 68% confidence,
+  2 represents 95% confidence and 3 represents 99.7% confidence.
+  For example, if the given num_std_devs = 2 and the returned values are {1000, 990, 1010}
+  that means that with 95% confidence, the true value lies within the range [990, 1010].
 Param seed: This is used to confirm that the given sketch was configured with the correct seed.
 Returns: a STRUCT with three FLOAT64 values as {estimate, lower_bound, upper_bound}.
 
