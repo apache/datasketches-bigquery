@@ -25,9 +25,13 @@ LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/kll_sketch.js"],
   description = '''Returns a summary string that represents the state of the given sketch.
+
 Param sketch: the given sketch as sketch encoded bytes.
 Returns: a string that represents the state of the given sketch.
-For more details: https://datasketches.apache.org/docs/KLL/KLLSketch.html'''
+
+For more information:
+ - https://datasketches.apache.org/docs/KLL/KLLSketch.html
+'''
 ) AS R"""
 try {
   var sketchObject = null;

@@ -25,10 +25,16 @@ LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/kll_sketch.mjs"],
   description = '''Creates a sketch that represents the distribution of the given column.
-Param value: the column of values.
-Param k: the sketch accuracy/size parameter as an integer in the range [8, 65535].
+
+Param value: the column of FLOAT64 values.
+Param k: the sketch accuracy/size parameter as an INT in the range [8, 65535].
 Returns: a KLL Sketch, as bytes.
-For more details: https://datasketches.apache.org/docs/KLL/KLLSketch.html'''
+
+For more information:
+ - https://datasketches.apache.org/docs/KLL/KLLSketch.html
+ - https://datasketches.apache.org/docs/KLL/KLLAccuracyAndSize.html
+ - https://datasketches.apache.org/docs/KLL/UnderstandingKLLBounds.html
+'''
 ) AS R"""
 import ModuleFactory from "gs://$GCS_BUCKET/kll_sketch.mjs";
 var Module = await ModuleFactory();

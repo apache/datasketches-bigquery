@@ -25,9 +25,13 @@ LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/kll_sketch.js"],
   description = '''Returns the length of the input stream.
-Param sketch: the given sketch in serialized form.
-Returns: stream length
-For more details: https://datasketches.apache.org/docs/KLL/KLLSketch.html'''
+
+Param sketch: the given sketch as BYTES.
+Returns: stream length as INT64
+
+For more information:
+ - https://datasketches.apache.org/docs/KLL/KLLSketch.html
+ '''
 ) AS R"""
 try {
   var sketchObject = null;

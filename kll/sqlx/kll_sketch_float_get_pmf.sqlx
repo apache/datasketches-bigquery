@@ -24,15 +24,38 @@ RETURNS ARRAY<FLOAT64>
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/kll_sketch.js"],
-  description = '''Returns an approximation to the Probability Mass Function (PMF) of the input stream  given a set of split points.
-Param sketch: the given sketch in serialized form.
-Param split_points: an array of M unique, monotonically increasing values that divide the input domain into M+1 consecutive disjoint intervals (bins).
-Param inclusive: if true the rank of a value includes its own weight, and therefore
-if the sketch contains values equal to a slit point, then in PMF such values are
-included into the interval to the left of split point. Otherwise they are included into the interval to the right of split point.
-Returns: an array of M+1 values each of which is an approximation
-to the fraction of the input stream values (the mass) that fall into one of those intervals.
-For more details: https://datasketches.apache.org/docs/KLL/KLLSketch.html'''
+  description = '''Returns an approximation to the Probability Mass Function (PMF)
+of the input stream as an array of probability masses defined by the given split_points.
+
+Param sketch: the given sketch as BYTES.
+
+Param split_points: an array of M unique, monotonically increasing values 
+  (of the same type as the input values)
+  that divide the input value domain into M+1 non-overlapping intervals.
+  
+  Each interval except for the end intervals starts with a split-point and ends with the next split-point in sequence.
+
+  The first interval starts below the minimum value of the stream (corresponding to a zero rank or zero probability), 
+  and ends with the first split-point
+
+  The last (m+1)th interval starts with the last split-point 
+  and ends above the maximum value of the stream (corresponding to a rank or probability of 1.0).
+
+Param inclusive: if true and the upper boundary of an interval equals a value retained by the sketch, the interval will include that value. 
+  If the lower boundary of an interval equals a value retained by the sketch, the interval will exclude that value.
+
+  If false and the upper boundary of an interval equals a value retained by the sketch, the interval will exclude that value. 
+  If the lower boundary of an interval equals a value retained by the sketch, the interval will include that value.
+
+Returns: the PMF as a FLOAT64 array of M+1 probability masses on the interval [0.0, 1.0].
+  The sum of the probability masses of all (m+1) intervals is 1.0.
+
+For more information:
+ - https://datasketches.apache.org/docs/KLL/KLLSketch.html
+ - https://datasketches.apache.org/docs/Quantiles/SketchingQuantilesAndRanksTutorial.html
+ - https://datasketches.apache.org/docs/KLL/KLLAccuracyAndSize.html
+ - https://datasketches.apache.org/docs/KLL/UnderstandingKLLBounds.html
+'''
 ) AS R"""
 try {
   var sketchObject = null;

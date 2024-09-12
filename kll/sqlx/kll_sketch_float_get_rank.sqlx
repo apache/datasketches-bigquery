@@ -24,12 +24,19 @@ RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/kll_sketch.js"],
-  description = '''Returns an approximation to the normalized rank of the given value. from 0 to 1, inclusive.
+  description = '''Returns an approximation to the normalized rank, on the interval [0.0, 1.0], of the given value.
+
 Param sketch: the given sketch in serialized form.
 Param value: value to be ranked.
 Param inclusive: if true the weight of the given value is included into the rank.
 Returns: an approximate rank of the given value.
-For more details: https://datasketches.apache.org/docs/KLL/KLLSketch.html'''
+
+For more information:
+ - https://datasketches.apache.org/docs/KLL/KLLSketch.html
+ - https://datasketches.apache.org/docs/Quantiles/SketchingQuantilesAndRanksTutorial.html
+ - https://datasketches.apache.org/docs/KLL/KLLAccuracyAndSize.html
+ - https://datasketches.apache.org/docs/KLL/UnderstandingKLLBounds.html
+'''
 ) AS R"""
 try {
   var sketchObject = null;
