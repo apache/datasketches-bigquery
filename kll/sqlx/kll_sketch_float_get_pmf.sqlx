@@ -47,7 +47,7 @@ Param inclusive: if true and the upper boundary of an interval equals a value re
   If false and the upper boundary of an interval equals a value retained by the sketch, the interval will exclude that value. 
   If the lower boundary of an interval equals a value retained by the sketch, the interval will include that value.
 
-Returns: the PMF as a FLOAT64 array of M+1 probability masses on the interval (0.0, 1.0].
+Returns: the PMF as a FLOAT64 array of M+1 probability masses on the interval [0.0, 1.0].
   The sum of the probability masses of all (m+1) intervals is 1.0.
 
 For more information:

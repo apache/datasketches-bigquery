@@ -24,7 +24,7 @@ RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/kll_sketch.js"],
-  description = '''Returns an approximation to the normalized rank, on the interval (0.0, 1.0], of the given value.
+  description = '''Returns an approximation to the normalized rank, on the interval [0.0, 1.0], of the given value.
 
 Param sketch: the given sketch in serialized form.
 Param value: value to be ranked.
