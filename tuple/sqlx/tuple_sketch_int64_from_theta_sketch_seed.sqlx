@@ -1,0 +1,35 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+config { hasOutput: true }
+
+CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, value INT64, seed INT64)
+RETURNS BYTES
+LANGUAGE js
+OPTIONS (
+  library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"]
+) AS R"""
+var sketchObject = null;
+try {
+  sketchObject = Module.compact_tuple_sketch_int64.convertThetaFromB64(sketch, BigInt(value), seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED));
+  return sketchObject.serializeAsB64();
+} finally {
+  if (sketchObject != null) sketchObject.delete();
+}
+""";
