@@ -79,13 +79,22 @@ select $BQ_DATASET.tuple_sketch_int64_get_estimate_seed(
 );
 
 # expected 2
+select $BQ_DATASET.tuple_sketch_int64_get_estimate(
+  $BQ_DATASET.tuple_sketch_int64_a_not_b(
+    (select $BQ_DATASET.tuple_sketch_int64_agg_string(str, 1) from unnest(["a", "b", "c"]) as str),
+    (select $BQ_DATASET.tuple_sketch_int64_agg_string(str, 1) from unnest(["c", "d", "e"]) as str)
+  )
+);
+
+# full signatures
+# expected 2
 select $BQ_DATASET.tuple_sketch_int64_get_estimate_seed(
   $BQ_DATASET.tuple_sketch_int64_a_not_b_seed(
-    (select $BQ_DATASET.tuple_sketch_int64_agg_string(str, 1) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.tuple_sketch_int64_agg_string(str, 1) from unnest(["c", "d", "e"]) as str),
-    null
+    (select $BQ_DATASET.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "MIN")) from unnest(["a", "b", "c"]) as str),
+    (select $BQ_DATASET.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "MIN")) from unnest(["c", "d", "e"]) as str),
+    111
   ),
-  null
+  111
 );
 
 /*
