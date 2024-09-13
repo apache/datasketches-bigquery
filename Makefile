@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-MODULES := theta cpc hll kll
+MODULES := theta tuple cpc hll kll
 
 $(MODULES):
 	$(MAKE) -C $@
