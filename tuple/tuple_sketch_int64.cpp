@@ -100,6 +100,9 @@ EMSCRIPTEN_BINDINGS(tuple_sketch_int64) {
     .function("updateString", emscripten::optional_override([](update_tuple_sketch_int64& self, const std::string& key, Update value) {
       self.update(key, value);
     }))
+    .function("updateInt64", emscripten::optional_override([](update_tuple_sketch_int64& self, uint64_t key, Update value) {
+      self.update(key, value);
+    }))
     .function("serializeAsUint8Array", emscripten::optional_override([](const update_tuple_sketch_int64& self) {
       auto bytes = self.compact().serialize();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
