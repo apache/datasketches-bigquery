@@ -20,9 +20,9 @@
 create or replace table $BQ_DATASET.kll_sketch(sketch bytes);
 
 insert into $BQ_DATASET.kll_sketch
-(select $BQ_DATASET.kll_sketch_float_build(value, null) from unnest([1,2,3,4,5,6,7,8,9,10]) as value);
+(select $BQ_DATASET.kll_sketch_float_build(value, 200) from unnest([1,2,3,4,5,6,7,8,9,10]) as value);
 insert into $BQ_DATASET.kll_sketch
-(select $BQ_DATASET.kll_sketch_float_build(value, null) from unnest([11,12,13,14,15,16,17,18,19,20]) as value);
+(select $BQ_DATASET.kll_sketch_float_build(value, 200) from unnest([11,12,13,14,15,16,17,18,19,20]) as value);
 
 select $BQ_DATASET.kll_sketch_float_to_string(sketch) from $BQ_DATASET.kll_sketch;
 
