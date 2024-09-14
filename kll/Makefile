@@ -24,7 +24,8 @@ EMCFLAGS=-I../datasketches-cpp/common/include \
 	-sENVIRONMENT=shell \
 	-sTOTAL_MEMORY=1024MB \
 	-O3 \
-	--bind
+	--bind \
+	--pre-js crypto.js
 
 ARTIFACTS=kll_sketch.mjs kll_sketch.js kll_sketch.wasm
 
