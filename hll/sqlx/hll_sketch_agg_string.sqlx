@@ -25,11 +25,17 @@ LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/hll_sketch.mjs"],
   description = '''Creates a sketch that represents the cardinality of the given STRING column.
+
 Param str: the STRING column of identifiers.
-Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 26].
-Param tgt_type: The HLL type to use, if or when the sketch reaches that state.
-Returns: an HLL Sketch, as bytes, from which the cardinality can be obtained.
-For more details: https://datasketches.apache.org/docs/HLL/HLL.html'''
+Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 21].
+Param tgt_type: The HLL type to use: one of {"HLL_4", "HLL_6", "HLL_8"}.
+Returns: an HLL Sketch, as BYTES.
+
+For more information:
+ - https://datasketches.apache.org/docs/HLL/HLL.html
+ - https://datasketches.apache.org/docs/HLL/HllMaxSizeAndErrorTable.html
+ - https://datasketches.apache.org/docs/HLL/HllPerformance.html
+'''
 ) AS R"""
 import ModuleFactory from "gs://$GCS_BUCKET/hll_sketch.mjs";
 var Module = await ModuleFactory();

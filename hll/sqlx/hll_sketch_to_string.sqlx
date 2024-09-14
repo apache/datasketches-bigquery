@@ -25,9 +25,13 @@ LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/hll_sketch.js"],
   description = '''Returns a summary string that represents the state of the given sketch.
-Param sketch: the given sketch as bytes.
-Returns: a string that represents the state of the given sketch.
-For more details: https://datasketches.apache.org/docs/HLL/HLL.html'''
+
+Param sketch: the given sketch as BYTES.
+Returns: a STRING that represents the state of the given sketch.
+
+For more information:
+ - https://datasketches.apache.org/docs/HLL/HLL.html
+'''
 ) AS R"""
 try {
   var sketchObject = null;

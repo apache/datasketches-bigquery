@@ -32,7 +32,7 @@ Returns: a STRING that represents the state of the given sketch.
 
 For more information:
  - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
- '''
+'''
 ) AS R"""
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
