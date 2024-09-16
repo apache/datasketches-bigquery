@@ -97,11 +97,17 @@ select $BQ_DATASET.tuple_sketch_int64_get_estimate_seed(
   111
 );
 
-/*
+
 # expected 0.2
-select $BQ_DATASET.tuple_sketch_jaccard_similarity(
-  (select $BQ_DATASET.tuple_sketch_agg_string(str) from unnest(["a", "b", "c"]) as str),
-  (select $BQ_DATASET.tuple_sketch_agg_string(str) from unnest(["c", "d", "e"]) as str),
-  null
+select $BQ_DATASET.tuple_sketch_int64_jaccard_similarity(
+  (select $BQ_DATASET.tuple_sketch_int64_agg_string(str, 1) from unnest(["a", "b", "c"]) as str),
+  (select $BQ_DATASET.tuple_sketch_int64_agg_string(str, 1) from unnest(["c", "d", "e"]) as str)
 );
-*/
+
+#full signatures
+# expected 0.2
+select $BQ_DATASET.tuple_sketch_int64_jaccard_similarity_seed(
+  (select $BQ_DATASET.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "NOP")) from unnest(["a", "b", "c"]) as str),
+  (select $BQ_DATASET.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "NOP")) from unnest(["c", "d", "e"]) as str),
+  111
+);
