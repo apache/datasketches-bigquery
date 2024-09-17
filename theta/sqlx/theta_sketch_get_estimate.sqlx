@@ -19,15 +19,13 @@
 
 config { hasOutput: true }
 
-CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, seed INT64)
+CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES)
 RETURNS FLOAT64
-LANGUAGE js
 OPTIONS (
-  library=["gs://$GCS_BUCKET/theta_sketch.js"],
   description = '''Gets cardinality estimate and bounds from given sketch.
   
 Param sketch: The given sketch to query as BYTES.
-Param seed: This is used to confirm that the given sketch was configured with the correct seed.
+Default seed.
 Returns: a FLOAT64 value as the cardinality estimate.
 
 For more information:
@@ -36,17 +34,6 @@ For more information:
  - https://datasketches.apache.org/docs/Theta/ThetaErrorTable.html
  - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
 '''
-) AS R"""
-const default_seed = BigInt(Module.DEFAULT_SEED);
-try {
-  var sketchObject = null;
-  try {
-    sketchObject = Module.compact_theta_sketch.deserializeFromB64(sketch, seed ? BigInt(seed) : default_seed);
-    return sketchObject.getEstimate();
-  } finally {
-    if (sketchObject != null) sketchObject.delete();
-  }
-} catch (e) {
-  throw new Error(Module.getExceptionMessage(e));
-}
-""";
+) AS (
+  $BQ_DATASET.theta_sketch_get_estimate_seed(sketch, NULL)
+);

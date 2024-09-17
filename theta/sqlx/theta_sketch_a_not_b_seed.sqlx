@@ -19,14 +19,16 @@
 
 config { hasOutput: true }
 
-CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES)
+CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES, seed INT64)
 RETURNS BYTES
+LANGUAGE js
 OPTIONS (
+  library=["gs://$GCS_BUCKET/theta_sketch.js"],
   description = '''Computes a sketch that represents the scalar set difference: sketchA and not sketchB.
 
 Param sketchA: the first sketch "A" as bytes.
 Param sketchB: the second sketch "B" as bytes.
-Default seed.
+Param seed: This is used to confirm that the given sketches were configured with the correct seed.
 Returns: a Compact, Compressed Theta Sketch, as BYTES.
 
 For more information:
@@ -38,6 +40,17 @@ For more information:
  - https://datasketches.apache.org/docs/Theta/ThetaSize.html
  - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
  '''
-) AS (
-  $BQ_DATASET.theta_sketch_a_not_b_seed(sketchA, sketchB, NULL)
-);
+) AS R"""
+const default_seed = BigInt(Module.DEFAULT_SEED);
+try {
+  var a_not_b = null;
+  try {
+    a_not_b = new Module.theta_a_not_b(seed ? BigInt(seed) : default_seed);
+    return a_not_b.computeWithB64ReturnB64Compressed(sketchA, sketchB, seed ? BigInt(seed) : default_seed);
+  } finally {
+    if (a_not_b != null) a_not_b.delete();
+  }
+} catch (e) {
+  throw new Error(Module.getExceptionMessage(e));
+}
+""";
