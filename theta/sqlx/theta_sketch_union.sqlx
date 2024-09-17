@@ -22,22 +22,20 @@ config { hasOutput: true }
 CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES)
 RETURNS BYTES
 OPTIONS (
-  description = '''Computes a sketch that represents the scalar set difference: sketchA and not sketchB.
+  description = '''Computes a sketch that represents the scalar union of the two given sketches.
 
-Param sketchA: the first sketch "A" as bytes.
-Param sketchB: the second sketch "B" as bytes.
-Default seed.
+Param sketchA: the first sketch as BYTES.
+Param sketchB: the second sketch as BYTES.
+Default lg_k and seed.
 Returns: a Compact, Compressed Theta Sketch, as BYTES.
 
 For more information:
- - https://datasketches.apache.org/docs/Theta/ThetaSketchSetOps.html
  - https://datasketches.apache.org/docs/Theta/ThetaAccuracy.html
- - https://datasketches.apache.org/docs/Theta/ThetaSketchSetOpsAccuracy.html
  - https://datasketches.apache.org/docs/Theta/ThetaAccuracyPlots.html
  - https://datasketches.apache.org/docs/Theta/ThetaErrorTable.html
  - https://datasketches.apache.org/docs/Theta/ThetaSize.html
  - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
- '''
+'''
 ) AS (
-  $BQ_DATASET.theta_sketch_a_not_b_seed(sketchA, sketchB, NULL)
+  $BQ_DATASET.theta_sketch_union_lgk_seed(sketchA, sketchB, NULL, NULL)
 );

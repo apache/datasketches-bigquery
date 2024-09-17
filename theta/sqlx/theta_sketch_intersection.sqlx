@@ -22,10 +22,10 @@ config { hasOutput: true }
 CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES)
 RETURNS BYTES
 OPTIONS (
-  description = '''Computes a sketch that represents the scalar set difference: sketchA and not sketchB.
+  description = '''Computes a sketch that represents the scalar intersection of the two given sketches.
 
-Param sketchA: the first sketch "A" as bytes.
-Param sketchB: the second sketch "B" as bytes.
+Param sketchA: the first sketch as BYTES.
+Param sketchB: the second sketch as BYTES.
 Default seed.
 Returns: a Compact, Compressed Theta Sketch, as BYTES.
 
@@ -37,7 +37,7 @@ For more information:
  - https://datasketches.apache.org/docs/Theta/ThetaErrorTable.html
  - https://datasketches.apache.org/docs/Theta/ThetaSize.html
  - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
- '''
+'''
 ) AS (
-  $BQ_DATASET.theta_sketch_a_not_b_seed(sketchA, sketchB, NULL)
+  $BQ_DATASET.theta_sketch_intersection_seed(sketchA, sketchB, NULL)
 );

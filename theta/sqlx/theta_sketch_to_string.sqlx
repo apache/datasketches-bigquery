@@ -19,31 +19,18 @@
 
 config { hasOutput: true }
 
-CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, seed INT64)
+CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES)
 RETURNS STRING
-LANGUAGE js
 OPTIONS (
-  library=["gs://$GCS_BUCKET/theta_sketch.js"],
   description = '''Returns a summary string that represents the state of the given sketch.
 
 Param sketch: the given sketch as BYTES.
-Param seed: This is used to confirm that the given sketch was configured with the correct seed.
+Default seed.
 Returns: a STRING that represents the state of the given sketch.
 
 For more information:
  - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
 '''
-) AS R"""
-const default_seed = BigInt(Module.DEFAULT_SEED);
-try {
-  var sketchObject = null;
-  try {
-    sketchObject = Module.compact_theta_sketch.deserializeFromB64(sketch, seed ? BigInt(seed) : default_seed);
-    return sketchObject.toString();
-  } finally {
-    if (sketchObject != null) sketchObject.delete();
-  }
-} catch (e) {
-  throw new Error(Module.getExceptionMessage(e));
-}
-""";
+) AS (
+  $BQ_DATASET.theta_sketch_to_string_seed(sketch, NULL)
+);
