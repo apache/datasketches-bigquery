@@ -31,7 +31,7 @@ Returns: stream length as INT64
 
 For more information:
  - https://datasketches.apache.org/docs/KLL/KLLSketch.html
- '''
+'''
 ) AS R"""
 try {
   var sketchObject = null;

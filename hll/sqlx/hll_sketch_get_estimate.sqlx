@@ -25,9 +25,15 @@ LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/hll_sketch.js"],
   description = '''Returns a summary string that represents the state of the given sketch.
-Param sketch: the given sketch as bytes.
+
+Param sketch: the given sketch as BYTES.
 Returns: the cardinality estimate as FLOAT64 value.
-For more details: https://datasketches.apache.org/docs/HLL/HLL.html'''
+
+For more information:
+ - https://datasketches.apache.org/docs/HLL/HLL.html
+ - https://datasketches.apache.org/docs/HLL/HllMaxSizeAndErrorTable.html
+ - https://datasketches.apache.org/docs/HLL/HllPerformance.html
+'''
 ) AS R"""
 try {
   var sketchObject = null;
