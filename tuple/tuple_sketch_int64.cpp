@@ -23,6 +23,7 @@
 #include <tuple_union.hpp>
 #include <tuple_intersection.hpp>
 #include <tuple_a_not_b.hpp>
+#include <tuple_jaccard_similarity.hpp>
 #include <theta_sketch.hpp>
 
 #include "../base64.hpp"
@@ -70,6 +71,13 @@ template<typename S> using tuple_intersection_policy = tuple_union_policy<S>;
 using tuple_intersection_int64 = datasketches::tuple_intersection<Summary, tuple_intersection_policy<Summary>>;
 
 using tuple_a_not_b_int64 = datasketches::tuple_a_not_b<Summary>;
+
+template<typename T>
+struct no_op_policy {
+  void operator()(T&, const T&) const {}
+};
+
+using tuple_jaccard_similarity_int64 = datasketches::tuple_jaccard_similarity<Summary, no_op_policy<Summary>, no_op_policy<Summary>>;
 
 tuple_mode convert_mode(const std::string& mode_str) {
   if (mode_str == "" || mode_str == "SUM") return SUM;
@@ -210,4 +218,17 @@ EMSCRIPTEN_BINDINGS(tuple_sketch_int64) {
       return std::string(b64.data(), b64.size());
     }))
     ;
+
+  emscripten::function("tupleInt64JaccardSimilarity", emscripten::optional_override([](const std::string& sketch1_b64, const std::string& sketch2_b64, uint64_t seed) {
+    std::vector<char> bytes1(b64_dec_len(sketch1_b64.data(), sketch1_b64.size()));
+    b64_decode(sketch1_b64.data(), sketch1_b64.size(), bytes1.data());
+    std::vector<char> bytes2(b64_dec_len(sketch2_b64.data(), sketch2_b64.size()));
+    b64_decode(sketch2_b64.data(), sketch2_b64.size(), bytes2.data());
+    const auto arr = tuple_jaccard_similarity_int64::jaccard(
+      compact_tuple_sketch_int64::deserialize(bytes1.data(), bytes1.size(), seed),
+      compact_tuple_sketch_int64::deserialize(bytes2.data(), bytes2.size(), seed),
+      seed
+    );
+    return std::vector<double>{arr[0], arr[1], arr[2]};
+  }));
 }
