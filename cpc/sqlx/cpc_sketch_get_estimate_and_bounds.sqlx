@@ -25,13 +25,18 @@ LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/cpc_sketch.js"],
   description = '''Gets cardinality estimate and bounds from given sketch.
+  
 Param sketch: The given sketch to query as bytes.
 Param num_std_devs: The returned bounds will be based on the statistical confidence interval determined by the given number of standard deviations
-from the returned estimate. This number may be one of {1,2,3}, where 1 represents 68% confidence, 2 represents 95% confidence and 3 represents 99.7% confidence.
-For example, if the given num_std_devs = 2 and the returned values are {1000, 990, 1010} that means that with 95% confidence, the true value lies within the range [990, 1010].
+  from the returned estimate. This number may be one of {1,2,3}, where 1 represents 68% confidence, 2 represents 95% confidence and 3 represents 99.7% confidence.
+  For example, if the given num_std_devs = 2 and the returned values are {1000, 990, 1010} that means that with 95% confidence, the true value lies within the range [990, 1010].
 Param seed: This is used to confirm that the given sketch was configured with the correct seed.
-Returns: a struct with 3 FLOAT64 values as {estimate, lower_bound, upper_bound}.
-For more details: https://datasketches.apache.org/docs/CPC/CPC.html'''
+Returns: a STRUCT with 3 FLOAT64 values as {estimate, lower_bound, upper_bound}.
+
+For more information:
+ - https://datasketches.apache.org/docs/CPC/CPC.html
+ - https://datasketches.apache.org/docs/CPC/CpcPerformance.html
+'''
 ) AS R"""
 try {
   var sketchObject = null;
