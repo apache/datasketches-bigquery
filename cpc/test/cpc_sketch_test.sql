@@ -17,36 +17,69 @@
  * under the License.
  */
 
+# using defaults
 # expected 5
 select $BQ_DATASET.cpc_sketch_get_estimate(
-  $BQ_DATASET.cpc_sketch_scalar_union(
-    (select $BQ_DATASET.cpc_sketch_agg_string(str, struct<int, int>(null, null)) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.cpc_sketch_agg_string(str, struct<int, int>(null, null)) from unnest(["c", "d", "e"]) as str),
-    null,
-    null
-  ),
-  null
+  $BQ_DATASET.cpc_sketch_union(
+    (select $BQ_DATASET.cpc_sketch_agg_string(str) from unnest(["a", "b", "c"]) as str),
+    (select $BQ_DATASET.cpc_sketch_agg_string(str) from unnest(["c", "d", "e"]) as str)
+  )
 );
 
+# using full signatures
+# expected 5
+select $BQ_DATASET.cpc_sketch_get_estimate_seed(
+  $BQ_DATASET.cpc_sketch_union_lgk_seed(
+    (select $BQ_DATASET.cpc_sketch_agg_string_lgk_seed(str, struct<byteint, int64>(10, 111)) from unnest(["a", "b", "c"]) as str),
+    (select $BQ_DATASET.cpc_sketch_agg_string_lgk_seed(str, struct<byteint, int64>(10, 111)) from unnest(["c", "d", "e"]) as str),
+    10,
+    111
+  ),
+  111
+);
+
+# using defaults
 create or replace table $BQ_DATASET.cpc_sketch(sketch bytes);
 
 insert into $BQ_DATASET.cpc_sketch
-(select $BQ_DATASET.cpc_sketch_agg_string(cast(value as string), struct<int, int>(null, null)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+(select $BQ_DATASET.cpc_sketch_agg_string(cast(value as string)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
 insert into $BQ_DATASET.cpc_sketch
-(select $BQ_DATASET.cpc_sketch_agg_string(cast(value as string), struct<int, int>(null, null)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+(select $BQ_DATASET.cpc_sketch_agg_string(cast(value as string)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
-select $BQ_DATASET.cpc_sketch_to_string(sketch, null) from $BQ_DATASET.cpc_sketch;
+select $BQ_DATASET.cpc_sketch_to_string(sketch) from $BQ_DATASET.cpc_sketch;
 
 # expected about 20000
 select $BQ_DATASET.cpc_sketch_get_estimate(
-  $BQ_DATASET.cpc_sketch_agg_union(sketch, struct<int, int>(null, null)),
-  null
+  $BQ_DATASET.cpc_sketch_agg_union(sketch)
 ) from $BQ_DATASET.cpc_sketch;
 
 select $BQ_DATASET.cpc_sketch_get_estimate_and_bounds(
-  $BQ_DATASET.cpc_sketch_agg_union(sketch, struct<int, int>(14, null)),
+  $BQ_DATASET.cpc_sketch_agg_union(sketch),
+  3
+) from $BQ_DATASET.cpc_sketch;
+
+drop table $BQ_DATASET.cpc_sketch;
+
+# using full signatures
+create or replace table $BQ_DATASET.cpc_sketch(sketch bytes);
+
+insert into $BQ_DATASET.cpc_sketch
+(select $BQ_DATASET.cpc_sketch_agg_string_lgk_seed(cast(value as string), struct<byteint, int64>(10, 111)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+insert into $BQ_DATASET.cpc_sketch
+(select $BQ_DATASET.cpc_sketch_agg_string_lgk_seed(cast(value as string), struct<byteint, int64>(10, 111)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+
+select $BQ_DATASET.cpc_sketch_to_string_seed(sketch, 111) from $BQ_DATASET.cpc_sketch;
+
+# expected about 20000
+select $BQ_DATASET.cpc_sketch_get_estimate_seed(
+  $BQ_DATASET.cpc_sketch_agg_union_lgk_seed(sketch, struct<byteint, int64>(10, 111)),
+  111
+) from $BQ_DATASET.cpc_sketch;
+
+select $BQ_DATASET.cpc_sketch_get_estimate_and_bounds_seed(
+  $BQ_DATASET.cpc_sketch_agg_union_lgk_seed(sketch, struct<byteint, int64>(10, 111)),
   3,
-  null
+  111
 ) from $BQ_DATASET.cpc_sketch;
 
 drop table $BQ_DATASET.cpc_sketch;

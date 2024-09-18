@@ -19,19 +19,31 @@
 
 config { hasOutput: true }
 
-CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES)
+CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, seed INT64)
 RETURNS FLOAT64
+LANGUAGE js
 OPTIONS (
+  library=["gs://$GCS_BUCKET/cpc_sketch.js"],
   description = '''Gets cardinality estimate and bounds from given sketch.
 
 Param sketch: The given sketch to query as BYTES.
-Default seed.
+Param seed: This is used to confirm that the given sketch was configured with the correct seed.
 Returns: a FLOAT64 value as the cardinality estimate.
 
 For more information:
  - https://datasketches.apache.org/docs/CPC/CPC.html
  - https://datasketches.apache.org/docs/CPC/CpcPerformance.html
 '''
-) AS (
-  $BQ_DATASET.cpc_sketch_get_estimate_seed(sketch, NULL)
-);
+) AS R"""
+try {
+  var sketchObject = null;
+  try {
+    sketchObject = Module.cpc_sketch.deserializeFromB64(sketch, seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED));
+    return sketchObject.getEstimate();
+  } finally {
+    if (sketchObject != null) sketchObject.delete();
+  }
+} catch (e) {
+  throw new Error(Module.getExceptionMessage(e));
+}
+""";
