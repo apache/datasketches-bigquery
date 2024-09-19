@@ -19,13 +19,16 @@
 
 config { hasOutput: true }
 
-CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(str STRING)
+CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES, lg_k BYTEINT, tgt_type STRING)
 RETURNS BYTES
+LANGUAGE js
 OPTIONS (
-  description = '''Creates a sketch that represents the cardinality of the given STRING column.
-
-Param str: the STRING column of identifiers.
-Default lg_k and tgt_type.
+  library=["gs://$GCS_BUCKET/hll_sketch.js"],
+  description = '''Computes a sketch that represents the union of the two given sketches.
+Param sketchA: the first sketch as bytes.
+Param sketchB: the second sketch as bytes.
+Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 21].
+Param tgt_type: The HLL type to use: one of {"HLL_4", "HLL_6", "HLL_8"}.
 Returns: an HLL Sketch, as BYTES.
 
 For more information:
@@ -33,6 +36,19 @@ For more information:
  - https://datasketches.apache.org/docs/HLL/HllMaxSizeAndErrorTable.html
  - https://datasketches.apache.org/docs/HLL/HllPerformance.html
 '''
-) AS (
-  $BQ_DATASET.hll_sketch_agg_string_lgk_type(str, STRUCT<BYTEINT, STRING>(NULL, NULL))
-);
+) AS R"""
+const default_lg_k = 12;
+try {
+  var union = null;
+  try {
+    union = new Module.hll_union(lg_k ? lg_k : default_lg_k);
+    union.updateWithB64(sketchA)
+    union.updateWithB64(sketchB)
+    return union.getResultB64(tgt_type ? tgt_type : "");
+  } finally {
+    if (union != null) union.delete();
+  }
+} catch (e) {
+  throw new Error(Module.getExceptionMessage(e));
+}
+""";

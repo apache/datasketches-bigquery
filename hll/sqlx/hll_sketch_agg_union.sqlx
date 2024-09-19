@@ -19,16 +19,13 @@
 
 config { hasOutput: true }
 
-CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(sketch BYTES, params STRUCT<lg_k BYTEINT, tgt_type STRING> NOT AGGREGATE)
+CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(sketch BYTES)
 RETURNS BYTES
-LANGUAGE js
 OPTIONS (
-  library=["gs://$GCS_BUCKET/hll_sketch.mjs"],
   description = '''Creates a sketch that represents the union of the given column of sketches.
 
 Param sketch: the column of sketches. Each as BYTES.
-Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 21].
-Param tgt_type: The HLL type to use: one of {"HLL_4", "HLL_6", "HLL_8"}.
+Default lg_k and tgt_type.
 Returns: an HLL Sketch, as BYTES.
 
 For more information:
@@ -36,96 +33,6 @@ For more information:
  - https://datasketches.apache.org/docs/HLL/HllMaxSizeAndErrorTable.html
  - https://datasketches.apache.org/docs/HLL/HllPerformance.html
 '''
-) AS R"""
-import ModuleFactory from "gs://$GCS_BUCKET/hll_sketch.mjs";
-var Module = await ModuleFactory();
-const default_lg_k = Number(12);
-const default_tgt_type = Module.TargetHllType.HLL_4;
-
-// ensures we have a union
-// if there is a serialized sketch, add it to the union and destroy it
-function ensureUnion(state) {
-  try {
-    if (state.union == null) {
-      state.union = new Module.hll_union(state.lg_k);
-    }
-    if (state.serialized != null) {
-      state.union.updateWithBytes(state.serialized);
-      state.serialized = null;
-    }
-  } catch (e) {
-    throw new Error(Module.getExceptionMessage(e));
-  }
-}
-
-export function initialState(params) {
-  try {
-    var state = {
-      lg_k: params.lg_k == null ? default_lg_k : Number(params.lg_k),
-    };
-    if (params.tgt_type == null) {
-      state.tgt_type = default_tgt_type;
-    } else if (params.tgt_type == "HLL_4") {
-      state.tgt_type = Module.TargetHllType.HLL_4;
-    } else if (params.tgt_type == "HLL_6") {
-      state.tgt_type = Module.TargetHllType.HLL_6;
-    } else if (params.tgt_type == "HLL_8") {
-      state.tgt_type = Module.TargetHllType.HLL_8;
-    } else {
-      throw new Error("unrecognized HLL type " + params.tgt_type);
-    }
-    state.union = new Module.hll_union(state.lg_k);
-    return state;
-  } catch (e) {
-    throw new Error(Module.getExceptionMessage(e));
-  }
-}
-
-export function aggregate(state, sketch) {
-  if (sketch != null) {
-    ensureUnion(state);
-    try {
-      state.union.updateWithBytes(sketch);
-    } catch (e) {
-      throw new Error(Module.getExceptionMessage(e));
-    }
-  }
-}
-
-export function serialize(state) {
-  if (state.union == null) return state; // for transition deserialize-serialize
-  try {
-    ensureUnion(state);
-    return {
-      lg_k: state.lg_k,
-      tgt_type: state.tgt_type,
-      serialized: state.union.getResultAsUint8Array(state.tgt_type)
-    };
-  } catch (e) {
-    throw new Error(Module.getExceptionMessage(e));
-  } finally {
-    state.union.delete();
-    state.union = null;
-  }
-}
-
-export function deserialize(state) {
-  return state;
-}
-
-export function merge(state, other_state) {
-  ensureUnion(state);
-  if (other_state.serialized != null) {
-    try {
-      state.union.updateWithBytes(other_state.serialized);
-      other_state.serialized = null;
-    } catch (e) {
-      throw new Error(Module.getExceptionMessage(e));
-    }
-  }
-}
-
-export function finalize(state) {
-  return serialize(state).serialized;
-}
-""";
+) AS (
+  $BQ_DATASET.hll_sketch_agg_union_lgk_type(sketch, STRUCT<BYTEINT, STRING>(NULL, NULL))
+);
