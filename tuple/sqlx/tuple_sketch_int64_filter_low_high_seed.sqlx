@@ -23,7 +23,21 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, low INT64, high INT64, seed I
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
-  library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"]
+  library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"],
+  description = '''Returns a Tuple Sketch computed from the given sketch filtered by the given low and high values. 
+This returns a compact tuple sketch that contains the subset of rows of the give sketch where the
+summary column is greater-than or equal to the given low and less-than or equal to the given high.
+This function only applies to Tuple Sketches with an INT64 summary column.
+
+Param sketch: the given Tuple Sketch. This may not be NULL.
+Param low: the given low INT64. This may not be NULL.
+Param high: the given high INT64. This may not be NULL.
+Param seed: This is used to confirm that the given sketches were configured with the correct seed. A NULL specifies the default seed = 9001.
+Returns: a Compact Tuple Sketch as BYTES.
+
+For more information:
+ - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
+'''
 ) AS R"""
 var sketchObject = null;
 try {

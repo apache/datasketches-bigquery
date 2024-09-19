@@ -23,7 +23,19 @@ CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES, lg_k BYTEINT,
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
-  library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"]
+  library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"],
+  description = '''Computes a Tuple Sketch that represents the UNION of sketchA and sketchB.
+Cardinality estimation accuracy, plots, error tables, and p value are the same as the Theta Sketch.
+This function only applies to Tuple Sketches with an INT64 summary column.
+
+Param sketchA: the first sketch "A" as BYTES. This may not be NULL.
+Param sketchB: the second sketch "B" as BYTES. This may not be NULL.
+Param seed: This is used to confirm that the given sketches were configured with the correct seed. A NULL specifies the default seed = 9001.
+Returns: a Compact Tuple Sketch as BYTES.
+
+For more information:
+ - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
+'''
 ) AS R"""
 const default_lg_k = Number(Module.DEFAULT_LG_K);
 const default_seed = BigInt(Module.DEFAULT_SEED);

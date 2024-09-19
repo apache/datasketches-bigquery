@@ -21,6 +21,19 @@ config { hasOutput: true }
 
 CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES)
 RETURNS BYTES
-AS (
+OPTIONS (
+  description = '''Computes a sketch that represents the scalar intersection of sketchA and sketchB.
+Cardinality estimation accuracy, plots, error tables, and p value are the same as the Theta Sketch.
+This function only applies to Tuple Sketches with an INT64 summary column.
+
+Param sketchA: the first sketch "A" as BYTES.
+Param sketchB: the second sketch "B" as BYTES.
+Param seed: assumes default = 9001.
+Returns: a Compact Tuple Sketch as BYTES.
+
+For more information:
+ - https://datasketches.apache.org/docs/Tuple/TupleSketches.html 
+'''
+) AS (
   $BQ_DATASET.tuple_sketch_int64_intersection_seed_mode(sketchA, sketchB, NULL, NULL)
 );

@@ -23,7 +23,18 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, value INT64, seed INT64)
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
-  library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"]
+  library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"],
+  description = '''Converts the given Theta Sketch into a Tuple Sketch with a INT64 summary column
+set to the given INT64 value.
+
+Param sketch: the given Theta Sketch. This may not be NULL.
+Param value: the given INT64 value. This may not be NULL.
+Param seed: This is used to confirm that the given sketches were configured with the correct seed. A NULL specifies the default seed = 9001.
+Returns: a Tuple Sketch as BYTES.
+
+For more information:
+ - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
+'''
 ) AS R"""
 var sketchObject = null;
 try {

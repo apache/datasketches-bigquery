@@ -24,21 +24,22 @@ RETURNS BYTES
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/tuple_sketch_int64.mjs"],
-  description = '''Creates a sketch that represents the cardinality of the given INT64 column
-with an additional INT64 value associated with each key.
-Multiple values for the same key are aggregated using one of the selectable
-operations: SUM, MIN, MAX, ONE. 
-Param key: the INT64 column of identifiers.
-Param value: the INT64 value associated with the key.
-Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 26].
-Param seed: the seed to be used by the underlying hash function.
-Param p: sampling probability (initial theta). The default is 1, so the sketch retains
-all entries until it reaches the limit, at which point it goes into the estimation mode
-and reduces the effective sampling probability (theta) as necessary.
-Param mode: aggregate values using SUM, MIN, MAX, ONE (constant 1).
-Returns: a Compact Tuple Sketch, as bytes, which can be queried for results
-or used in other sketch operations.
-For more details: https://datasketches.apache.org/docs/Tuple/TupleOverview.html'''
+  description = '''Builds a Tuple Sketch from an INT64 Key column and an INT64 value column.
+Multiple values for the same key are aggregated using one of the selectable operations: { SUM, MIN, MAX, ONE (constant 1) }.
+Cardinality estimation accuracy, plots, error tables, and p value are the same as the Theta Sketch.
+This function only applies to Tuple Sketches with an INT64 Key column and an INT64 summary column.
+
+Param key: the INT64 key column of identifiers. This may not be NULL.
+Param value: the INT64 value column associated with each key. This may not be NULL.
+Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 26]. A NULL specifies the default lg_k of 12.
+Param seed: the seed to be used by the underlying hash function. A NULL specifies the default seed of 9001.
+Param p: up-front sampling probability. A NULL specifies the default of 1.0.
+Param mode:  aggregation mode for the summary field: one of { SUM, MIN, MAX, ONE (constant 1) }. A NULL specifies the default = SUM.
+Returns: a Compact Tuple Sketch as BYTES.
+
+For more information:
+ - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
+'''
 ) AS R"""
 import ModuleFactory from "gs://$GCS_BUCKET/tuple_sketch_int64.mjs";
 var Module = await ModuleFactory();
