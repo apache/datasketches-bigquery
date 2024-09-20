@@ -25,7 +25,7 @@ LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"],
   description = '''Computes a sketch that represents the scalar set difference of sketchA and not sketchB.
-Cardinality estimation accuracy, plots, error tables, and p value are the same as the Theta Sketch.
+Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.
 This function only applies to Tuple Sketches with an INT64 summary column.
 
 Param sketchA: the first sketch "A" as BYTES. This may not be NULL.

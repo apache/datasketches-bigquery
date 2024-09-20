@@ -25,6 +25,7 @@ LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"],
   description = '''Returns a human readable STRING that is a short summary of the state of this sketch.
+  Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.
   This function only applies to Tuple Sketches with an INT64 summary column.
 
 Param sketch: the sketch to be summarized. This may not be NULL.

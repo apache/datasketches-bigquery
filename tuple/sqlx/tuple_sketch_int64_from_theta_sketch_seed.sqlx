@@ -24,13 +24,13 @@ RETURNS BYTES
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"],
-  description = '''Converts the given Theta Sketch into a Tuple Sketch with a INT64 summary column
-set to the given INT64 value.
+  description = '''Converts the given Theta Sketch into a Tuple Sketch with a INT64 summary column set to the given INT64 value.
+Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.
 
 Param sketch: the given Theta Sketch. This may not be NULL.
 Param value: the given INT64 value. This may not be NULL.
 Param seed: This is used to confirm that the given sketches were configured with the correct seed. A NULL specifies the default seed = 9001.
-Returns: a Tuple Sketch as BYTES.
+Returns: a Tuple Sketch with an INT64 summary column as BYTES.
 
 For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
