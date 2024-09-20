@@ -72,4 +72,4 @@ select $BQ_DATASET.hll_sketch_to_string(
   $BQ_DATASET.hll_sketch_agg_union_lgk_type(sketch, struct<byteint, string>(8, "HLL_6"))
 ) from $BQ_DATASET.hll_sketch;
 
-#drop table $BQ_DATASET.hll_sketch;
+drop table $BQ_DATASET.hll_sketch;
