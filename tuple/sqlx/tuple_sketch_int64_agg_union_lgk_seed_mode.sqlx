@@ -23,7 +23,20 @@ CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(sketch BYTES, params STRUCT<lg_k 
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
-  library=["gs://$GCS_BUCKET/tuple_sketch_int64.mjs"]
+  library=["gs://$GCS_BUCKET/tuple_sketch_int64.mjs"],
+  description = '''Builds a Tuple Sketch that represents the UNION of the given column of Tuple Sketches.
+Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.
+This function only applies to Tuple Sketches with an INT64 summary column.
+
+Param sketch: the given column of Tuple Sketches with an INT64 summary column. This may not be NULL.
+Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 26]. A NULL specifies the default lg_k of 12.
+Param seed: the seed to be used by the underlying hash function. A NULL specifies the default seed of 9001.
+Param mode:  aggregation mode for the summary field: one of { SUM, MIN, MAX, ONE (constant 1) }. A NULL specifies the default = SUM.
+Returns: a Compact Tuple Sketch as BYTES.
+
+For more information:
+ - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
+'''
 ) AS R"""
 import ModuleFactory from "gs://$GCS_BUCKET/tuple_sketch_int64.mjs";
 var Module = await ModuleFactory();

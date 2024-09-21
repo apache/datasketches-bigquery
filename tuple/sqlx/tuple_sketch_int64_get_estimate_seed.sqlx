@@ -23,7 +23,18 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, seed INT64)
 RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (
-  library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"]
+  library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"],
+  description = '''Returns the cardinality estimate of the given Tuple Sketch.
+Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.
+This function only applies to Tuple Sketches with an INT64 summary column.
+  
+Param sketch: the given Tuple Sketch. This may not be NULL.
+Param seed: This is used to confirm that the given sketches were configured with the correct seed. A NULL specifies the default seed = 9001.
+Returns: the cardinality estimate of the given Tuple Sketch
+
+For more information:
+ - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
+'''
 ) AS R"""
 try {
   var sketchObject = null;

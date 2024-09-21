@@ -22,15 +22,22 @@ config { hasOutput: true }
 CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(key STRING, value INT64)
 RETURNS BYTES 
 OPTIONS (
-  description = '''Creates a sketch that represents the cardinality of the given STRING column
-with an additional INT64 value associated with each key.
-Multiple values for the same key are aggregated using one of the selectable
-operations: SUM, MIN, MAX. 
-Param key: the STRING column of identifiers.
-Param value: the INT64 value associated with the key.
-Returns: a Compact Tuple Sketch, as bytes, which can be queried for results
-or used in other sketch operations.
-For more details: https://datasketches.apache.org/docs/Tuple/TupleOverview.html'''
+  description = '''Builds a Tuple Sketch from an STRING Key column and an INT64 value column.
+Multiple values for the same key are aggregated using the default mode.
+Note that cardinality estimation accuracy, plots, error tables, and sampling probability p are the same as the Theta Sketch.
+This function only applies to Tuple Sketches with an STRING Key column and an INT64 summary column.
+ 
+Param key: the STRING column of identifiers. This may not be NULL.
+Param value: the INT64 value column associated with each key. This may not be NULL.
+Assumed Default Param lg_k: 12
+Assumed Default Param seed: 9001
+Assumed Default Param p: 1.0
+Assumed Default Param mode: SUM.
+Returns: a Compact Tuple Sketch as BYTES.
+
+For more information:
+ - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
+ '''
 ) AS (
   $BQ_DATASET.tuple_sketch_int64_agg_string_lgk_seed_p_mode(key, value, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(NULL, NULL, NULL, NULL))
 );
