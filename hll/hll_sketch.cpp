@@ -24,6 +24,13 @@
 
 #include "../base64.hpp"
 
+datasketches::target_hll_type convert_tgt_type(const std::string& tgt_type_str) {
+  if (tgt_type_str == "" || tgt_type_str == "HLL_4") return datasketches::HLL_4;
+  if (tgt_type_str == "HLL_6") return datasketches::HLL_6;
+  if (tgt_type_str == "HLL_8") return datasketches::HLL_8;
+  throw std::invalid_argument("unrecognized HLL target type " + tgt_type_str);
+}
+
 const emscripten::val Uint8Array = emscripten::val::global("Uint8Array");
 
 EMSCRIPTEN_BINDINGS(hll_sketch) {
@@ -32,15 +39,9 @@ EMSCRIPTEN_BINDINGS(hll_sketch) {
     return std::string(reinterpret_cast<std::exception*>(ptr)->what());
   }));
 
-  emscripten::enum_<datasketches::target_hll_type>("TargetHllType")
-    .value("HLL_4", datasketches::HLL_4)
-    .value("HLL_6", datasketches::HLL_6)
-    .value("HLL_8", datasketches::HLL_8)
-    ;
-
   emscripten::class_<datasketches::hll_sketch>("hll_sketch")
-    .constructor(emscripten::optional_override([](uint8_t lg_k, datasketches::target_hll_type tgt_type) {
-      return new datasketches::hll_sketch(lg_k, tgt_type);
+    .constructor(emscripten::optional_override([](uint8_t lg_k, const std::string& tgt_type_str) {
+      return new datasketches::hll_sketch(lg_k, convert_tgt_type(tgt_type_str));
     }))
     .function("updateString", emscripten::select_overload<void(const std::string&)>(&datasketches::hll_sketch::update))
     .function("serializeAsUint8Array", emscripten::optional_override([](const datasketches::hll_sketch& self) {
@@ -87,12 +88,12 @@ EMSCRIPTEN_BINDINGS(hll_sketch) {
 //      self.get_result(tgt_type).serialize_compact(stream);
 //      return (int) stream.tellp();
 //    }))
-    .function("getResultAsUint8Array", emscripten::optional_override([](datasketches::hll_union& self, datasketches::target_hll_type tgt_type) {
-      auto bytes = self.get_result(tgt_type).serialize_compact();
+    .function("getResultAsUint8Array", emscripten::optional_override([](datasketches::hll_union& self, const std::string& tgt_type_str) {
+      auto bytes = self.get_result(convert_tgt_type(tgt_type_str)).serialize_compact();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
     }))
-    .function("getResultB64", emscripten::optional_override([](datasketches::hll_union& self, datasketches::target_hll_type tgt_type) {
-      auto bytes = self.get_result(tgt_type).serialize_compact();
+    .function("getResultB64", emscripten::optional_override([](datasketches::hll_union& self, const std::string& tgt_type_str) {
+      auto bytes = self.get_result(convert_tgt_type(tgt_type_str)).serialize_compact();
       std::vector<char> b64(b64_enc_len(bytes.size()));
       b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
       return std::string(b64.data(), b64.size());

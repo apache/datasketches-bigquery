@@ -18,29 +18,58 @@
  */
 
 # expected 3
-select $BQ_DATASET.hll_sketch_get_estimate($BQ_DATASET.hll_sketch_agg_string(s, struct<int, string>(null, null))) from unnest(["a", "b", "c"]) as s;
+select $BQ_DATASET.hll_sketch_get_estimate($BQ_DATASET.hll_sketch_agg_string(s)) from unnest(["a", "b", "c"]) as s;
+
+select $BQ_DATASET.hll_sketch_to_string($BQ_DATASET.hll_sketch_agg_string(s)) from unnest(["a", "b", "c"]) as s;
 
 # expected 5
 select $BQ_DATASET.hll_sketch_get_estimate_and_bounds(
-  $BQ_DATASET.hll_sketch_scalar_union(
-    (select $BQ_DATASET.hll_sketch_agg_string(str, struct<int, string>(10, "HLL_8")) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.hll_sketch_agg_string(str, struct<int, string>(10, "HLL_8")) from unnest(["c", "d", "e"]) as str),
+  $BQ_DATASET.hll_sketch_union_lgk_type(
+    (select $BQ_DATASET.hll_sketch_agg_string_lgk_type(str, struct<byteint, string>(10, "HLL_8")) from unnest(["a", "b", "c"]) as str),
+    (select $BQ_DATASET.hll_sketch_agg_string_lgk_type(str, struct<byteint, string>(10, "HLL_8")) from unnest(["c", "d", "e"]) as str),
     10,
     "HLL_8"
   ),
   2
 );
 
+select $BQ_DATASET.hll_sketch_to_string(
+  $BQ_DATASET.hll_sketch_union_lgk_type(
+    (select $BQ_DATASET.hll_sketch_agg_string_lgk_type(str, struct<byteint, string>(10, "HLL_8")) from unnest(["a", "b", "c"]) as str),
+    (select $BQ_DATASET.hll_sketch_agg_string_lgk_type(str, struct<byteint, string>(10, "HLL_8")) from unnest(["c", "d", "e"]) as str),
+    10,
+    "HLL_8"
+  )
+);
+
 create or replace table $BQ_DATASET.hll_sketch(sketch bytes);
 
 insert into $BQ_DATASET.hll_sketch
-(select $BQ_DATASET.hll_sketch_agg_string(cast(value as string), struct<int, string>(null, null)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+(select $BQ_DATASET.hll_sketch_agg_string(cast(value as string)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
 insert into $BQ_DATASET.hll_sketch
-(select $BQ_DATASET.hll_sketch_agg_string(cast(value as string), struct<int, string>(null, null)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+(select $BQ_DATASET.hll_sketch_agg_string(cast(value as string)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
 # expected estimate about 20000
 select $BQ_DATASET.hll_sketch_to_string(
-  $BQ_DATASET.hll_sketch_agg_union(sketch, struct<int, string>(null, null))
+  $BQ_DATASET.hll_sketch_agg_union(sketch)
+) from $BQ_DATASET.hll_sketch;
+
+select $BQ_DATASET.hll_sketch_to_string(
+  $BQ_DATASET.hll_sketch_agg_union_lgk_type(sketch, struct<byteint, string>(10, "HLL_6"))
+) from $BQ_DATASET.hll_sketch;
+
+drop table $BQ_DATASET.hll_sketch;
+
+create or replace table $BQ_DATASET.hll_sketch(sketch bytes);
+
+insert into $BQ_DATASET.hll_sketch
+(select $BQ_DATASET.hll_sketch_agg_string_lgk_type(cast(value as string), struct<int, string>(8, "HLL_6")) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+insert into $BQ_DATASET.hll_sketch
+(select $BQ_DATASET.hll_sketch_agg_string_lgk_type(cast(value as string), struct<int, string>(8, "HLL_6")) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+
+# expected estimate about 20000
+select $BQ_DATASET.hll_sketch_to_string(
+  $BQ_DATASET.hll_sketch_agg_union_lgk_type(sketch, struct<byteint, string>(8, "HLL_6"))
 ) from $BQ_DATASET.hll_sketch;
 
 drop table $BQ_DATASET.hll_sketch;
