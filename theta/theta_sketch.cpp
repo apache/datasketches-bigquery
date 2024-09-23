@@ -26,8 +26,6 @@
 #include <theta_a_not_b.hpp>
 #include <theta_jaccard_similarity.hpp>
 
-#include "../base64.hpp"
-
 using datasketches::update_theta_sketch;
 using datasketches::compact_theta_sketch;
 using datasketches::wrapped_compact_theta_sketch;
@@ -52,22 +50,6 @@ EMSCRIPTEN_BINDINGS(theta_sketch) {
       return new update_theta_sketch(update_theta_sketch::builder().set_lg_k(lg_k).set_seed(seed).set_p(p).build());
     }))
     .function("updateString", emscripten::select_overload<void(const std::string&)>(&update_theta_sketch::update))
-    .function("serializeB64", emscripten::optional_override([](const update_theta_sketch& self) {
-      auto bytes = self.compact().serialize();
-      std::vector<char> b64(b64_enc_len(bytes.size()));
-      b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
-      return std::string(b64.data(), b64.size());
-    }))
-    .function("serializeB64Compressed", emscripten::optional_override([](const update_theta_sketch& self) {
-      auto bytes = self.compact().serialize_compressed();
-      std::vector<char> b64(b64_enc_len(bytes.size()));
-      b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
-      return std::string(b64.data(), b64.size());
-    }))
-    .function("serializeAsUint8Array", emscripten::optional_override([](const update_theta_sketch& self) {
-      auto bytes = self.compact().serialize();
-      return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
-    }))
     .function("serializeAsUint8ArrayCompressed", emscripten::optional_override([](const update_theta_sketch& self) {
       auto bytes = self.compact().serialize_compressed();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
@@ -75,42 +57,17 @@ EMSCRIPTEN_BINDINGS(theta_sketch) {
     ;
 
   emscripten::class_<compact_theta_sketch>("compact_theta_sketch")
-    .constructor(emscripten::optional_override([](intptr_t bytes, size_t size, uint64_t seed) {
-      return new compact_theta_sketch(compact_theta_sketch::deserialize(reinterpret_cast<void*>(bytes), size, seed));
-    }))
-    .class_function("deserializeFromB64", emscripten::optional_override([](const std::string& b64, uint64_t seed) {
-      std::vector<char> bytes(b64_dec_len(b64.data(), b64.size()));
-      b64_decode(b64.data(), b64.size(), bytes.data());
-      return new compact_theta_sketch(compact_theta_sketch::deserialize(bytes.data(), bytes.size(), seed));
+    .class_function("getEstimateFromBytes", emscripten::optional_override([](const std::string& bytes, uint64_t seed) {
+      return wrapped_compact_theta_sketch::wrap(bytes.data(), bytes.size(), seed).get_estimate();
     }), emscripten::allow_raw_pointers())
-    .class_function("deserializeFromBinary", emscripten::optional_override([](const std::string& bytes, uint64_t seed) {
-      return new compact_theta_sketch(compact_theta_sketch::deserialize(bytes.data(), bytes.size(), seed));
+    .class_function("getEstimateAndBoundsFromBytes", emscripten::optional_override([](const std::string& bytes, uint8_t num_std_devs, uint64_t seed) {
+      const auto sketch =  wrapped_compact_theta_sketch::wrap(bytes.data(), bytes.size(), seed);
+      return std::vector<double>{sketch.get_estimate(), sketch.get_lower_bound(num_std_devs), sketch.get_upper_bound(num_std_devs)};
     }), emscripten::allow_raw_pointers())
-    .function("getEstimate", emscripten::optional_override([](const compact_theta_sketch& self) {
-      return self.get_estimate();
-    }))
-    .function("getLowerBound", emscripten::optional_override([](const compact_theta_sketch& self, uint8_t num_std_devs) {
-      return self.get_lower_bound(num_std_devs);
-    }))
-    .function("getUpperBound", emscripten::optional_override([](const compact_theta_sketch& self, uint8_t num_std_devs) {
-      return self.get_upper_bound(num_std_devs);
-    }))
-    .function("toString", emscripten::optional_override([](const compact_theta_sketch& self) {
-      return std::string(self.to_string());
-    }))
+    .class_function("toStringFromBytes", emscripten::optional_override([](const std::string& bytes, uint64_t seed) {
+      return std::string(wrapped_compact_theta_sketch::wrap(bytes.data(), bytes.size(), seed).to_string());
+    }), emscripten::allow_raw_pointers())
     .class_function("getMaxSerializedSizeBytes", &compact_theta_sketch::get_max_serialized_size_bytes)
-    ;
-
-  emscripten::class_<wrapped_compact_theta_sketch>("wrapped_compact_theta_sketch")
-    .constructor(emscripten::optional_override([](intptr_t bytes, size_t size) {
-      return new wrapped_compact_theta_sketch(wrapped_compact_theta_sketch::wrap(reinterpret_cast<void*>(bytes), size));
-    }))
-    .function("getEstimate", emscripten::optional_override([](wrapped_compact_theta_sketch& self) {
-      return self.get_estimate();
-    }))
-    .function("toString", emscripten::optional_override([](wrapped_compact_theta_sketch& self) {
-      return std::string(self.to_string());
-    }))
     ;
 
   emscripten::class_<theta_union>("theta_union")
@@ -123,15 +80,7 @@ EMSCRIPTEN_BINDINGS(theta_sketch) {
     .function("updateWithCompactSketch", emscripten::optional_override([](theta_union& self, const compact_theta_sketch& sketch) {
       self.update(sketch);
     }), emscripten::allow_raw_pointers())
-    .function("updateWithWrappedSketch", emscripten::optional_override([](theta_union& self, const wrapped_compact_theta_sketch& sketch) {
-      self.update(sketch);
-    }), emscripten::allow_raw_pointers())
     .function("updateWithBytes", emscripten::optional_override([](theta_union& self, const std::string& bytes, uint64_t seed) {
-      self.update(wrapped_compact_theta_sketch::wrap(bytes.data(), bytes.size(), seed));
-    }), emscripten::allow_raw_pointers())
-    .function("updateWithB64", emscripten::optional_override([](theta_union& self, const std::string& b64, uint64_t seed) {
-      std::vector<char> bytes(b64_dec_len(b64.data(), b64.size()));
-      b64_decode(b64.data(), b64.size(), bytes.data());
       self.update(wrapped_compact_theta_sketch::wrap(bytes.data(), bytes.size(), seed));
     }), emscripten::allow_raw_pointers())
     .function("updateWithBuffer", emscripten::optional_override([](theta_union& self, intptr_t bytes, size_t size, uint64_t seed) {
@@ -150,96 +99,35 @@ EMSCRIPTEN_BINDINGS(theta_sketch) {
       auto bytes = self.get_result().serialize_compressed();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
     }))
-    .function("getResultB64", emscripten::optional_override([](theta_union& self) {
-      auto bytes = self.get_result().serialize();
-      std::vector<char> b64(b64_enc_len(bytes.size()));
-      b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
-      return std::string(b64.data(), b64.size());
-    }))
-    .function("getResultB64Compressed", emscripten::optional_override([](theta_union& self) {
-      auto bytes = self.get_result().serialize_compressed();
-      std::vector<char> b64(b64_enc_len(bytes.size()));
-      b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
-      return std::string(b64.data(), b64.size());
+    .class_function("computeWithBytesReturnCompressed", emscripten::optional_override([](const std::string& bytes1, const std::string& bytes2, uint8_t lg_k, uint64_t seed) {
+      auto u = theta_union::builder().set_lg_k(lg_k).set_seed(seed).build();
+      u.update(wrapped_compact_theta_sketch::wrap(bytes1.data(), bytes1.size(), seed));
+      u.update(wrapped_compact_theta_sketch::wrap(bytes2.data(), bytes2.size(), seed));
+      const auto bytes = u.get_result().serialize_compressed();
+      return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
     }))
     ;
 
-  emscripten::class_<theta_intersection>("theta_intersection")
-    .constructor(emscripten::optional_override([](uint64_t seed) {
-      return new theta_intersection(seed);
-    }))
-    .function("updateWithCompactSketch", emscripten::optional_override([](theta_intersection& self, const compact_theta_sketch& sketch) {
-      self.update(sketch);
-    }))
-    .function("updateWithWrappedSketch", emscripten::optional_override([](theta_intersection& self, const wrapped_compact_theta_sketch& sketch) {
-      self.update(sketch);
-    }))
-    .function("updateWithB64", emscripten::optional_override([](theta_intersection& self, const std::string& b64, uint64_t seed) {
-      std::vector<char> bytes(b64_dec_len(b64.data(), b64.size()));
-      b64_decode(b64.data(), b64.size(), bytes.data());
-      self.update(wrapped_compact_theta_sketch::wrap(bytes.data(), bytes.size(), seed));
-    }), emscripten::allow_raw_pointers())
-    .function("getResultB64", emscripten::optional_override([](theta_intersection& self) {
-      auto bytes = self.get_result().serialize();
-      std::vector<char> b64(b64_enc_len(bytes.size()));
-      b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
-      return std::string(b64.data(), b64.size());
-    }))
-    .function("getResultB64Compressed", emscripten::optional_override([](theta_intersection& self) {
-      auto bytes = self.get_result().serialize_compressed();
-      std::vector<char> b64(b64_enc_len(bytes.size()));
-      b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
-      return std::string(b64.data(), b64.size());
+  emscripten::function("thetaIntersectionCompressed", emscripten::optional_override([](const std::string& bytes1, const std::string& bytes2, uint64_t seed) {
+      auto intersection = theta_intersection(seed);
+      intersection.update(wrapped_compact_theta_sketch::wrap(bytes1.data(), bytes1.size(), seed));
+      intersection.update(wrapped_compact_theta_sketch::wrap(bytes2.data(), bytes2.size(), seed));
+      const auto bytes = intersection.get_result().serialize_compressed();
+      return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
     }))
     ;
 
-  emscripten::class_<theta_a_not_b>("theta_a_not_b")
-    .constructor(emscripten::optional_override([](uint64_t seed) {
-      return new theta_a_not_b(seed);
-    }))
-    .function("computeWithCompactSketch", emscripten::optional_override([](theta_a_not_b& self,
-      const compact_theta_sketch& sketch1, const compact_theta_sketch& sketch2) {
-      return self.compute(sketch1, sketch2);
-    }))
-    .function("computeWithWrappedSketch", emscripten::optional_override([](theta_a_not_b& self,
-      const wrapped_compact_theta_sketch& sketch1, const wrapped_compact_theta_sketch& sketch2) {
-      return self.compute(sketch1, sketch2);
-    }))
-    .function("computeWithB64ReturnB64", emscripten::optional_override([](theta_a_not_b& self,
-      const std::string& b64_1, const std::string& b64_2, uint64_t seed) {
-      std::vector<char> bytes1(b64_dec_len(b64_1.data(), b64_1.size()));
-      b64_decode(b64_1.data(), b64_1.size(), bytes1.data());
-      std::vector<char> bytes2(b64_dec_len(b64_2.data(), b64_2.size()));
-      b64_decode(b64_2.data(), b64_2.size(), bytes2.data());
-      auto bytes = self.compute(
-        wrapped_compact_theta_sketch::wrap(bytes1.data(), bytes1.size(), seed),
-        wrapped_compact_theta_sketch::wrap(bytes2.data(), bytes2.size(), seed)
-      ).serialize();
-      std::vector<char> b64(b64_enc_len(bytes.size()));
-      b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
-      return std::string(b64.data(), b64.size());
-    }))
-    .function("computeWithB64ReturnB64Compressed", emscripten::optional_override([](theta_a_not_b& self,
-      const std::string& b64_1, const std::string& b64_2, uint64_t seed) {
-      std::vector<char> bytes1(b64_dec_len(b64_1.data(), b64_1.size()));
-      b64_decode(b64_1.data(), b64_1.size(), bytes1.data());
-      std::vector<char> bytes2(b64_dec_len(b64_2.data(), b64_2.size()));
-      b64_decode(b64_2.data(), b64_2.size(), bytes2.data());
-      auto bytes = self.compute(
+  emscripten::function("thetaAnotBCompressed", emscripten::optional_override([](const std::string& bytes1, const std::string& bytes2, uint64_t seed) {
+      auto a_not_b = theta_a_not_b(seed);
+      const auto bytes = a_not_b.compute(
         wrapped_compact_theta_sketch::wrap(bytes1.data(), bytes1.size(), seed),
         wrapped_compact_theta_sketch::wrap(bytes2.data(), bytes2.size(), seed)
       ).serialize_compressed();
-      std::vector<char> b64(b64_enc_len(bytes.size()));
-      b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
-      return std::string(b64.data(), b64.size());
+      return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
     }))
     ;
 
-  emscripten::function("thetaJaccardSimilarity", emscripten::optional_override([](const std::string& sketch1_b64, const std::string& sketch2_b64, uint64_t seed) {
-    std::vector<char> bytes1(b64_dec_len(sketch1_b64.data(), sketch1_b64.size()));
-    b64_decode(sketch1_b64.data(), sketch1_b64.size(), bytes1.data());
-    std::vector<char> bytes2(b64_dec_len(sketch2_b64.data(), sketch2_b64.size()));
-    b64_decode(sketch2_b64.data(), sketch2_b64.size(), bytes2.data());
+  emscripten::function("thetaJaccardSimilarity", emscripten::optional_override([](const std::string& bytes1, const std::string& bytes2, uint64_t seed) {
     const auto arr = datasketches::theta_jaccard_similarity::jaccard(
       wrapped_compact_theta_sketch::wrap(bytes1.data(), bytes1.size(), seed),
       wrapped_compact_theta_sketch::wrap(bytes2.data(), bytes2.size(), seed),

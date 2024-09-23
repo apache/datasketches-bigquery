@@ -24,6 +24,7 @@ RETURNS STRUCT<estimate FLOAT64, lower_bound FLOAT64, upper_bound FLOAT64>
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/theta_sketch.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Gets cardinality estimate and bounds from given sketch.
 
 Param sketch: The given sketch to query as BYTES.
@@ -45,18 +46,14 @@ For more information:
 ) AS R"""
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
-  var sketchObject = null;
-  try {
-    sketchObject = Module.compact_theta_sketch.deserializeFromB64(sketch, seed ? BigInt(seed) : default_seed);
-    return {
-      estimate: sketchObject.getEstimate(),
-      lower_bound: sketchObject.getLowerBound(num_std_devs),
-      upper_bound: sketchObject.getUpperBound(num_std_devs)
-    };
-  } finally {
-    if (sketchObject != null) sketchObject.delete();
-  }
+  const result = Module.compact_theta_sketch.getEstimateAndBoundsFromBytes(sketch, Number(num_std_devs), seed ? BigInt(seed) : default_seed);
+  return {
+    estimate: result.get(0),
+    lower_bound: result.get(1),
+    upper_bound: result.get(2)
+  };
 } catch (e) {
+  if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
 }
 """;
