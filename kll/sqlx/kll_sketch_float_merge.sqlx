@@ -47,6 +47,7 @@ export function initialState(k) {
     state.sketch = new Module.kll_sketch_float(state.k);
     return state;
   } catch (e) {
+    if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));
   }
 }
@@ -58,6 +59,7 @@ export function aggregate(state, sketch) {
     }
     state.sketch.mergeBytes(sketch);
   } catch (e) {
+    if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));
   }
 }
@@ -75,6 +77,7 @@ export function serialize(state) {
       serialized: state.sketch.serializeAsUint8Array()
     };
   } catch (e) {
+    if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));
   } finally {
     state.sketch.delete();
@@ -99,6 +102,7 @@ export function merge(state, other_state) {
       other_state.serialized = null;
     }
   } catch (e) {
+    if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));
   }
 }

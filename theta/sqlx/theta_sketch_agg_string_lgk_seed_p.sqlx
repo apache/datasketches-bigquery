@@ -73,7 +73,7 @@ export function aggregate(state, str) {
 }
 
 export function serialize(state) {
-  if (state.sketch == null) return state; // for transition deserialize-serialize
+  if (state.sketch == null && state.union == null) return state; // for transition deserialize-serialize
   try {
     // for prior transition deserialize-aggregate
     // merge aggregated and serialized state

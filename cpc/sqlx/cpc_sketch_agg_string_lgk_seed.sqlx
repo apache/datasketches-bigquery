@@ -54,86 +54,81 @@ function destroyState(state) {
 
 // UDAF interface
 export function initialState(params) {
-  var state = {
+  return {
     lg_k: params.lg_k == null ? default_lg_k : Number(params.lg_k),
-    seed: params.seed == null ? default_seed : BigInt(params.seed),
-    sketch: null,
-    union: null,
-    serialized: null
+    seed: params.seed == null ? default_seed : BigInt(params.seed)
   };
-  state.sketch = new Module.cpc_sketch(state.lg_k, state.seed);
-  return state;
 }
 
 export function aggregate(state, str) {
-  if (state.sketch == null) {
-    state.sketch = new Module.cpc_sketch(state.lg_k, state.seed);
+  try {
+    if (state.sketch == null) {
+      state.sketch = new Module.cpc_sketch(state.lg_k, state.seed);
+    }
+    state.sketch.updateString(str);
+  } catch (e) {
+    if (e.message != null) throw e;
+    throw new Error(Module.getExceptionMessage(e));
   }
-  state.sketch.updateString(str);
 }
 
 export function serialize(state) {
+  if (state.sketch == null && state.union == null) return state; // for transition deserialize-serialize
   try {
+    // for prior transition deserialize-aggregate
+    // merge aggregated and serialized state
     if (state.sketch != null && state.serialized != null) {
-      // merge aggregated and serialized state
-      var u = new Module.cpc_union(state.lg_k, state.seed);
+      var u = null;
       try {
+        u = new Module.cpc_union(state.lg_k, state.seed);
         u.updateWithSketch(state.sketch);
         u.updateWithBytes(state.serialized, state.seed);
         state.serialized = u.getResultAsUint8Array();
       } finally {
-        u.delete();
+        if (u != null) u.delete();
       }
     } else if (state.sketch != null) {
       state.serialized = state.sketch.serializeAsUint8Array();
     } else if (state.union != null) {
       state.serialized = state.union.getResultAsUint8Array();
-    } else if (state.serialized == null) {
-      throw new Error("Unexpected state in serialization " + JSON.stringify(state));
     }
     return {
       lg_k: state.lg_k,
       seed: state.seed,
-      bytes: state.serialized
+      serialized: state.serialized
     };
+  } catch (e) {
+    if (e.message != null) throw e;
+    throw new Error(Module.getExceptionMessage(e));
   } finally {
     destroyState(state);
   }
 }
 
-export function deserialize(serialized) {
-  return {
-    sketch: null,
-    union: null,
-    serialized: serialized.bytes,
-    lg_k: serialized.lg_k,
-    seed: serialized.seed
-  };
+export function deserialize(state) {
+  return state;
 }
 
 export function merge(state, other_state) {
-  if (!state.union) {
-    state.union = new Module.cpc_union(state.lg_k, state.seed);
-  }
-  if (state.sketch || other_state.sketch) {
-    throw new Error("sketch is not expected in merge");
-  }
-  if (other_state.union) {
-    throw new Error("other_state should not have union in merge");
-  }
-  if (state.serialized) {
-    state.union.updateWithBytes(state.serialized, state.seed);
-    state.serialized = null;
-  }
-  if (other_state.serialized) {
-    state.union.updateWithBytes(other_state.serialized, other_state.seed);
-    other_state.serialized = null;
-  } else {
-    throw new Error("other_state should have serialized sketch in merge");
+  try {
+    if (state.union == null) {
+      state.union = new Module.cpc_union(state.lg_k, state.seed);
+    }
+    if (state.serialized) {
+      state.union.updateWithBytes(state.serialized, state.seed);
+      state.serialized = null;
+    }
+    if (other_state.serialized) {
+      state.union.updateWithBytes(other_state.serialized, other_state.seed);
+      other_state.serialized = null;
+    }
+  } catch (e) {
+    if (e.message != null) throw e;
+    throw new Error(Module.getExceptionMessage(e));
   }
 }
 
 export function finalize(state) {
-  return serialize(state).bytes
+  return serialize(state).serialized;
 }
 """;
