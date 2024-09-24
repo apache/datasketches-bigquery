@@ -34,11 +34,7 @@ Param seed: This is used to confirm that the given sketches were configured with
 Returns: a Compact, Compressed Theta Sketch, as BYTES.
 
 For more information:
- - https://datasketches.apache.org/docs/Theta/ThetaAccuracy.html
- - https://datasketches.apache.org/docs/Theta/ThetaAccuracyPlots.html
- - https://datasketches.apache.org/docs/Theta/ThetaErrorTable.html
- - https://datasketches.apache.org/docs/Theta/ThetaSize.html
- - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
 '''
 ) AS R"""
 const default_lg_k = Number(Module.DEFAULT_LG_K);

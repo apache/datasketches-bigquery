@@ -30,9 +30,7 @@ Param sketch: the given sketch as BYTES.
 Returns: the cardinality estimate as FLOAT64 value.
 
 For more information:
- - https://datasketches.apache.org/docs/HLL/HLL.html
- - https://datasketches.apache.org/docs/HLL/HllMaxSizeAndErrorTable.html
- - https://datasketches.apache.org/docs/HLL/HllPerformance.html
+ - https://datasketches.apache.org/docs/HLL/HllSketches.html
 '''
 ) AS R"""
 try {

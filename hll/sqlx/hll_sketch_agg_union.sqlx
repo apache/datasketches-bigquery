@@ -29,9 +29,7 @@ Default lg_k and tgt_type.
 Returns: an HLL Sketch, as BYTES.
 
 For more information:
- - https://datasketches.apache.org/docs/HLL/HLL.html
- - https://datasketches.apache.org/docs/HLL/HllMaxSizeAndErrorTable.html
- - https://datasketches.apache.org/docs/HLL/HllPerformance.html
+ - https://datasketches.apache.org/docs/HLL/HllSketches.html
 '''
 ) AS (
   $BQ_DATASET.hll_sketch_agg_union_lgk_type(sketch, STRUCT<BYTEINT, STRING>(NULL, NULL))

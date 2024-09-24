@@ -32,10 +32,7 @@ Param seed: This is used to confirm that the given sketch was configured with th
 Returns: a FLOAT64 value as the cardinality estimate.
 
 For more information:
- - https://datasketches.apache.org/docs/Theta/ThetaAccuracy.html
- - https://datasketches.apache.org/docs/Theta/ThetaAccuracyPlots.html
- - https://datasketches.apache.org/docs/Theta/ThetaErrorTable.html
- - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
 '''
 ) AS R"""
 const default_seed = BigInt(Module.DEFAULT_SEED);

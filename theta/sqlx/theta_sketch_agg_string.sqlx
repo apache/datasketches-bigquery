@@ -31,12 +31,7 @@ Param p: assume default = 1.0
 Returns: a Compact, Compressed Theta Sketch, as BYTES. 
 
 For more information:
- - https://datasketches.apache.org/docs/Theta/ThetaAccuracy.html
- - https://datasketches.apache.org/docs/Theta/ThetaAccuracyPlots.html
- - https://datasketches.apache.org/docs/Theta/ThetaErrorTable.html
- - https://datasketches.apache.org/docs/Theta/ThetaSize.html
- - https://datasketches.apache.org/docs/Theta/ThetaPSampling.html
- - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
  '''
 ) AS (
   $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(str, STRUCT<BYTEINT, INT64, FLOAT64>(NULL, NULL, NULL))

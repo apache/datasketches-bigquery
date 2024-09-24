@@ -29,8 +29,7 @@ Default seed.
 Returns: a FLOAT64 value as the cardinality estimate.
 
 For more information:
- - https://datasketches.apache.org/docs/CPC/CPC.html
- - https://datasketches.apache.org/docs/CPC/CpcPerformance.html
+ - https://datasketches.apache.org/docs/CPC/CpcSketches.html
 '''
 ) AS (
   $BQ_DATASET.cpc_sketch_get_estimate_seed(sketch, NULL)

@@ -29,7 +29,7 @@ Default seed.
 Returns: a STRING that represents the state of the given sketch.
 
 For more information:
- - https://datasketches.apache.org/docs/CPC/CPC.html
+ - https://datasketches.apache.org/docs/CPC/CpcSketches.html
 '''
 ) AS (
   $BQ_DATASET.cpc_sketch_to_string_seed(sketch, NULL)

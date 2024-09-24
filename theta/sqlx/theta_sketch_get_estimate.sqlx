@@ -29,10 +29,7 @@ Default seed.
 Returns: a FLOAT64 value as the cardinality estimate.
 
 For more information:
- - https://datasketches.apache.org/docs/Theta/ThetaAccuracy.html
- - https://datasketches.apache.org/docs/Theta/ThetaAccuracyPlots.html
- - https://datasketches.apache.org/docs/Theta/ThetaErrorTable.html
- - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
 '''
 ) AS (
   $BQ_DATASET.theta_sketch_get_estimate_seed(sketch, NULL)

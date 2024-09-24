@@ -33,12 +33,7 @@ Param p: up-front sampling probability. A NULL specifies the default of 1.0.
 Returns: a Compact, Compressed Theta Sketch, as BYTES.
 
 For more information:
- - https://datasketches.apache.org/docs/Theta/ThetaAccuracy.html
- - https://datasketches.apache.org/docs/Theta/ThetaAccuracyPlots.html
- - https://datasketches.apache.org/docs/Theta/ThetaErrorTable.html
- - https://datasketches.apache.org/docs/Theta/ThetaSize.html
- - https://datasketches.apache.org/docs/Theta/ThetaPSampling.html
- - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
  '''
 ) AS R"""
 import ModuleFactory from "gs://$GCS_BUCKET/theta_sketch.mjs";

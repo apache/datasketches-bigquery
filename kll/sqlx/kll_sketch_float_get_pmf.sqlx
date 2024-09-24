@@ -52,9 +52,6 @@ Returns: the PMF as a FLOAT64 array of M+1 probability masses on the interval [0
 
 For more information:
  - https://datasketches.apache.org/docs/KLL/KLLSketch.html
- - https://datasketches.apache.org/docs/Quantiles/SketchingQuantilesAndRanksTutorial.html
- - https://datasketches.apache.org/docs/KLL/KLLAccuracyAndSize.html
- - https://datasketches.apache.org/docs/KLL/UnderstandingKLLBounds.html
 '''
 ) AS R"""
 try {

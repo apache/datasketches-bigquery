@@ -29,7 +29,7 @@ Default seed.
 Returns: a STRING that represents the state of the given sketch.
 
 For more information:
- - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
 '''
 ) AS (
   $BQ_DATASET.theta_sketch_to_string_seed(sketch, NULL)

@@ -30,7 +30,7 @@ Param sketch: the given sketch as BYTES.
 Returns: a STRING that represents the state of the given sketch.
 
 For more information:
- - https://datasketches.apache.org/docs/HLL/HLL.html
+ - https://datasketches.apache.org/docs/HLL/HllSketches.html
 '''
 ) AS R"""
 try {

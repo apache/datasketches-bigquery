@@ -32,8 +32,7 @@ Default seed.
 Returns: a STRUCT with 3 FLOAT64 values as {estimate, lower_bound, upper_bound}.
 
 For more information:
- - https://datasketches.apache.org/docs/CPC/CPC.html
- - https://datasketches.apache.org/docs/CPC/CpcPerformance.html
+ - https://datasketches.apache.org/docs/CPC/CpcSketches.html
 '''
 ) AS (
   $BQ_DATASET.cpc_sketch_get_estimate_and_bounds_seed(sketch, num_std_devs, NULL)
