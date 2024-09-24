@@ -51,6 +51,7 @@ upload: all
 
 create:
 	@for file in $(wildcard sqlx/*.sqlx); do \
+	  echo creating $$file; \
 	  ../substitute_and_run.sh $$file ; \
 	done
 

@@ -51,6 +51,7 @@ function ensureUnion(state) {
       state.serialized = null;
     }
   } catch (e) {
+    if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));
   }
 }
@@ -68,6 +69,7 @@ export function aggregate(state, sketch) {
     try {
       state.union.updateWithBytes(sketch);
     } catch (e) {
+      if (e.message != null) throw e;
       throw new Error(Module.getExceptionMessage(e));
     }
   }
@@ -83,6 +85,7 @@ export function serialize(state) {
       serialized: state.union.getResultAsUint8Array(state.tgt_type)
     };
   } catch (e) {
+    if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));
   } finally {
     state.union.delete();
@@ -101,13 +104,13 @@ export function merge(state, other_state) {
       state.union.updateWithBytes(other_state.serialized);
       other_state.serialized = null;
     } catch (e) {
+      if (e.message != null) throw e;
       throw new Error(Module.getExceptionMessage(e));
     }
   }
 }
 
 export function finalize(state) {
-//  throw new Error("type: " + state.tgt_type);
   return serialize(state).serialized;
 }
 """;

@@ -72,14 +72,19 @@ export function initialState(params) {
 }
 
 export function aggregate(state, key, value) {
-  if (state.sketch == null) {
-    state.sketch = new Module.update_tuple_sketch_int64(state.lg_k, state.seed, state.p, state.mode);
+  try {
+    if (state.sketch == null) {
+      state.sketch = new Module.update_tuple_sketch_int64(state.lg_k, state.seed, state.p, state.mode);
+    }
+    state.sketch.updateInt64(key, value);
+  } catch (e) {
+    if (e.message != null) throw e;
+    throw new Error(Module.getExceptionMessage(e));
   }
-  state.sketch.updateInt64(key, value);
 }
 
 export function serialize(state) {
-  if (state.sketch == null) return state; // for transition deserialize-serialize
+  if (state.sketch == null && state.union == null) return state; // for transition deserialize-serialize
   try {
     // for prior transition deserialize-aggregate
     // merge aggregated and serialized state
@@ -105,6 +110,7 @@ export function serialize(state) {
       serialized: state.serialized
     };
   } catch (e) {
+    if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));
   } finally {
     destroyState(state);
@@ -129,6 +135,7 @@ export function merge(state, other_state) {
       other_state.serialized = null;
     }
   } catch (e) {
+    if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));
   }
 }
