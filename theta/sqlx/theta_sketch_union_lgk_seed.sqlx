@@ -24,6 +24,7 @@ RETURNS BYTES
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/theta_sketch.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Computes a sketch that represents the scalar union of the two given sketches.
 
 Param sketchA: the first sketch as BYTES.
@@ -43,15 +44,14 @@ For more information:
 const default_lg_k = Number(Module.DEFAULT_LG_K);
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
-  var union = new Module.theta_union(lg_k ? lg_k : default_lg_k, seed ? BigInt(seed) : default_seed);
-  try {
-    union.updateWithB64(sketchA, seed ? BigInt(seed) : default_seed)
-    union.updateWithB64(sketchB, seed ? BigInt(seed) : default_seed)
-    return union.getResultB64Compressed();
-  } finally {
-    union.delete();
-  }
+  return Module.theta_union.computeWithBytesReturnCompressed(
+    sketchA,
+    sketchB,
+    lg_k ? Number(lg_k) : default_lg_k,
+    seed ? BigInt(seed) : default_seed
+  );
 } catch (e) {
+  if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
 }
 """;

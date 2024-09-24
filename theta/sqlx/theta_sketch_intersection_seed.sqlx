@@ -24,6 +24,7 @@ RETURNS BYTES
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/theta_sketch.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Computes a sketch that represents the scalar intersection of the two given sketches.
 
 Param sketchA: the first sketch as BYTES.
@@ -43,15 +44,9 @@ For more information:
 ) AS R"""
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
-  var intersection = new Module.theta_intersection(seed ? BigInt(seed) : default_seed);
-  try {
-    intersection.updateWithB64(sketchA, seed ? BigInt(seed) : default_seed);
-    intersection.updateWithB64(sketchB, seed ? BigInt(seed) : default_seed);
-    return intersection.getResultB64Compressed();
-  } finally {
-    intersection.delete();
-  }
+  return Module.thetaIntersectionCompressed(sketchA, sketchB, seed ? BigInt(seed) : default_seed);
 } catch (e) {
+  if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
 }
 """;

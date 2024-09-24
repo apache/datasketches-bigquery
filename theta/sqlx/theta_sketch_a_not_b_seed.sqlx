@@ -24,6 +24,7 @@ RETURNS BYTES
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/theta_sketch.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Computes a sketch that represents the scalar set difference: sketchA and not sketchB.
 
 Param sketchA: the first sketch "A" as bytes.
@@ -43,14 +44,9 @@ For more information:
 ) AS R"""
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
-  var a_not_b = null;
-  try {
-    a_not_b = new Module.theta_a_not_b(seed ? BigInt(seed) : default_seed);
-    return a_not_b.computeWithB64ReturnB64Compressed(sketchA, sketchB, seed ? BigInt(seed) : default_seed);
-  } finally {
-    if (a_not_b != null) a_not_b.delete();
-  }
+  return Module.thetaAnotBCompressed(sketchA, sketchB, seed ? BigInt(seed) : default_seed);
 } catch (e) {
+  if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
 }
 """;
