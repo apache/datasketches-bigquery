@@ -32,7 +32,6 @@ Returns: a serialized KLL sketch as BYTES.
 
 For more information:
  - https://datasketches.apache.org/docs/KLL/KLLSketch.html
- - https://datasketches.apache.org/docs/KLL/KLLAccuracyAndSize.html
 '''
 ) AS R"""
 import ModuleFactory from "gs://$GCS_BUCKET/kll_sketch.mjs";

@@ -33,9 +33,6 @@ Returns: an approximate quantile associated with the given rank.
 
 For more information:
  - https://datasketches.apache.org/docs/KLL/KLLSketch.html
- - https://datasketches.apache.org/docs/Quantiles/SketchingQuantilesAndRanksTutorial.html
- - https://datasketches.apache.org/docs/KLL/KLLAccuracyAndSize.html
- - https://datasketches.apache.org/docs/KLL/UnderstandingKLLBounds.html
 '''
 ) AS R"""
 try {

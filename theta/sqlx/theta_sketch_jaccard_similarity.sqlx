@@ -33,7 +33,7 @@ Default seed.
 Returns: a STRUCT with three FLOAT64 values {lower_bound, estimate, upper_bound} of the Jaccard index.
 
 For more information:
- - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
  '''
 ) AS (
   $BQ_DATASET.theta_sketch_jaccard_similarity_seed(sketchA, sketchB, NULL)

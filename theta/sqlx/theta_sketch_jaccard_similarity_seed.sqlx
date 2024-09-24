@@ -36,7 +36,7 @@ Param seed: This is used to confirm that the given sketches were configured with
 Returns: a STRUCT with three FLOAT64 values {lower_bound, estimate, upper_bound} of the Jaccard index.
 
 For more information:
- - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
  '''
 ) AS R"""
 const default_seed = BigInt(Module.DEFAULT_SEED);

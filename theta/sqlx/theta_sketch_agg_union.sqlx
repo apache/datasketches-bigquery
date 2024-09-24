@@ -29,11 +29,7 @@ Default lg_k and seed.
 Returns: a Compact, Compressed Theta Sketch, as BYTES.
 
 For more information:
- - https://datasketches.apache.org/docs/Theta/ThetaAccuracy.html
- - https://datasketches.apache.org/docs/Theta/ThetaAccuracyPlots.html
- - https://datasketches.apache.org/docs/Theta/ThetaErrorTable.html
- - https://datasketches.apache.org/docs/Theta/ThetaSize.html
- - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
 '''
 ) AS (
   $BQ_DATASET.theta_sketch_agg_union_lgk_seed(sketch, STRUCT<BYTEINT, INT64>(NULL, NULL))

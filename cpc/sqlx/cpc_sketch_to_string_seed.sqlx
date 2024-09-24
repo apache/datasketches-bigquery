@@ -31,7 +31,7 @@ Param seed: This is used to confirm that the given sketch was configured with th
 Returns: a STRING that represents the state of the given sketch.
 
 For more information:
- - https://datasketches.apache.org/docs/CPC/CPC.html
+ - https://datasketches.apache.org/docs/CPC/CpcSketches.html
 '''
 ) AS R"""
 const default_seed = BigInt(Module.DEFAULT_SEED);

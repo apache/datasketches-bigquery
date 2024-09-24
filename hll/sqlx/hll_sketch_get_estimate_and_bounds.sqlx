@@ -33,9 +33,7 @@ Param num_std_devs: The returned bounds will be based on the statistical confide
 Returns: a struct with 3 FLOAT64 values as {estimate, lower_bound, upper_bound}.
 
 For more information:
- - https://datasketches.apache.org/docs/HLL/HLL.html
- - https://datasketches.apache.org/docs/HLL/HllMaxSizeAndErrorTable.html
- - https://datasketches.apache.org/docs/HLL/HllPerformance.html
+ - https://datasketches.apache.org/docs/HLL/HllSketches.html
 '''
 ) AS R"""
 try {

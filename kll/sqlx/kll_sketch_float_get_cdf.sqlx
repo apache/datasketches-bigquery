@@ -50,9 +50,6 @@ Returns: the CDF as a monotonically increasing FLOAT64 array of M+1 cumulative p
 
 For more information:
  - https://datasketches.apache.org/docs/KLL/KLLSketch.html
- - https://datasketches.apache.org/docs/Quantiles/SketchingQuantilesAndRanksTutorial.html
- - https://datasketches.apache.org/docs/KLL/KLLAccuracyAndSize.html
- - https://datasketches.apache.org/docs/KLL/UnderstandingKLLBounds.html
 '''
 ) AS R"""
 try {

@@ -30,13 +30,7 @@ Default seed.
 Returns: a Compact, Compressed Theta Sketch, as BYTES.
 
 For more information:
- - https://datasketches.apache.org/docs/Theta/ThetaSketchSetOps.html
- - https://datasketches.apache.org/docs/Theta/ThetaAccuracy.html
- - https://datasketches.apache.org/docs/Theta/ThetaSketchSetOpsAccuracy.html
- - https://datasketches.apache.org/docs/Theta/ThetaAccuracyPlots.html
- - https://datasketches.apache.org/docs/Theta/ThetaErrorTable.html
- - https://datasketches.apache.org/docs/Theta/ThetaSize.html
- - https://datasketches.apache.org/docs/Theta/ThetaSketchFramework.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
  '''
 ) AS (
   $BQ_DATASET.theta_sketch_a_not_b_seed(sketchA, sketchB, NULL)

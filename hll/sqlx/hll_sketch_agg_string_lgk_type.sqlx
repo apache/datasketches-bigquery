@@ -32,9 +32,7 @@ Param tgt_type: The HLL type to use: one of {"HLL_4", "HLL_6", "HLL_8"}.
 Returns: an HLL Sketch, as BYTES.
 
 For more information:
- - https://datasketches.apache.org/docs/HLL/HLL.html
- - https://datasketches.apache.org/docs/HLL/HllMaxSizeAndErrorTable.html
- - https://datasketches.apache.org/docs/HLL/HllPerformance.html
+ - https://datasketches.apache.org/docs/HLL/HllSketches.html
 '''
 ) AS R"""
 import ModuleFactory from "gs://$GCS_BUCKET/hll_sketch.mjs";
