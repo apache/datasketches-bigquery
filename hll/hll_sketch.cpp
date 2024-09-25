@@ -22,8 +22,6 @@
 
 #include <hll.hpp>
 
-#include "../base64.hpp"
-
 datasketches::target_hll_type convert_tgt_type(const std::string& tgt_type_str) {
   if (tgt_type_str == "" || tgt_type_str == "HLL_4") return datasketches::HLL_4;
   if (tgt_type_str == "HLL_6") return datasketches::HLL_6;
@@ -34,6 +32,7 @@ datasketches::target_hll_type convert_tgt_type(const std::string& tgt_type_str) 
 const emscripten::val Uint8Array = emscripten::val::global("Uint8Array");
 
 EMSCRIPTEN_BINDINGS(hll_sketch) {
+  emscripten::register_vector<double>("VectorDouble");
 
   emscripten::function("getExceptionMessage", emscripten::optional_override([](intptr_t ptr) {
     return std::string(reinterpret_cast<std::exception*>(ptr)->what());
@@ -48,21 +47,16 @@ EMSCRIPTEN_BINDINGS(hll_sketch) {
       auto bytes = self.serialize_compact();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
     }))
-    .class_function("deserializeFromB64", emscripten::optional_override([](const std::string& b64) {
-      std::vector<char> bytes(b64_dec_len(b64.data(), b64.size()));
-      b64_decode(b64.data(), b64.size(), bytes.data());
-      return new datasketches::hll_sketch(datasketches::hll_sketch::deserialize(bytes.data(), bytes.size()));
-    }), emscripten::allow_raw_pointers())
-    .class_function("deserializeFromBytes", emscripten::optional_override([](const std::string& bytes) {
-      return new datasketches::hll_sketch(datasketches::hll_sketch::deserialize(bytes.data(), bytes.size()));
-    }), emscripten::allow_raw_pointers())
-    .function("getEstimate", &datasketches::hll_sketch::get_estimate)
-    .function("getLowerBound", &datasketches::hll_sketch::get_lower_bound)
-    .function("getUpperBound", &datasketches::hll_sketch::get_upper_bound)
-    .function("toString", emscripten::optional_override([](const datasketches::hll_sketch& self) {
-      return self.to_string();
+    .class_function("getEstimate", emscripten::optional_override([](const std::string& bytes) {
+      return datasketches::hll_sketch::deserialize(bytes.data(), bytes.size()).get_estimate();
     }))
-    .class_function("getMaxSerializedSizeBytes", &datasketches::hll_sketch::get_max_updatable_serialization_bytes)
+    .class_function("getEstimateAndBounds", emscripten::optional_override([](const std::string& bytes, uint8_t num_std_devs) {
+      const auto sketch = datasketches::hll_sketch::deserialize(bytes.data(), bytes.size());
+      return std::vector<double>{sketch.get_estimate(), sketch.get_lower_bound(num_std_devs), sketch.get_upper_bound(num_std_devs)};
+    }))
+    .class_function("toString", emscripten::optional_override([](const std::string& bytes) {
+      return datasketches::hll_sketch::deserialize(bytes.data(), bytes.size()).to_string();
+    }))
     ;
 
   emscripten::class_<datasketches::hll_union>("hll_union")
@@ -75,29 +69,19 @@ EMSCRIPTEN_BINDINGS(hll_sketch) {
     .function("updateWithBytes", emscripten::optional_override([](datasketches::hll_union& self, const std::string& bytes) {
       self.update(datasketches::hll_sketch::deserialize(bytes.data(), bytes.size()));
     }), emscripten::allow_raw_pointers())
-    .function("updateWithB64", emscripten::optional_override([](datasketches::hll_union& self, const std::string& b64) {
-      std::vector<char> bytes(b64_dec_len(b64.data(), b64.size()));
-      b64_decode(b64.data(), b64.size(), bytes.data());
-      self.update(datasketches::hll_sketch::deserialize(bytes.data(), bytes.size()));
-    }), emscripten::allow_raw_pointers())
-    .function("updateWithBuffer", emscripten::optional_override([](datasketches::hll_union& self, intptr_t bytes, size_t size) {
-      self.update(datasketches::hll_sketch::deserialize(reinterpret_cast<void*>(bytes), size));
-    }))
-//    .function("getResultStream", emscripten::optional_override([](datasketches::hll_union& self, intptr_t bytes, size_t size, datasketches::target_hll_type tgt_type) {
-//      std::strstream stream(reinterpret_cast<char*>(bytes), size);
-//      self.get_result(tgt_type).serialize_compact(stream);
-//      return (int) stream.tellp();
-//    }))
     .function("getResultAsUint8Array", emscripten::optional_override([](datasketches::hll_union& self, const std::string& tgt_type_str) {
       auto bytes = self.get_result(convert_tgt_type(tgt_type_str)).serialize_compact();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
     }))
-    .function("getResultB64", emscripten::optional_override([](datasketches::hll_union& self, const std::string& tgt_type_str) {
-      auto bytes = self.get_result(convert_tgt_type(tgt_type_str)).serialize_compact();
-      std::vector<char> b64(b64_enc_len(bytes.size()));
-      b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
-      return std::string(b64.data(), b64.size());
-    }))
     ;
 
+  emscripten::function("hllUnion", emscripten::optional_override([](
+    const std::string& bytes1, const std::string& bytes2, uint8_t lg_k, const std::string& tgt_type_str
+  ) {
+    datasketches::hll_union u(lg_k);
+    u.update(datasketches::hll_sketch::deserialize(bytes1.data(), bytes1.size()));
+    u.update(datasketches::hll_sketch::deserialize(bytes2.data(), bytes2.size()));
+    const auto bytes = u.get_result(convert_tgt_type(tgt_type_str)).serialize_compact();
+    return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
+  }));
 }

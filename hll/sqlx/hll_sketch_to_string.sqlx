@@ -24,6 +24,7 @@ RETURNS STRING
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/hll_sketch.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Returns a summary string that represents the state of the given sketch.
 
 Param sketch: the given sketch as BYTES.
@@ -34,14 +35,9 @@ For more information:
 '''
 ) AS R"""
 try {
-  var sketchObject = null;
-  try {
-    sketchObject = Module.hll_sketch.deserializeFromB64(sketch);
-    return sketchObject.toString();
-  } finally {
-    if (sketchObject != null) sketchObject.delete();
-  }
+  return Module.hll_sketch.toString(sketch);
 } catch (e) {
+  if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
 }
 """;
