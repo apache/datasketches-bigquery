@@ -24,6 +24,7 @@ RETURNS BYTES
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Computes a Tuple Sketch that represents the UNION of sketchA and sketchB.
 Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.
 This function only applies to Tuple Sketches with an INT64 summary column.
@@ -40,16 +41,9 @@ For more information:
 const default_lg_k = Number(Module.DEFAULT_LG_K);
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
-  var union = null;
-  try {
-    union = new Module.tuple_union_int64(lg_k ? lg_k : default_lg_k, seed ? BigInt(seed) : default_seed, mode ? mode : "");
-    union.updateWithB64(sketchA, seed ? BigInt(seed) : default_seed)
-    union.updateWithB64(sketchB, seed ? BigInt(seed) : default_seed)
-    return union.getResultB64();
-  } finally {
-    if (union != null) union.delete();
-  }
+  return Module.tupleUnionInt64(sketchA, sketchB, lg_k ? Number(lg_k) : default_lg_k, seed ? BigInt(seed) : default_seed, mode ? mode : "");
 } catch (e) {
+  if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
 }
 """;

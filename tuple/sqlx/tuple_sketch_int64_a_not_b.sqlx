@@ -34,6 +34,6 @@ Returns: a Compact Tuple Sketch as BYTES.
 For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
 '''
-AS (
+) AS (
   $BQ_DATASET.tuple_sketch_int64_a_not_b_seed(sketchA, sketchB, NULL)
 );

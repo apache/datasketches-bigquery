@@ -24,6 +24,7 @@ RETURNS BYTES
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Computes a sketch that represents the scalar set difference of sketchA and not sketchB.
 Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.
 This function only applies to Tuple Sketches with an INT64 summary column.
@@ -37,16 +38,10 @@ For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
 '''
 ) AS R"""
-const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
-  var a_not_b = null;
-  try {
-    a_not_b = new Module.tuple_a_not_b_int64(seed ? BigInt(seed) : default_seed);
-    return a_not_b.computeWithB64ReturnB64(sketchA, sketchB, seed ? BigInt(seed) : default_seed);
-  } finally {
-    if (a_not_b != null) a_not_b.delete();
-  }
+  return Module.tupleAnotBInt64(sketchA, sketchB, seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED));
 } catch (e) {
+  if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
 }
 """;
