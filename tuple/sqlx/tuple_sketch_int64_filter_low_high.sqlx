@@ -19,28 +19,24 @@
 
 config { hasOutput: true }
 
-CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, seed INT64)
-RETURNS FLOAT64
-LANGUAGE js
+CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, low INT64, high INT64)
+RETURNS BYTES
 OPTIONS (
-  library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"],
-  js_parameter_encoding_mode='STANDARD',
-  description = '''Returns the cardinality estimate of the given Tuple Sketch.
+  description = '''Returns a Tuple Sketch computed from the given sketch filtered by the given low and high values. 
+This returns a compact tuple sketch that contains the subset of rows of the give sketch where the
+summary column is greater-than or equal to the given low and less-than or equal to the given high.
 Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.
 This function only applies to Tuple Sketches with an INT64 summary column.
-  
+
 Param sketch: the given Tuple Sketch. This may not be NULL.
-Param seed: This is used to confirm that the given sketches were configured with the correct seed. A NULL specifies the default seed = 9001.
-Returns: the cardinality estimate of the given Tuple Sketch
+Param low: the given low INT64. This may not be NULL.
+Param high: the given high INT64. This may not be NULL.
+Assumed Default Param seed: 9001.
+Returns: a Compact Tuple Sketch as BYTES.
 
 For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
 '''
-) AS R"""
-try {
-  return Module.compact_tuple_sketch_int64.getEstimate(sketch, seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED));
-} catch (e) {
-  if (e.message != null) throw e;
-  throw new Error(Module.getExceptionMessage(e));
-}
-""";
+) AS (
+  $BQ_DATASET.tuple_sketch_int64_filter_low_high_seed(sketch, low, high, NULL)
+);

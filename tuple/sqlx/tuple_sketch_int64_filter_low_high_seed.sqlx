@@ -24,6 +24,7 @@ RETURNS BYTES
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Returns a Tuple Sketch computed from the given sketch filtered by the given low and high values. 
 This returns a compact tuple sketch that contains the subset of rows of the give sketch where the
 summary column is greater-than or equal to the given low and less-than or equal to the given high.
@@ -42,9 +43,9 @@ For more information:
 ) AS R"""
 var sketchObject = null;
 try {
-  sketchObject = Module.compact_tuple_sketch_int64.deserializeFromB64(sketch, seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED));
-  return sketchObject.filterB64(low, high);
-} finally {
-  if (sketchObject != null) sketchObject.delete();
+  return Module.compact_tuple_sketch_int64.filterLowHigh(sketch, Number(low), Number(high), seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED));
+} catch (e) {
+  if (e.message != null) throw e;
+  throw new Error(Module.getExceptionMessage(e));
 }
 """;

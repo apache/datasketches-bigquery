@@ -24,6 +24,7 @@ RETURNS BYTES
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Converts the given Theta Sketch into a Tuple Sketch with a INT64 summary column set to the given INT64 value.
 Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.
 
@@ -36,11 +37,10 @@ For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
 '''
 ) AS R"""
-var sketchObject = null;
 try {
-  sketchObject = Module.compact_tuple_sketch_int64.convertThetaFromB64(sketch, BigInt(value), seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED));
-  return sketchObject.serializeAsB64();
-} finally {
-  if (sketchObject != null) sketchObject.delete();
+  return Module.compact_tuple_sketch_int64.convertTheta(sketch, BigInt(value), seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED));
+} catch (e) {
+  if (e.message != null) throw e;
+  throw new Error(Module.getExceptionMessage(e));
 }
 """;

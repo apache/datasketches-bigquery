@@ -26,8 +26,6 @@
 #include <tuple_jaccard_similarity.hpp>
 #include <theta_sketch.hpp>
 
-#include "../base64.hpp"
-
 using Summary = uint64_t;
 using Update = uint64_t;
 
@@ -118,39 +116,23 @@ EMSCRIPTEN_BINDINGS(tuple_sketch_int64) {
     ;
 
   emscripten::class_<compact_tuple_sketch_int64>("compact_tuple_sketch_int64")
-    .class_function("deserializeFromB64", emscripten::optional_override([](const std::string& b64, uint64_t seed) {
-      std::vector<char> bytes(b64_dec_len(b64.data(), b64.size()));
-      b64_decode(b64.data(), b64.size(), bytes.data());
-      return new compact_tuple_sketch_int64(compact_tuple_sketch_int64::deserialize(bytes.data(), bytes.size(), seed));
-    }), emscripten::allow_raw_pointers())
-    .class_function("deserializeFromBinary", emscripten::optional_override([](const std::string& bytes, uint64_t seed) {
-      return new compact_tuple_sketch_int64(compact_tuple_sketch_int64::deserialize(bytes.data(), bytes.size(), seed));
-    }), emscripten::allow_raw_pointers())
-    .class_function("convertThetaFromB64", emscripten::optional_override([](const std::string& b64, uint64_t value, uint64_t seed) {
-      std::vector<char> bytes(b64_dec_len(b64.data(), b64.size()));
-      b64_decode(b64.data(), b64.size(), bytes.data());
+    .class_function("convertTheta", emscripten::optional_override([](const std::string& theta_sketch_bytes, uint64_t value, uint64_t seed) {
       // converting constructor does not currently take wrapped compact theta sketch
-      const auto sketch = datasketches::compact_theta_sketch::deserialize(bytes.data(), bytes.size(), seed);
-      return new compact_tuple_sketch_int64(sketch, value);
-    }), emscripten::allow_raw_pointers())
-    .function("getEstimate", emscripten::optional_override([](const compact_tuple_sketch_int64& self) {
-      return self.get_estimate();
+      const auto sketch = datasketches::compact_theta_sketch::deserialize(theta_sketch_bytes.data(), theta_sketch_bytes.size(), seed);
+      auto bytes = compact_tuple_sketch_int64(sketch, value).serialize();
+      return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
     }))
-    .function("toString", emscripten::optional_override([](const compact_tuple_sketch_int64& self) {
-      return std::string(self.to_string());
+    .class_function("getEstimate", emscripten::optional_override([](const std::string& sketch_bytes, uint64_t seed) {
+      return compact_tuple_sketch_int64::deserialize(sketch_bytes.data(), sketch_bytes.size(), seed).get_estimate();
     }))
-    .function("serializeAsB64", emscripten::optional_override([](const compact_tuple_sketch_int64& self) {
-      auto bytes = self.serialize();
-      std::vector<char> b64(b64_enc_len(bytes.size()));
-      b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
-      return std::string(b64.data(), b64.size());
+    .class_function("toString", emscripten::optional_override([](const std::string& sketch_bytes, uint64_t seed) {
+      return std::string(compact_tuple_sketch_int64::deserialize(sketch_bytes.data(), sketch_bytes.size(), seed).to_string());
     }))
-    .function("filterB64", emscripten::optional_override([](const compact_tuple_sketch_int64& self, int low, int high) {
-      auto sketch = self.filter([low, high](int v){return v >= low && v <= high;});
-      auto bytes = sketch.serialize();
-      std::vector<char> b64(b64_enc_len(bytes.size()));
-      b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
-      return std::string(b64.data(), b64.size());
+    .class_function("filterLowHigh", emscripten::optional_override([](const std::string& sketch_bytes, int low, int high, uint64_t seed) {
+      auto bytes = compact_tuple_sketch_int64::deserialize(
+        sketch_bytes.data(), sketch_bytes.size(), seed
+      ).filter([low, high](int v){return v >= low && v <= high;}).serialize();
+      return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
     }))
     ;
 
@@ -165,65 +147,42 @@ EMSCRIPTEN_BINDINGS(tuple_sketch_int64) {
     .function("updateWithBytes", emscripten::optional_override([](tuple_union_int64& self, const std::string& bytes, uint64_t seed) {
       self.update(compact_tuple_sketch_int64::deserialize(bytes.data(), bytes.size(), seed));
     }), emscripten::allow_raw_pointers())
-    .function("updateWithB64", emscripten::optional_override([](tuple_union_int64& self, const std::string& b64, uint64_t seed) {
-      std::vector<char> bytes(b64_dec_len(b64.data(), b64.size()));
-      b64_decode(b64.data(), b64.size(), bytes.data());
-      self.update(compact_tuple_sketch_int64::deserialize(bytes.data(), bytes.size(), seed));
-    }), emscripten::allow_raw_pointers())
     .function("getResultAsUint8Array", emscripten::optional_override([](tuple_union_int64& self) {
       auto bytes = self.get_result().serialize();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
     }))
-    .function("getResultB64", emscripten::optional_override([](tuple_union_int64& self) {
-      auto bytes = self.get_result().serialize();
-      std::vector<char> b64(b64_enc_len(bytes.size()));
-      b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
-      return std::string(b64.data(), b64.size());
-    }))
     ;
 
-  emscripten::class_<tuple_intersection_int64>("tuple_intersection_int64")
-    .constructor(emscripten::optional_override([](uint64_t seed, const std::string& mode_str) {
-      return new tuple_intersection_int64(seed, tuple_intersection_policy<Summary>(convert_mode(mode_str)));
-    }))
-    .function("updateWithB64", emscripten::optional_override([](tuple_intersection_int64& self, const std::string& b64, uint64_t seed) {
-      std::vector<char> bytes(b64_dec_len(b64.data(), b64.size()));
-      b64_decode(b64.data(), b64.size(), bytes.data());
-      self.update(compact_tuple_sketch_int64::deserialize(bytes.data(), bytes.size(), seed));
-    }), emscripten::allow_raw_pointers())
-    .function("getResultB64", emscripten::optional_override([](tuple_intersection_int64& self) {
-      auto bytes = self.get_result().serialize();
-      std::vector<char> b64(b64_enc_len(bytes.size()));
-      b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
-      return std::string(b64.data(), b64.size());
-    }))
-    ;
+  emscripten::function("tupleUnionInt64", emscripten::optional_override([](
+    const std::string& bytes1, const std::string& bytes2, uint8_t lg_k, uint64_t seed, const std::string& mode_str
+  ) {
+    const auto policy = tuple_union_policy<Summary>(convert_mode(mode_str));
+    auto u = tuple_union_int64(tuple_union_int64::builder(policy).set_lg_k(lg_k).set_seed(seed).build());
+    u.update(compact_tuple_sketch_int64::deserialize(bytes1.data(), bytes1.size(), seed));
+    u.update(compact_tuple_sketch_int64::deserialize(bytes2.data(), bytes2.size(), seed));
+    const auto bytes = u.get_result().serialize();
+    return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
+  }));
 
-  emscripten::class_<tuple_a_not_b_int64>("tuple_a_not_b_int64")
-    .constructor(emscripten::optional_override([](uint64_t seed) {
-      return new tuple_a_not_b_int64(seed);
-    }))
-    .function("computeWithB64ReturnB64", emscripten::optional_override([](tuple_a_not_b_int64& self,
-      const std::string& b64_1, const std::string& b64_2, uint64_t seed) {
-      std::vector<char> bytes1(b64_dec_len(b64_1.data(), b64_1.size()));
-      b64_decode(b64_1.data(), b64_1.size(), bytes1.data());
-      std::vector<char> bytes2(b64_dec_len(b64_2.data(), b64_2.size()));
-      b64_decode(b64_2.data(), b64_2.size(), bytes2.data());
-      auto bytes = self.compute(
-        compact_tuple_sketch_int64::deserialize(bytes1.data(), bytes1.size(), seed),
-        compact_tuple_sketch_int64::deserialize(bytes2.data(), bytes2.size(), seed)
-      ).serialize();
-      std::vector<char> b64(b64_enc_len(bytes.size()));
-      b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
-      return std::string(b64.data(), b64.size());
-    }))
-    ;
+  emscripten::function("tupleIntersectionInt64", emscripten::optional_override([](
+    const std::string& bytes1, const std::string& bytes2, uint64_t seed, const std::string& mode_str
+  ) {
+    tuple_intersection_int64 intersection(seed, tuple_intersection_policy<Summary>(convert_mode(mode_str)));
+    intersection.update(compact_tuple_sketch_int64::deserialize(bytes1.data(), bytes1.size(), seed));
+    intersection.update(compact_tuple_sketch_int64::deserialize(bytes2.data(), bytes2.size(), seed));
+    const auto bytes = intersection.get_result().serialize();
+    return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
+  }));
 
-  emscripten::function("tupleInt64JaccardSimilarity", emscripten::optional_override([](const std::string& sketch1_b64, const std::string& sketch2_b64, uint64_t seed) {
-    std::vector<char> bytes1(b64_dec_len(sketch1_b64.data(), sketch1_b64.size()));
-    b64_decode(sketch1_b64.data(), sketch1_b64.size(), bytes1.data());
-    std::vector<char> bytes2(b64_dec_len(sketch2_b64.data(), sketch2_b64.size()));
-    b64_decode(sketch2_b64.data(), sketch2_b64.size(), bytes2.data());
+  emscripten::function("tupleAnotBInt64", emscripten::optional_override([](const std::string& bytes1, const std::string& bytes2, uint64_t seed) {
+    auto bytes = tuple_a_not_b_int64(seed).compute(
+      compact_tuple_sketch_int64::deserialize(bytes1.data(), bytes1.size(), seed),
+      compact_tuple_sketch_int64::deserialize(bytes2.data(), bytes2.size(), seed)
+    ).serialize();
+    return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
+  }));
+
+  emscripten::function("tupleInt64JaccardSimilarity", emscripten::optional_override([](const std::string& bytes1, const std::string& bytes2, uint64_t seed) {
     const auto arr = tuple_jaccard_similarity_int64::jaccard(
       compact_tuple_sketch_int64::deserialize(bytes1.data(), bytes1.size(), seed),
       compact_tuple_sketch_int64::deserialize(bytes2.data(), bytes2.size(), seed),
