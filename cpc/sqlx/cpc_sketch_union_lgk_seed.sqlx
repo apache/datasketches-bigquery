@@ -24,6 +24,7 @@ RETURNS BYTES
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/cpc_sketch.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Computes a sketch that represents the scalar union of the two given sketches.
 
 Param sketchA: the first sketch as BYTES.
@@ -36,19 +37,12 @@ For more information:
  - https://datasketches.apache.org/docs/CPC/CpcSketches.html
 '''
 ) AS R"""
-const default_lg_k = 12;
+const default_lg_k = Number(12);
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
-  var union = null;
-  try {
-    union = new Module.cpc_union(lg_k ? lg_k : default_lg_k, seed ? BigInt(seed) : default_seed);
-    union.updateWithB64(sketchA, seed ? BigInt(seed) : default_seed)
-    union.updateWithB64(sketchB, seed ? BigInt(seed) : default_seed)
-    return union.getResultB64();
-  } finally {
-    if (union != null) union.delete();
-  }
+  return Module.cpcUnion(sketchA, sketchB, lg_k ? Number(lg_k) : default_lg_k, seed ? BigInt(seed) : default_seed);
 } catch (e) {
+  if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
 }
 """;

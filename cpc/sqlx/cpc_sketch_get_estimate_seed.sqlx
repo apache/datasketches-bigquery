@@ -24,6 +24,7 @@ RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/cpc_sketch.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Gets cardinality estimate and bounds from given sketch.
 
 Param sketch: The given sketch to query as BYTES.
@@ -35,14 +36,9 @@ For more information:
 '''
 ) AS R"""
 try {
-  var sketchObject = null;
-  try {
-    sketchObject = Module.cpc_sketch.deserializeFromB64(sketch, seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED));
-    return sketchObject.getEstimate();
-  } finally {
-    if (sketchObject != null) sketchObject.delete();
-  }
+  return Module.cpc_sketch.getEstimate(sketch, seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED));
 } catch (e) {
+  if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
 }
 """;

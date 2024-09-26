@@ -23,11 +23,10 @@
 #include <cpc_sketch.hpp>
 #include <cpc_union.hpp>
 
-#include "../base64.hpp"
-
 const emscripten::val Uint8Array = emscripten::val::global("Uint8Array");
 
 EMSCRIPTEN_BINDINGS(cpc_sketch) {
+  emscripten::register_vector<double>("VectorDouble");
 
   emscripten::function("getExceptionMessage", emscripten::optional_override([](intptr_t ptr) {
     return std::string(reinterpret_cast<std::exception*>(ptr)->what());
@@ -45,19 +44,16 @@ EMSCRIPTEN_BINDINGS(cpc_sketch) {
       auto bytes = self.serialize();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
     }))
-    .class_function("deserializeFromB64", emscripten::optional_override([](const std::string& b64, uint64_t seed) {
-      std::vector<char> bytes(b64_dec_len(b64.data(), b64.size()));
-      b64_decode(b64.data(), b64.size(), bytes.data());
-      return new datasketches::cpc_sketch(datasketches::cpc_sketch::deserialize(bytes.data(), bytes.size(), seed));
-    }), emscripten::allow_raw_pointers())
-    .class_function("deserializeFromBytes", emscripten::optional_override([](const std::string& bytes, uint64_t seed) {
-      return new datasketches::cpc_sketch(datasketches::cpc_sketch::deserialize(bytes.data(), bytes.size(), seed));
-    }), emscripten::allow_raw_pointers())
-    .function("getEstimate", &datasketches::cpc_sketch::get_estimate)
-    .function("getLowerBound", &datasketches::cpc_sketch::get_lower_bound)
-    .function("getUpperBound", &datasketches::cpc_sketch::get_upper_bound)
-    .function("toString", &datasketches::cpc_sketch::to_string)
-    .class_function("getMaxSerializedSizeBytes", &datasketches::cpc_sketch::get_max_serialized_size_bytes)
+    .class_function("getEstimate", emscripten::optional_override([](const std::string& sketch_bytes, uint64_t seed) {
+      return datasketches::cpc_sketch::deserialize(sketch_bytes.data(), sketch_bytes.size(), seed).get_estimate();
+    }))
+    .class_function("getEstimateAndBounds", emscripten::optional_override([](const std::string& sketch_bytes, uint8_t num_std_devs, uint64_t seed) {
+      const auto sketch = datasketches::cpc_sketch::deserialize(sketch_bytes.data(), sketch_bytes.size(), seed);
+      return std::vector<double>{sketch.get_estimate(), sketch.get_lower_bound(num_std_devs), sketch.get_upper_bound(num_std_devs)};
+    }))
+    .class_function("toString", emscripten::optional_override([](const std::string& sketch_bytes, uint64_t seed) {
+      return datasketches::cpc_sketch::deserialize(sketch_bytes.data(), sketch_bytes.size(), seed).to_string();
+    }))
     ;
 
   emscripten::class_<datasketches::cpc_union>("cpc_union")
@@ -70,29 +66,17 @@ EMSCRIPTEN_BINDINGS(cpc_sketch) {
     .function("updateWithBytes", emscripten::optional_override([](datasketches::cpc_union& self, const std::string& bytes, uint64_t seed) {
       self.update(datasketches::cpc_sketch::deserialize(bytes.data(), bytes.size(), seed));
     }), emscripten::allow_raw_pointers())
-    .function("updateWithB64", emscripten::optional_override([](datasketches::cpc_union& self, const std::string& b64, uint64_t seed) {
-      std::vector<char> bytes(b64_dec_len(b64.data(), b64.size()));
-      b64_decode(b64.data(), b64.size(), bytes.data());
-      self.update(datasketches::cpc_sketch::deserialize(bytes.data(), bytes.size(), seed));
-    }), emscripten::allow_raw_pointers())
-    .function("updateWithBuffer", emscripten::optional_override([](datasketches::cpc_union& self, intptr_t bytes, size_t size, uint64_t seed) {
-      self.update(datasketches::cpc_sketch::deserialize(reinterpret_cast<void*>(bytes), size, seed));
-    }))
-//    .function("getResultStream", emscripten::optional_override([](datasketches::cpc_union& self, intptr_t bytes, size_t size) {
-//      std::strstream stream(reinterpret_cast<char*>(bytes), size);
-//      self.get_result().serialize(stream);
-//      return (int) stream.tellp();
-//    }))
     .function("getResultAsUint8Array", emscripten::optional_override([](datasketches::cpc_union& self) {
       auto bytes = self.get_result().serialize();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
     }))
-    .function("getResultB64", emscripten::optional_override([](datasketches::cpc_union& self) {
-      auto bytes = self.get_result().serialize();
-      std::vector<char> b64(b64_enc_len(bytes.size()));
-      b64_encode((const char*) bytes.data(), bytes.size(), b64.data());
-      return std::string(b64.data(), b64.size());
-    }))
     ;
 
+  emscripten::function("cpcUnion", emscripten::optional_override([](const std::string& bytes1, const std::string& bytes2, uint8_t lg_k, uint64_t seed) {
+    datasketches::cpc_union u(lg_k, seed);
+    u.update(datasketches::cpc_sketch::deserialize(bytes1.data(), bytes1.size(), seed));
+    u.update(datasketches::cpc_sketch::deserialize(bytes2.data(), bytes2.size(), seed));
+    const auto bytes = u.get_result().serialize();
+    return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
+  }));
 }
