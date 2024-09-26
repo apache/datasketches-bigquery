@@ -24,6 +24,7 @@ RETURNS ARRAY<FLOAT64>
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/kll_sketch.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Returns an approximation to the Cumulative Distribution Function (CDF) 
 of the input stream as an array of cumulative probabilities defined by the given split_points.
 
@@ -55,11 +56,11 @@ For more information:
 try {
   var sketchObject = null;
   try {
-    sketchObject = Module.kll_sketch_float.deserializeFromB64(sketch);
+    sketchObject = Module.kll_sketch_float.deserialize(sketch);
     var vectorFloat = new Module.VectorFloat();
     split_points.forEach(value => vectorFloat.push_back(value));
     if (sketchObject.isEmpty()) return null;
-    var cdf = sketchObject.getCDF(vectorFloat, inclusive);
+    const cdf = sketchObject.getCDF(vectorFloat, inclusive);
     var array = [];
     for (let i = 0; i < cdf.size(); i++) array.push(cdf.get(i));
     return array;
@@ -67,6 +68,7 @@ try {
     if (sketchObject != null) sketchObject.delete();
   }
 } catch (e) {
+  if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
 }
 """;

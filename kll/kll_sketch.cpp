@@ -22,8 +22,6 @@
 #include <kll_sketch.hpp>
 #include <kolmogorov_smirnov.hpp>
 
-#include "../base64.hpp"
-
 using kll_sketch_float = datasketches::kll_sketch<float>;
 
 const emscripten::val Uint8Array = emscripten::val::global("Uint8Array");
@@ -56,9 +54,7 @@ EMSCRIPTEN_BINDINGS(kll_sketch_float) {
       auto bytes = self.serialize();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
     }))
-    .class_function("deserializeFromB64", emscripten::optional_override([](const std::string& b64) {
-      std::vector<char> bytes(b64_dec_len(b64.data(), b64.size()));
-      b64_decode(b64.data(), b64.size(), bytes.data());
+    .class_function("deserialize", emscripten::optional_override([](const std::string& bytes) {
       return new kll_sketch_float(kll_sketch_float::deserialize(bytes.data(), bytes.size()));
     }), emscripten::allow_raw_pointers())
     .function("getN", &kll_sketch_float::get_n)
@@ -75,14 +71,10 @@ EMSCRIPTEN_BINDINGS(kll_sketch_float) {
     }))
     ;
 
-  emscripten::function("kolmogorovSmirnovTest", emscripten::optional_override([](const std::string& sketch1_b64, const std::string& sketch2_b64, double pvalue) {
-    std::vector<char> bytes1(b64_dec_len(sketch1_b64.data(), sketch1_b64.size()));
-    b64_decode(sketch1_b64.data(), sketch1_b64.size(), bytes1.data());
-    std::vector<char> bytes2(b64_dec_len(sketch2_b64.data(), sketch2_b64.size()));
-    b64_decode(sketch2_b64.data(), sketch2_b64.size(), bytes2.data());
+  emscripten::function("kolmogorovSmirnovTest", emscripten::optional_override([](const std::string& sketch_bytes1, const std::string& sketch_bytes2, double pvalue) {
     return datasketches::kolmogorov_smirnov::test(
-      kll_sketch_float::deserialize(bytes1.data(), bytes1.size()),
-      kll_sketch_float::deserialize(bytes2.data(), bytes2.size()),
+      kll_sketch_float::deserialize(sketch_bytes1.data(), sketch_bytes1.size()),
+      kll_sketch_float::deserialize(sketch_bytes2.data(), sketch_bytes2.size()),
       pvalue
     );
   }));

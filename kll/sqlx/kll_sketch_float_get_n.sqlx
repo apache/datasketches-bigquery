@@ -24,6 +24,7 @@ RETURNS INT64
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/kll_sketch.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Returns the length of the input stream.
 
 Param sketch: the given sketch as BYTES.
@@ -36,12 +37,13 @@ For more information:
 try {
   var sketchObject = null;
   try {
-    sketchObject = Module.kll_sketch_float.deserializeFromB64(sketch);
+    sketchObject = Module.kll_sketch_float.deserialize(sketch);
     return sketchObject.getN();
   } finally {
     if (sketchObject != null) sketchObject.delete();
   }
 } catch (e) {
+  if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
 }
 """;

@@ -24,6 +24,7 @@ RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/kll_sketch.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Returns an approximation to the normalized rank, on the interval [0.0, 1.0], of the given value.
 
 Param sketch: the given sketch in serialized form.
@@ -38,13 +39,14 @@ For more information:
 try {
   var sketchObject = null;
   try {
-    sketchObject = Module.kll_sketch_float.deserializeFromB64(sketch);
+    sketchObject = Module.kll_sketch_float.deserialize(sketch);
     if (sketchObject.isEmpty()) return null;
     return sketchObject.getRank(value, inclusive);
   } finally {
     if (sketchObject != null) sketchObject.delete();
   }
 } catch (e) {
+  if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
 }
 """;

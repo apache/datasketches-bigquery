@@ -24,6 +24,7 @@ RETURNS BOOL
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/kll_sketch.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Performs the Kolmogorov-Smirnov Test between two KLL sketches of type FLOAT64.
 If the given sketches have insufficient data or if the sketch sizes are too small, this will return false.
 
@@ -40,6 +41,7 @@ For more information:
 try {
   return Module.kolmogorovSmirnovTest(sketchA, sketchB, pvalue);
 } catch (e) {
+  if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
 }
 """;
