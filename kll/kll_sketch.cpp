@@ -46,7 +46,7 @@ EMSCRIPTEN_BINDINGS(kll_sketch_float) {
     }))
     .function("mergeBytes", emscripten::optional_override([](kll_sketch_float& self, const std::string& bytes) {
       self.merge(kll_sketch_float::deserialize(bytes.data(), bytes.size()));
-    }), emscripten::allow_raw_pointers())
+    }))
     .function("mergeBuffer", emscripten::optional_override([](kll_sketch_float& self, intptr_t bytes, size_t size) {
       self.merge(kll_sketch_float::deserialize(reinterpret_cast<void*>(bytes), size));
     }))
@@ -67,7 +67,7 @@ EMSCRIPTEN_BINDINGS(kll_sketch_float) {
       return self.get_CDF(split_points.data(), split_points.size(), inclusive);
     }))
     .function("toString", emscripten::optional_override([](const kll_sketch_float& self) {
-      return std::string(self.to_string());
+      return self.to_string();
     }))
     ;
 

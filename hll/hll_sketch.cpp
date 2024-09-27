@@ -65,10 +65,10 @@ EMSCRIPTEN_BINDINGS(hll_sketch) {
     }))
     .function("updateWithSketch", emscripten::optional_override([](datasketches::hll_union& self, const datasketches::hll_sketch& sketch) {
       self.update(sketch);
-    }), emscripten::allow_raw_pointers())
+    }))
     .function("updateWithBytes", emscripten::optional_override([](datasketches::hll_union& self, const std::string& bytes) {
       self.update(datasketches::hll_sketch::deserialize(bytes.data(), bytes.size()));
-    }), emscripten::allow_raw_pointers())
+    }))
     .function("getResultAsUint8Array", emscripten::optional_override([](datasketches::hll_union& self, const std::string& tgt_type_str) {
       auto bytes = self.get_result(convert_tgt_type(tgt_type_str)).serialize_compact();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
