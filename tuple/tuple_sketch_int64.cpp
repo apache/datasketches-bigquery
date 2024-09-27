@@ -126,7 +126,7 @@ EMSCRIPTEN_BINDINGS(tuple_sketch_int64) {
       return compact_tuple_sketch_int64::deserialize(sketch_bytes.data(), sketch_bytes.size(), seed).get_estimate();
     }))
     .class_function("toString", emscripten::optional_override([](const std::string& sketch_bytes, uint64_t seed) {
-      return std::string(compact_tuple_sketch_int64::deserialize(sketch_bytes.data(), sketch_bytes.size(), seed).to_string());
+      return compact_tuple_sketch_int64::deserialize(sketch_bytes.data(), sketch_bytes.size(), seed).to_string();
     }))
     .class_function("filterLowHigh", emscripten::optional_override([](const std::string& sketch_bytes, int low, int high, uint64_t seed) {
       auto bytes = compact_tuple_sketch_int64::deserialize(
@@ -143,10 +143,10 @@ EMSCRIPTEN_BINDINGS(tuple_sketch_int64) {
     }))
     .function("updateWithCompactSketch", emscripten::optional_override([](tuple_union_int64& self, const compact_tuple_sketch_int64& sketch) {
       self.update(sketch);
-    }), emscripten::allow_raw_pointers())
+    }))
     .function("updateWithBytes", emscripten::optional_override([](tuple_union_int64& self, const std::string& bytes, uint64_t seed) {
       self.update(compact_tuple_sketch_int64::deserialize(bytes.data(), bytes.size(), seed));
-    }), emscripten::allow_raw_pointers())
+    }))
     .function("getResultAsUint8Array", emscripten::optional_override([](tuple_union_int64& self) {
       auto bytes = self.get_result().serialize();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));

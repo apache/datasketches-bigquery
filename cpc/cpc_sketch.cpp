@@ -62,10 +62,10 @@ EMSCRIPTEN_BINDINGS(cpc_sketch) {
     }))
     .function("updateWithSketch", emscripten::optional_override([](datasketches::cpc_union& self, const datasketches::cpc_sketch& sketch) {
       self.update(sketch);
-    }), emscripten::allow_raw_pointers())
+    }))
     .function("updateWithBytes", emscripten::optional_override([](datasketches::cpc_union& self, const std::string& bytes, uint64_t seed) {
       self.update(datasketches::cpc_sketch::deserialize(bytes.data(), bytes.size(), seed));
-    }), emscripten::allow_raw_pointers())
+    }))
     .function("getResultAsUint8Array", emscripten::optional_override([](datasketches::cpc_union& self) {
       auto bytes = self.get_result().serialize();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
