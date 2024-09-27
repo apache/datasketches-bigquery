@@ -45,9 +45,9 @@ select $BQ_DATASET.hll_sketch_to_string(
 create or replace table $BQ_DATASET.hll_sketch(sketch bytes);
 
 insert into $BQ_DATASET.hll_sketch
-(select $BQ_DATASET.hll_sketch_agg_string(cast(value as string)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+(select $BQ_DATASET.hll_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
 insert into $BQ_DATASET.hll_sketch
-(select $BQ_DATASET.hll_sketch_agg_string(cast(value as string)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+(select $BQ_DATASET.hll_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
 # expected estimate about 20000
 select $BQ_DATASET.hll_sketch_to_string(
@@ -63,9 +63,9 @@ drop table $BQ_DATASET.hll_sketch;
 create or replace table $BQ_DATASET.hll_sketch(sketch bytes);
 
 insert into $BQ_DATASET.hll_sketch
-(select $BQ_DATASET.hll_sketch_agg_string_lgk_type(cast(value as string), struct<int, string>(8, "HLL_6")) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+(select $BQ_DATASET.hll_sketch_agg_int64_lgk_type(value, struct<int, string>(8, "HLL_6")) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
 insert into $BQ_DATASET.hll_sketch
-(select $BQ_DATASET.hll_sketch_agg_string_lgk_type(cast(value as string), struct<int, string>(8, "HLL_6")) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+(select $BQ_DATASET.hll_sketch_agg_int64_lgk_type(value, struct<int, string>(8, "HLL_6")) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
 # expected estimate about 20000
 select $BQ_DATASET.hll_sketch_to_string(

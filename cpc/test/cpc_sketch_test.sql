@@ -42,9 +42,9 @@ select $BQ_DATASET.cpc_sketch_get_estimate_seed(
 create or replace table $BQ_DATASET.cpc_sketch(sketch bytes);
 
 insert into $BQ_DATASET.cpc_sketch
-(select $BQ_DATASET.cpc_sketch_agg_string(cast(value as string)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+(select $BQ_DATASET.cpc_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
 insert into $BQ_DATASET.cpc_sketch
-(select $BQ_DATASET.cpc_sketch_agg_string(cast(value as string)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+(select $BQ_DATASET.cpc_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
 select $BQ_DATASET.cpc_sketch_to_string(sketch) from $BQ_DATASET.cpc_sketch;
 
@@ -64,9 +64,9 @@ drop table $BQ_DATASET.cpc_sketch;
 create or replace table $BQ_DATASET.cpc_sketch(sketch bytes);
 
 insert into $BQ_DATASET.cpc_sketch
-(select $BQ_DATASET.cpc_sketch_agg_string_lgk_seed(cast(value as string), struct<byteint, int64>(10, 111)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+(select $BQ_DATASET.cpc_sketch_agg_int64_lgk_seed(value, struct<byteint, int64>(10, 111)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
 insert into $BQ_DATASET.cpc_sketch
-(select $BQ_DATASET.cpc_sketch_agg_string_lgk_seed(cast(value as string), struct<byteint, int64>(10, 111)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+(select $BQ_DATASET.cpc_sketch_agg_int64_lgk_seed(value, struct<byteint, int64>(10, 111)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
 select $BQ_DATASET.cpc_sketch_to_string_seed(sketch, 111) from $BQ_DATASET.cpc_sketch;
 

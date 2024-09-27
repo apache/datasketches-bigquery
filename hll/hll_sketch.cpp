@@ -43,6 +43,7 @@ EMSCRIPTEN_BINDINGS(hll_sketch) {
       return new datasketches::hll_sketch(lg_k, convert_tgt_type(tgt_type_str));
     }))
     .function("updateString", emscripten::select_overload<void(const std::string&)>(&datasketches::hll_sketch::update))
+    .function("updateInt64", emscripten::select_overload<void(uint64_t)>(&datasketches::hll_sketch::update))
     .function("serializeAsUint8Array", emscripten::optional_override([](const datasketches::hll_sketch& self) {
       auto bytes = self.serialize_compact();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));

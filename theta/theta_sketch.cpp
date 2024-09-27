@@ -50,6 +50,7 @@ EMSCRIPTEN_BINDINGS(theta_sketch) {
       return new update_theta_sketch(update_theta_sketch::builder().set_lg_k(lg_k).set_seed(seed).set_p(p).build());
     }))
     .function("updateString", emscripten::select_overload<void(const std::string&)>(&update_theta_sketch::update))
+    .function("updateInt64", emscripten::select_overload<void(uint64_t)>(&update_theta_sketch::update))
     .function("serializeAsUint8ArrayCompressed", emscripten::optional_override([](const update_theta_sketch& self) {
       auto bytes = self.compact().serialize_compressed();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
