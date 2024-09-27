@@ -24,6 +24,7 @@ RETURNS STRING
 LANGUAGE js
 OPTIONS (
   library=["gs://$GCS_BUCKET/kll_sketch.js"],
+  js_parameter_encoding_mode='STANDARD',
   description = '''Returns a summary string that represents the state of the given sketch.
 
 Param sketch: the given sketch as sketch encoded bytes.
@@ -36,12 +37,13 @@ For more information:
 try {
   var sketchObject = null;
   try {
-    sketchObject = Module.kll_sketch_float.deserializeFromB64(sketch);
+    sketchObject = Module.kll_sketch_float.deserialize(sketch);
     return sketchObject.toString();
   } finally {
     if (sketchObject != null) sketchObject.delete();
   }
 } catch (e) {
+  if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
 }
 """;
