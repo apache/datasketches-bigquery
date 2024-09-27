@@ -17,7 +17,7 @@
     under the License.
 -->
 
-# HyperLogLog (HLL) Sketches
-Functions for distinct counting based on [HLL sketches](https://datasketches.apache.org/docs/HLL/HllSketches.html)
+# Tuple Sketches
+Functions for distinct counting, set operations, subset sampling and other various applications based on [Tuple sketches](https://datasketches.apache.org/docs/Tuple/TupleSketches.html)
 
 See tests for usage examples.
