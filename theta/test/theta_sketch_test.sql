@@ -21,9 +21,9 @@
 create or replace table $BQ_DATASET.theta_sketch(sketch bytes);
 
 insert into $BQ_DATASET.theta_sketch
-(select $BQ_DATASET.theta_sketch_agg_string(cast(value as string)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+(select $BQ_DATASET.theta_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
 insert into $BQ_DATASET.theta_sketch
-(select $BQ_DATASET.theta_sketch_agg_string(cast(value as string)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+(select $BQ_DATASET.theta_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
 # expected about 20000
 select $BQ_DATASET.theta_sketch_get_estimate_and_bounds(
@@ -42,9 +42,9 @@ drop table $BQ_DATASET.theta_sketch;
 create or replace table $BQ_DATASET.theta_sketch(sketch bytes);
 
 insert into $BQ_DATASET.theta_sketch
-(select $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(cast(value as string), struct<int, int, float64>(14, 111, 0.9)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+(select $BQ_DATASET.theta_sketch_agg_int64_lgk_seed_p(value, struct<int, int, float64>(14, 111, 0.9)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
 insert into $BQ_DATASET.theta_sketch
-(select $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(cast(value as string), struct<int, int, float64>(14, 111, 0.9)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+(select $BQ_DATASET.theta_sketch_agg_int64_lgk_seed_p(value, struct<int, int, float64>(14, 111, 0.9)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
 # expected about 20000
 select $BQ_DATASET.theta_sketch_get_estimate_and_bounds_seed(

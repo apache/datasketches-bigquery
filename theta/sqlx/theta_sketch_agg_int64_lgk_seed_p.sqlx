@@ -1,0 +1,132 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+config { hasOutput: true }
+
+CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(value INT64, params STRUCT<lg_k BYTEINT, seed INT64, p FLOAT64> NOT AGGREGATE)
+RETURNS BYTES 
+LANGUAGE js
+OPTIONS (
+  library=["gs://$GCS_BUCKET/theta_sketch.mjs"],
+  description = '''Creates a sketch that represents the cardinality of the given INT64 column.
+
+Param value: the INT64 column of identifiers.
+Param lg_k: the sketch accuracy/size parameter as a BYTEINT in the range [4, 26]. A NULL specifies the default of 12.
+Param seed: the seed to be used by the underlying hash function. A NULL specifies the default of 9001.
+Param p: up-front sampling probability. A NULL specifies the default of 1.0.
+Returns: a Compact, Compressed Theta Sketch, as BYTES.
+
+For more information:
+ - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
+ '''
+) AS R"""
+import ModuleFactory from "gs://$GCS_BUCKET/theta_sketch.mjs";
+var Module = await ModuleFactory();
+const default_lg_k = Number(Module.DEFAULT_LG_K);
+const default_seed = BigInt(Module.DEFAULT_SEED);
+const default_p = 1.0;
+
+function destroyState(state) {
+  if (state.sketch) {
+    state.sketch.delete();
+    state.sketch = null;
+  }
+  if (state.union) {
+    state.union.delete();
+    state.union = null;
+  }
+  state.serialized = null;
+}
+
+// UDAF interface
+export function initialState(params) {
+  var state = {
+    lg_k: params.lg_k == null ? default_lg_k : Number(params.lg_k),
+    seed: params.seed == null ? default_seed : BigInt(params.seed),
+    p: params.p == null ? default_p : params.p
+  };
+  state.sketch = new Module.update_theta_sketch(state.lg_k, state.seed, state.p);
+  return state;
+}
+
+export function aggregate(state, value) {
+  if (state.sketch == null) {
+    state.sketch = new Module.update_theta_sketch(state.lg_k, state.seed, state.p);
+  }
+  state.sketch.updateInt64(value);
+}
+
+export function serialize(state) {
+  if (state.sketch == null && state.union == null) return state; // for transition deserialize-serialize
+  try {
+    // for prior transition deserialize-aggregate
+    // merge aggregated and serialized state
+    if (state.sketch != null && state.serialized != null) {
+      var u = null;
+      try {
+        u = new Module.theta_union(state.lg_k, state.seed);
+        u.updateWithUpdateSketch(state.sketch);
+        u.updateWithBytes(state.serialized, state.seed);
+        state.serialized = u.getResultAsUint8ArrayCompressed();
+      } finally {
+        if (u != null) u.delete();
+      }
+    } else if (state.sketch != null) {
+      state.serialized = state.sketch.serializeAsUint8ArrayCompressed();
+    } else if (state.union != null) {
+      state.serialized = state.union.getResultAsUint8ArrayCompressed();
+    }
+    return {
+      lg_k: state.lg_k,
+      seed: state.seed,
+      serialized: state.serialized
+    };
+  } catch (e) {
+    throw new Error(Module.getExceptionMessage(e));
+  } finally {
+    destroyState(state);
+  }
+}
+
+export function deserialize(state) {
+  return state;
+}
+
+export function merge(state, other_state) {
+  try {
+    if (!state.union) {
+      state.union = new Module.theta_union(state.lg_k, state.seed);
+    }
+    if (state.serialized) {
+      state.union.updateWithBytes(state.serialized, state.seed);
+      state.serialized = null;
+    }
+    if (other_state.serialized) {
+      state.union.updateWithBytes(other_state.serialized, state.seed);
+      other_state.serialized = null;
+    }
+  } catch (e) {
+    throw new Error(Module.getExceptionMessage(e));
+  }
+}
+
+export function finalize(state) {
+  return serialize(state).serialized
+}
+""";
