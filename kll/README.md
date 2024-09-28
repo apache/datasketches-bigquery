@@ -17,28 +17,16 @@
     under the License.
 -->
 
-# Apache DataSketches functions for Google Cloud BigQuery 
+# Apache DataSketches KLL Sketches for GCP/BigQuery
 
-[User-Defined Aggregate Functions (UDAFs)](https://cloud.google.com/bigquery/docs/user-defined-aggregates) and
-[non-aggregate (scalar) functions (UDFs)](https://cloud.google.com/bigquery/docs/user-defined-functions) for BigQuery SQL engine.
+Please visit 
+[KLL Sketches](https://datasketches.apache.org/docs/KLL/KLLSketch.html) 
+for more information about this sketch family.
 
-Please visit the main [Apache DataSketches website](https://datasketches.apache.org) for more information about DataSketches library.
+Please visit the main 
+[Apache DataSketches website](https://datasketches.apache.org) 
+for more information about DataSketches library.
 
-If you are interested in making contributions to this project please see our [Community](https://datasketches.apache.org/docs/Community/) page for how to contact us.
-
-## Building
-
-- Requires [Emscripten (emcc compiler)](https://emscripten.org/)
-- Requires a link to [datasketches-cpp](https://github.com/apache/datasketches-cpp) in this directory
-
-## Example
-
-	select `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_get_estimate(
-	  `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_scalar_union(
-	    (select `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(value, struct<int, int64>(null, null)) from unnest(["1", "2", "3"]) as value),
-	    (select `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(value, struct<int, int64>(null, null)) from unnest(["3", "4", "5"]) as value),
-	    null, null
-	  ), null
-	);
-	
-	result: 5
+If you are interested in making contributions to this project please see our 
+[Community](https://datasketches.apache.org/docs/Community/) 
+page for how to contact us.

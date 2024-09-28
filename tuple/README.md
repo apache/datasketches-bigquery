@@ -17,10 +17,10 @@
     under the License.
 -->
 
-# Apache DataSketches Theta Sketches for GCP/BigQuery 
+# Apache DataSketches Tuple Sketches for GCP/BigQuery 
 
 Please visit 
-[Theta Sketches](https://datasketches.apache.org/docs/Theta/ThetaSketches.html) 
+[Tuple Sketches](https://datasketches.apache.org/docs/Tuple/TupleSketches.html) 
 for more information about this sketch family.
 
 Please visit the main 
@@ -30,3 +30,4 @@ for more information about DataSketches library.
 If you are interested in making contributions to this project please see our 
 [Community](https://datasketches.apache.org/docs/Community/) 
 page for how to contact us.
+

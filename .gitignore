@@ -1,6 +1,7 @@
 # Eclipse project files 
-.project
-.settings/
+**/.project
+**/.settings/
+**/.classpath
 
 # OSX files
 **/.DS_Store
