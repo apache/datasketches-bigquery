@@ -17,19 +17,16 @@
     under the License.
 -->
 
-# Apache DataSketches functions for Google Cloud BigQuery 
+# Apache DataSketches HLL Sketches for GCP/BigQuery 
 
-Functions to support HLL sketch and union operations.
+Please visit 
+[HLL Sketches](https://datasketches.apache.org/docs/HLL/HllSketches.html) 
+for more information about this sketch family.
 
-## Example
+Please visit the main 
+[Apache DataSketches website](https://datasketches.apache.org) 
+for more information about DataSketches library.
 
-	select t.hll_sketch_get_estimate(
-	  t.hll_sketch_scalar_union(
-	    (select t.hll_sketch_agg_string(str, struct<int, string>(10, "HLL_8")) from unnest(["a", "b", "c"]) as str),
-	    (select t.hll_sketch_agg_string(str, struct<int, string>(10, "HLL_8")) from unnest(["c", "d", "e"]) as str),
-	    10,
-	    "HLL_8"
-	  )
-	);
-	
-	result: 5
+If you are interested in making contributions to this project please see our 
+[Community](https://datasketches.apache.org/docs/Community/) 
+page for how to contact us.
