@@ -83,7 +83,7 @@ under the License.
   </developers>
 
   <properties>
-    <org-json.version>20230227</org-json.version> <!-- 20231013 -->
+    <org-json.version>20231013</org-json.version> <!-- 20231013 -->
 
     <!-- Test -->
     <testng.version>7.5.1</testng.version>
