@@ -25,7 +25,7 @@ OPTIONS (
   description = '''Returns a summary string that represents the state of the given sketch.
 
 Param sketch the given sketch as BYTES.
-Default seed.
+Defaults: seed = 9001.
 Returns: a STRING that represents the state of the given sketch.
 
 For more information:

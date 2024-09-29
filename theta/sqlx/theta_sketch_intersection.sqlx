@@ -26,7 +26,7 @@ OPTIONS (
 
 Param sketchA: the first sketch as BYTES.
 Param sketchB: the second sketch as BYTES.
-Default seed.
+Defaults: seed = 9001.
 Returns: a Compact, Compressed Theta Sketch, as BYTES.
 
 For more information:

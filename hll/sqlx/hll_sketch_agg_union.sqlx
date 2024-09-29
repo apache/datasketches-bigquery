@@ -25,7 +25,7 @@ OPTIONS (
   description = '''Creates a sketch that represents the union of the given column of sketches.
 
 Param sketch: the column of sketches. Each as BYTES.
-Default lg_k and tgt_type.
+Defaults: lg_k = 12, tgt_type = HLL_4.
 Returns: an HLL Sketch, as BYTES.
 
 For more information:

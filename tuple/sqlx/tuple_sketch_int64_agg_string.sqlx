@@ -29,10 +29,7 @@ This function only applies to Tuple Sketches with an STRING Key column and an IN
  
 Param key: the STRING column of identifiers. This may not be NULL.
 Param value: the INT64 value column associated with each key. This may not be NULL.
-Assumed Default Param lg_k: 12
-Assumed Default Param seed: 9001
-Assumed Default Param p: 1.0
-Assumed Default Param mode: SUM.
+Defaults: lg_k = 12, seed = 9001, p = 1.0, mode = SUM.
 Returns: a Compact Tuple Sketch as BYTES.
 
 For more information:

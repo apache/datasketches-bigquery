@@ -25,7 +25,7 @@ OPTIONS (
   description = '''Creates a sketch that represents the cardinality of the given STRING column.
 
 Param str: the STRING column of identifiers.
-Default lg_k and tgt_type.
+Defaults: lg_k = 12, tgt_type = HLL_4.
 Returns: an HLL Sketch, as BYTES.
 
 For more information:
