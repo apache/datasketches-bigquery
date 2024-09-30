@@ -25,9 +25,7 @@ OPTIONS (
   description = '''Creates a sketch that represents the cardinality of the given INT64 column.
   
 Param value: the INT64 column of identifiers.
-Param lg_k: assume default = 12
-Param seed: assume default = 9001
-Param p: assume default = 1.0
+Defaults: lg_k = 12, seed = 9001, p = 1.0.
 Returns: a Compact, Compressed Theta Sketch, as BYTES. 
 
 For more information:

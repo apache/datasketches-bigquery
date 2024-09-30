@@ -28,7 +28,7 @@ This function only applies to Tuple Sketches with an INT64 summary column.
   
 Param sketchA: the first sketch "A" as BYTES. This may not be NULL.
 Param sketchB: the second sketch "B" as BYTES. This may not be NULL.
-Assumed Default Param seed: 9001
+Defaults: seed = 9001.
 Returns: a Compact Tuple Sketch as BYTES.
 
 For more information:

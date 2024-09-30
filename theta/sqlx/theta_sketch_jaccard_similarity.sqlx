@@ -29,7 +29,7 @@ A Jaccard of .95 means the overlap between the two sets is 95% of the union of t
 
 Param sketchA: the first sketch as bytes.
 Param sketchB: the second sketch as bytes.
-Default seed.
+Defaults: seed = 9001.
 Returns: a STRUCT with three FLOAT64 values {lower_bound, estimate, upper_bound} of the Jaccard index.
 
 For more information:

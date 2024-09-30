@@ -28,7 +28,7 @@ Note that cardinality estimation accuracy, plots, and error tables are the same 
 This function only applies to Tuple Sketches with an INT64 summary column.
   
 Param sketch: the given Tuple Sketch. This may not be NULL.
-Assumed Default Param seed: 9001.
+Defaults: seed = 9001.
 Returns: the cardinality estimate of the given Tuple Sketch
 
 For more information:

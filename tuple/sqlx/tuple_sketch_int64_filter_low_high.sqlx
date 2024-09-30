@@ -31,7 +31,7 @@ This function only applies to Tuple Sketches with an INT64 summary column.
 Param sketch: the given Tuple Sketch. This may not be NULL.
 Param low: the given low INT64. This may not be NULL.
 Param high: the given high INT64. This may not be NULL.
-Assumed Default Param seed: 9001.
+Defaults: seed = 9001.
 Returns: a Compact Tuple Sketch as BYTES.
 
 For more information:

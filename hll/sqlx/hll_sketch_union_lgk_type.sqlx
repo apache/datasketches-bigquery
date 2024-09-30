@@ -26,6 +26,7 @@ OPTIONS (
   library=["gs://$GCS_BUCKET/hll_sketch.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Computes a sketch that represents the union of the two given sketches.
+
 Param sketchA: the first sketch as bytes.
 Param sketchB: the second sketch as bytes.
 Param lg_k: the sketch accuracy/size parameter as an integer in the range [4, 21].

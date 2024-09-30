@@ -23,9 +23,10 @@ CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES)
 RETURNS BYTES
 OPTIONS (
   description = '''Computes a sketch that represents the union of the two given sketches.
+
 Param sketchA: the first sketch as bytes.
 Param sketchB: the second sketch as bytes.
-Default lg_k and tgt_type
+Defaults: lg_k = 12, tgt_type = HLL_4.
 Returns: an HLL Sketch, as BYTES.
 
 For more information:
