@@ -17,7 +17,7 @@
     under the License.
 -->
 
-# Apache DataSketches library functions for GCP/BigQuery 
+# Apache DataSketches library functions for Google BigQuery 
 
 [User-Defined Aggregate Functions (UDAFs)](https://cloud.google.com/bigquery/docs/user-defined-aggregates) and
 [non-aggregate (scalar) functions (UDFs)](https://cloud.google.com/bigquery/docs/user-defined-functions) for BigQuery SQL engine.
@@ -30,26 +30,27 @@ If you are interested in making contributions to this project please see our
 [Community](https://datasketches.apache.org/docs/Community/) 
 page for how to contact us.
 
-## Building
+## Requirements
 
 - Requires [Emscripten (emcc compiler)](https://emscripten.org/)
 - Requires a link to **/datasketches-cpp** in this repository
 - Requires make utility
-
-## Installing and testing
-
 - Requires [Google Cloud CLI](https://cloud.google.com/sdk/docs/install)
-- Requires setting environment variables GCS\_BUCKET (to upload artifacts) and BQ\_DATASET (to create functions and run tests)
 
 
-## Example
+## Building, Installing, and Testing
 
-	select `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_get_estimate(
-	  `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_scalar_union(
-	    (select `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(value, struct<int, int64>(null, null)) from unnest(["1", "2", "3"]) as value),
-	    (select `$BQ_PROJECT.$BQ_DATASET`.theta_sketch_agg_string(value, struct<int, int64>(null, null)) from unnest(["3", "4", "5"]) as value),
-	    null, null
-	  ), null
-	);
-	
-	result: 5
+- Requires setting environment variables 
+    - GCS_BUCKET: to hold compiled artifacts
+    - BQ_DATASET: location of stored SQL functions (routines)
+
+```
+make          # performs compilation
+make install  # upload to $GCS_BUCKET & create functions in $BQ_DATASET
+make test     # runs predefined tests in BQ
+```
+
+The above steps can be executed in the root directory to install everything, or can be run from an individual sketch directory to install only that particular sketch.
+
+## Examples
+For examples see test directories in individual sketch directories.
