@@ -59,13 +59,10 @@ try {
   var sketchObject = null;
   try {
     sketchObject = Module.kll_sketch_float.deserialize(sketch);
+    if (sketchObject.isEmpty()) return null;
     var vectorFloat = new Module.VectorFloat();
     split_points.forEach(value => vectorFloat.push_back(value));
-    if (sketchObject.isEmpty()) return null;
-    var pmf = sketchObject.getPMF(vectorFloat, inclusive);
-    var array = [];
-    for (let i = 0; i < pmf.size(); i++) array.push(pmf.get(i));
-    return array;
+    return sketchObject.getPMF(vectorFloat, inclusive);
   } finally {
     if (sketchObject != null) sketchObject.delete();
   }

@@ -20,19 +20,30 @@
 config { hasOutput: true }
 
 CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES)
-RETURNS FLOAT64
+RETURNS INT64
+LANGUAGE js
 OPTIONS (
-  description = '''Returns the cardinality estimate of the given Tuple Sketch.
-Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.
-This function only applies to Tuple Sketches with an INT64 summary column.
-  
-Param sketch: the given Tuple Sketch. This may not be NULL.
-Defaults: seed = 9001.
-Returns: the cardinality estimate of the given Tuple Sketch
+  library=["gs://$GCS_BUCKET/kll_sketch.js"],
+  js_parameter_encoding_mode='STANDARD',
+  description = '''Returns the number of retained items (samples) in the sketch.
+
+Param sketch: the given sketch as BYTES.
+Returns: number of retained items as INT64
 
 For more information:
- - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
+ - https://datasketches.apache.org/docs/KLL/KLLSketch.html
 '''
-) AS (
-  $BQ_DATASET.tuple_sketch_int64_get_estimate_seed(sketch, NULL)
-);
+) AS R"""
+try {
+  var sketchObject = null;
+  try {
+    sketchObject = Module.kll_sketch_float.deserialize(sketch);
+    return sketchObject.getNumRetained();
+  } finally {
+    if (sketchObject != null) sketchObject.delete();
+  }
+} catch (e) {
+  if (e.message != null) throw e;
+  throw new Error(Module.getExceptionMessage(e));
+}
+""";

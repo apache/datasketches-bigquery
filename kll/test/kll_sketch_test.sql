@@ -41,7 +41,18 @@ select $BQ_DATASET.kll_sketch_float_get_pmf($BQ_DATASET.kll_sketch_float_merge(s
 # expected 0.5, 1
 select $BQ_DATASET.kll_sketch_float_get_cdf($BQ_DATASET.kll_sketch_float_merge(sketch, null), [10.0], true) from $BQ_DATASET.kll_sketch;
 
+# expected 1
+select $BQ_DATASET.kll_sketch_float_get_min_value($BQ_DATASET.kll_sketch_float_merge(sketch, null)) from $BQ_DATASET.kll_sketch;
+
+# expected 20
+select $BQ_DATASET.kll_sketch_float_get_max_value($BQ_DATASET.kll_sketch_float_merge(sketch, null)) from $BQ_DATASET.kll_sketch;
+
 drop table $BQ_DATASET.kll_sketch;
+
+# expected about 1.3%
+select $BQ_DATASET.kll_sketch_float_get_normalized_rank_error($BQ_DATASET.kll_sketch_float_build(value, null), false) from unnest(generate_array(1, 10000)) as value;
+
+select $BQ_DATASET.kll_sketch_float_get_num_retained($BQ_DATASET.kll_sketch_float_build(value, null)) from unnest(generate_array(1, 10000)) as value;
 
 # expected false
 select $BQ_DATASET.kll_sketch_float_kolmogorov_smirnov(

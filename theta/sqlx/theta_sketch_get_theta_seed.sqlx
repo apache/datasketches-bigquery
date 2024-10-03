@@ -19,20 +19,27 @@
 
 config { hasOutput: true }
 
-CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES)
+CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, seed INT64)
 RETURNS FLOAT64
+LANGUAGE js
 OPTIONS (
-  description = '''Returns the cardinality estimate of the given Tuple Sketch.
-Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.
-This function only applies to Tuple Sketches with an INT64 summary column.
+  library=["gs://$GCS_BUCKET/theta_sketch.js"],
+  js_parameter_encoding_mode='STANDARD',
+  description = '''Returns theta (effective sampling rate) as a fraction from 0 to 1.
   
-Param sketch: the given Tuple Sketch. This may not be NULL.
-Defaults: seed = 9001.
-Returns: the cardinality estimate of the given Tuple Sketch
+Param sketch: The given sketch to query as BYTES.
+Param seed: This is used to confirm that the given sketch was configured with the correct seed.
+Returns: theta as FLOAT64.
 
 For more information:
- - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
+ - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
 '''
-) AS (
-  $BQ_DATASET.tuple_sketch_int64_get_estimate_seed(sketch, NULL)
-);
+) AS R"""
+const default_seed = BigInt(Module.DEFAULT_SEED);
+try {
+  return Module.compact_theta_sketch.getThetaFromBytes(sketch, seed ? BigInt(seed) : default_seed);
+} catch (e) {
+  if (e.message != null) throw e;
+  throw new Error(Module.getExceptionMessage(e));
+}
+""";

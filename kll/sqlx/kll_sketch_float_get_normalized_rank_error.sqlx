@@ -1,0 +1,50 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+config { hasOutput: true }
+
+CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, pmf BOOL)
+RETURNS FLOAT64
+LANGUAGE js
+OPTIONS (
+  library=["gs://$GCS_BUCKET/kll_sketch.js"],
+  js_parameter_encoding_mode='STANDARD',
+  description = '''Returns the approximate rank error of the given sketch normalized as a fraction between zero and one.
+Param sketch: the given sketch as BYTES.
+Param pmf: if true, returns the "double-sided" normalized rank error for the get_PMF() function.
+Otherwise, it is the "single-sided" normalized rank error for all the other queries.
+Returns: normalized rank error as FLOAT64
+
+For more information:
+ - https://datasketches.apache.org/docs/KLL/KLLSketch.html
+'''
+) AS R"""
+try {
+  var sketchObject = null;
+  try {
+    sketchObject = Module.kll_sketch_float.deserialize(sketch);
+    return sketchObject.getNormalizedRankError(pmf);
+  } finally {
+    if (sketchObject != null) sketchObject.delete();
+  }
+} catch (e) {
+  if (e.message != null) throw e;
+  throw new Error(Module.getExceptionMessage(e));
+}
+""";

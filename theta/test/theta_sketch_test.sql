@@ -36,6 +36,14 @@ select $BQ_DATASET.theta_sketch_to_string(
   $BQ_DATASET.theta_sketch_agg_union(sketch)
 ) from $BQ_DATASET.theta_sketch;
 
+select $BQ_DATASET.theta_sketch_get_theta(
+  $BQ_DATASET.theta_sketch_agg_union(sketch)
+) from $BQ_DATASET.theta_sketch;
+
+select $BQ_DATASET.theta_sketch_get_num_retained(
+  $BQ_DATASET.theta_sketch_agg_union(sketch)
+) from $BQ_DATASET.theta_sketch;
+
 drop table $BQ_DATASET.theta_sketch;
 
 # using full signatures
@@ -55,6 +63,16 @@ select $BQ_DATASET.theta_sketch_get_estimate_and_bounds_seed(
 
 # expected estimate about 20000
 select $BQ_DATASET.theta_sketch_to_string_seed(
+  $BQ_DATASET.theta_sketch_agg_union_lgk_seed(sketch, struct<int, int>(10, 111)),
+  111
+) from $BQ_DATASET.theta_sketch;
+
+select $BQ_DATASET.theta_sketch_get_theta_seed(
+  $BQ_DATASET.theta_sketch_agg_union_lgk_seed(sketch, struct<int, int>(10, 111)),
+  111
+) from $BQ_DATASET.theta_sketch;
+
+select $BQ_DATASET.theta_sketch_get_num_retained_seed(
   $BQ_DATASET.theta_sketch_agg_union_lgk_seed(sketch, struct<int, int>(10, 111)),
   111
 ) from $BQ_DATASET.theta_sketch;

@@ -125,6 +125,12 @@ EMSCRIPTEN_BINDINGS(tuple_sketch_int64) {
     .class_function("getEstimate", emscripten::optional_override([](const std::string& sketch_bytes, uint64_t seed) {
       return compact_tuple_sketch_int64::deserialize(sketch_bytes.data(), sketch_bytes.size(), seed).get_estimate();
     }))
+    .class_function("getTheta", emscripten::optional_override([](const std::string& sketch_bytes, uint64_t seed) {
+      return compact_tuple_sketch_int64::deserialize(sketch_bytes.data(), sketch_bytes.size(), seed).get_theta();
+    }))
+    .class_function("getNumRetained", emscripten::optional_override([](const std::string& sketch_bytes, uint64_t seed) {
+      return compact_tuple_sketch_int64::deserialize(sketch_bytes.data(), sketch_bytes.size(), seed).get_num_retained();
+    }))
     .class_function("toString", emscripten::optional_override([](const std::string& sketch_bytes, uint64_t seed) {
       return compact_tuple_sketch_int64::deserialize(sketch_bytes.data(), sketch_bytes.size(), seed).to_string();
     }))

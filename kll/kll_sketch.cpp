@@ -32,7 +32,6 @@ EMSCRIPTEN_BINDINGS(kll_sketch_float) {
   }));
 
   emscripten::register_vector<float>("VectorFloat");
-  emscripten::register_vector<double>("VectorDouble");
 
   emscripten::constant("DEFAULT_K", datasketches::kll_constants::DEFAULT_K);
 
@@ -44,11 +43,8 @@ EMSCRIPTEN_BINDINGS(kll_sketch_float) {
     .function("update", emscripten::optional_override([](kll_sketch_float& self, float value) {
       self.update(value);
     }))
-    .function("mergeBytes", emscripten::optional_override([](kll_sketch_float& self, const std::string& bytes) {
+    .function("merge", emscripten::optional_override([](kll_sketch_float& self, const std::string& bytes) {
       self.merge(kll_sketch_float::deserialize(bytes.data(), bytes.size()));
-    }))
-    .function("mergeBuffer", emscripten::optional_override([](kll_sketch_float& self, intptr_t bytes, size_t size) {
-      self.merge(kll_sketch_float::deserialize(reinterpret_cast<void*>(bytes), size));
     }))
     .function("serializeAsUint8Array", emscripten::optional_override([](const kll_sketch_float& self) {
       auto bytes = self.serialize();
@@ -58,16 +54,24 @@ EMSCRIPTEN_BINDINGS(kll_sketch_float) {
       return new kll_sketch_float(kll_sketch_float::deserialize(bytes.data(), bytes.size()));
     }), emscripten::allow_raw_pointers())
     .function("getN", &kll_sketch_float::get_n)
+    .function("getNumRetained", &kll_sketch_float::get_num_retained)
+    .function("getMinValue", &kll_sketch_float::get_min_item)
+    .function("getMaxValue", &kll_sketch_float::get_max_item)
     .function("getRank", &kll_sketch_float::get_rank)
     .function("getQuantile", &kll_sketch_float::get_quantile)
     .function("getPMF", emscripten::optional_override([](const kll_sketch_float& self, const std::vector<float>& split_points, bool inclusive) {
-      return self.get_PMF(split_points.data(), split_points.size(), inclusive);
+      const auto pmf = self.get_PMF(split_points.data(), split_points.size(), inclusive);
+      return emscripten::val::array(pmf.begin(), pmf.end());
     }))
     .function("getCDF", emscripten::optional_override([](const kll_sketch_float& self, const std::vector<float>& split_points, bool inclusive) {
-      return self.get_CDF(split_points.data(), split_points.size(), inclusive);
+      const auto cdf = self.get_CDF(split_points.data(), split_points.size(), inclusive);
+      return emscripten::val::array(cdf.begin(), cdf.end());
     }))
     .function("toString", emscripten::optional_override([](const kll_sketch_float& self) {
       return self.to_string();
+    }))
+    .function("getNormalizedRankError", emscripten::optional_override([](const kll_sketch_float& self, bool pmf) {
+      return self.get_normalized_rank_error(pmf);
     }))
     ;
 

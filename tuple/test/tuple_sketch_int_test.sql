@@ -35,6 +35,14 @@ select $BQ_DATASET.tuple_sketch_int64_to_string(
   $BQ_DATASET.tuple_sketch_int64_agg_union(sketch)
 ) from $BQ_DATASET.tuple_sketch;
 
+select $BQ_DATASET.tuple_sketch_int64_get_theta(
+  $BQ_DATASET.tuple_sketch_int64_agg_union(sketch)
+) from $BQ_DATASET.tuple_sketch;
+
+select $BQ_DATASET.tuple_sketch_int64_get_num_retained(
+  $BQ_DATASET.tuple_sketch_int64_agg_union(sketch)
+) from $BQ_DATASET.tuple_sketch;
+
 drop table $BQ_DATASET.tuple_sketch;
 
 # using full signatures
@@ -61,6 +69,16 @@ select $BQ_DATASET.tuple_sketch_int64_get_estimate_seed(
 
 # expected estimate about 20000
 select $BQ_DATASET.tuple_sketch_int64_to_string_seed(
+  $BQ_DATASET.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
+  111
+) from $BQ_DATASET.tuple_sketch;
+
+select $BQ_DATASET.tuple_sketch_int64_get_theta_seed(
+  $BQ_DATASET.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
+  111
+) from $BQ_DATASET.tuple_sketch;
+
+select $BQ_DATASET.tuple_sketch_int64_get_num_retained_seed(
   $BQ_DATASET.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
   111
 ) from $BQ_DATASET.tuple_sketch;
