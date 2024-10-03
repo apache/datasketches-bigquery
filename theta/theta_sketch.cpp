@@ -68,6 +68,12 @@ EMSCRIPTEN_BINDINGS(theta_sketch) {
     .class_function("toStringFromBytes", emscripten::optional_override([](const std::string& bytes, uint64_t seed) {
       return wrapped_compact_theta_sketch::wrap(bytes.data(), bytes.size(), seed).to_string();
     }))
+    .class_function("getThetaFromBytes", emscripten::optional_override([](const std::string& bytes, uint64_t seed) {
+      return wrapped_compact_theta_sketch::wrap(bytes.data(), bytes.size(), seed).get_theta();
+    }))
+    .class_function("getNumRetainedFromBytes", emscripten::optional_override([](const std::string& bytes, uint64_t seed) {
+      return wrapped_compact_theta_sketch::wrap(bytes.data(), bytes.size(), seed).get_num_retained();
+    }))
     .class_function("getMaxSerializedSizeBytes", &compact_theta_sketch::get_max_serialized_size_bytes)
     ;
 

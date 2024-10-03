@@ -57,13 +57,10 @@ try {
   var sketchObject = null;
   try {
     sketchObject = Module.kll_sketch_float.deserialize(sketch);
+    if (sketchObject.isEmpty()) return null;
     var vectorFloat = new Module.VectorFloat();
     split_points.forEach(value => vectorFloat.push_back(value));
-    if (sketchObject.isEmpty()) return null;
-    const cdf = sketchObject.getCDF(vectorFloat, inclusive);
-    var array = [];
-    for (let i = 0; i < cdf.size(); i++) array.push(cdf.get(i));
-    return array;
+    return sketchObject.getCDF(vectorFloat, inclusive);
   } finally {
     if (sketchObject != null) sketchObject.delete();
   }
