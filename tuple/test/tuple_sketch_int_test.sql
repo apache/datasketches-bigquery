@@ -30,6 +30,11 @@ select $BQ_DATASET.tuple_sketch_int64_get_estimate(
   $BQ_DATASET.tuple_sketch_int64_agg_union(sketch)
 ) from $BQ_DATASET.tuple_sketch;
 
+select $BQ_DATASET.tuple_sketch_int64_get_estimate_and_bounds(
+  $BQ_DATASET.tuple_sketch_int64_agg_union(sketch),
+  2
+) from $BQ_DATASET.tuple_sketch;
+
 # expected estimate about 20000
 select $BQ_DATASET.tuple_sketch_int64_to_string(
   $BQ_DATASET.tuple_sketch_int64_agg_union(sketch)
@@ -64,6 +69,12 @@ insert into $BQ_DATASET.tuple_sketch
 # expected about 20000
 select $BQ_DATASET.tuple_sketch_int64_get_estimate_seed(
   $BQ_DATASET.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
+  111
+) from $BQ_DATASET.tuple_sketch;
+
+select $BQ_DATASET.tuple_sketch_int64_get_estimate_and_bounds_seed(
+  $BQ_DATASET.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
+  2,
   111
 ) from $BQ_DATASET.tuple_sketch;
 
