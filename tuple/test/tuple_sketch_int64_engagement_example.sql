@@ -1,3 +1,4 @@
+# for details see https://datasketches.apache.org/docs/Tuple/TupleEngagementExample.html
 create temp table raw_data(day int, id int);
 insert into raw_data values
 (1, 0),
