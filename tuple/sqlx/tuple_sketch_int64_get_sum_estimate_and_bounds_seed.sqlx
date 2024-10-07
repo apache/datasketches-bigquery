@@ -1,0 +1,53 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+config { hasOutput: true }
+
+CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, num_std_devs BYTEINT, seed INT64)
+RETURNS STRUCT<sum_estimate FLOAT64, sum_lower_bound FLOAT64, sum_upper_bound FLOAT64>
+LANGUAGE js
+OPTIONS (
+  library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"],
+  js_parameter_encoding_mode='STANDARD',
+  description = '''Returns the estimate and bounds for the sum of the INT64 summary column
+scaled to the original population from the given Tuple Sketch.
+Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.
+This function only applies to Tuple Sketches with an INT64 summary column.
+
+Param sketch: the given Tuple Sketch. This may not be NULL.
+Param num_std_devs: The returned bounds will be based on the statistical confidence interval
+  determined by the given number of standard deviations from the returned estimate.
+  This number may be one of {1,2,3}, where 1 represents 68% confidence,
+  2 represents 95% confidence and 3 represents 99.7% confidence.
+  For example, if the given num_std_devs = 2 and the returned values are {1000, 990, 1010}
+  that means that with 95% confidence, the true value lies within the range [990, 1010].
+Param seed: This is used to confirm that the given sketches were configured with the correct seed. A NULL specifies the default seed = 9001.
+Returns: a STRUCT with three FLOAT64 values as {sum_estimate, sum_lower_bound, sum_upper_bound}.
+
+For more information:
+ - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
+'''
+) AS R"""
+try {
+  return Module.compact_tuple_sketch_int64.getSumEstimateAndBounds(sketch, Number(num_std_devs), seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED));
+} catch (e) {
+  if (e.message != null) throw e;
+  throw new Error(Module.getExceptionMessage(e));
+}
+""";

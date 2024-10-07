@@ -18,6 +18,7 @@
  */
 
 # for details see https://datasketches.apache.org/docs/Tuple/TupleEngagementExample.html
+declare result_sketch bytes;
 create temp table raw_data(day int, id int);
 insert into raw_data values
 (1, 0),
@@ -918,16 +919,22 @@ insert into raw_data values
 (1, 269),
 (1, 270);
 
-with daily_agg as (
-  select day, $BQ_DATASET.tuple_sketch_int64_agg_int64_lgk_seed_p_mode(id, 1, struct<int, int, float64, string>(8, null, null, "ONE")) as sketch from raw_data group by day
-),
-result as (
+# this shows how to aggregate per day first and then union across days
+set result_sketch = (
+  with daily_agg as (
+    select day, $BQ_DATASET.tuple_sketch_int64_agg_int64_lgk_seed_p_mode(id, 1, struct<int, int, float64, string>(8, null, null, "ONE")) as sketch from raw_data group by day
+  )
   select $BQ_DATASET.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, struct<int, int, string>(8, null, "SUM")) as sketch from daily_agg
-),
-num_days as (
-  select n from unnest(generate_array(1, 30)) as n
-)
+);
+
+# engagement histogram with bounds
 select
   n as days_visited,
-  $BQ_DATASET.tuple_sketch_int64_get_estimate_and_bounds($BQ_DATASET.tuple_sketch_int64_filter_low_high(sketch, n, n), 2) as visitors
-from num_days, result;
+  $BQ_DATASET.tuple_sketch_int64_get_estimate_and_bounds($BQ_DATASET.tuple_sketch_int64_filter_low_high(result_sketch, n, n), 2) as visitors
+from unnest(generate_array(1, 30)) as n;
+
+# total estimated number of visitors with bounds
+select $BQ_DATASET.tuple_sketch_int64_get_estimate_and_bounds(result_sketch, 2);
+
+# total estimated number of visits with bounds
+select $BQ_DATASET.tuple_sketch_int64_get_sum_estimate_and_bounds(result_sketch, 2);

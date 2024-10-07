@@ -133,6 +133,17 @@ EMSCRIPTEN_BINDINGS(tuple_sketch_int64) {
       result.set("upper_bound", sketch.get_upper_bound(num_std_devs));
       return result;
     }))
+    .class_function("getSumEstimateAndBounds", emscripten::optional_override([](const std::string& sketch_bytes, uint8_t num_std_devs, uint64_t seed) {
+      const auto sketch = compact_tuple_sketch_int64::deserialize(sketch_bytes.data(), sketch_bytes.size(), seed);
+      uint64_t sum = 0;
+      for (const auto& entry: sketch) sum += entry.second;
+      const double sum_estimate = sum / sketch.get_theta();
+      auto result =  emscripten::val::object();
+      result.set("sum_estimate", sum_estimate);
+      result.set("sum_lower_bound", sketch.get_estimate() > 0 ? (sum_estimate * sketch.get_lower_bound(num_std_devs) / sketch.get_estimate()) : 0);
+      result.set("sum_upper_bound", sketch.get_estimate() > 0 ? (sum_estimate * sketch.get_upper_bound(num_std_devs) / sketch.get_estimate()) : 0);
+      return result;
+    }))
     .class_function("getTheta", emscripten::optional_override([](const std::string& sketch_bytes, uint64_t seed) {
       return compact_tuple_sketch_int64::deserialize(sketch_bytes.data(), sketch_bytes.size(), seed).get_theta();
     }))
