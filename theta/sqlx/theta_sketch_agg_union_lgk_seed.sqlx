@@ -63,7 +63,7 @@ function ensureUnion(state) {
       reserveBuffer(state.serialized.length);
       Module.HEAPU8.subarray(buffer.ptr, buffer.ptr + state.serialized.length).set(state.serialized);
       state.union.updateWithBuffer(buffer.ptr, state.serialized.length, state.seed);
-      state.serialized = null;
+      delete state.serialized;
     }
   } catch (e) {
     if (e.message != null) throw e;
@@ -74,9 +74,7 @@ function ensureUnion(state) {
 export function initialState(params) {
   var state = {
     lg_k: params.lg_k == null ? default_lg_k : Number(params.lg_k),
-    seed: params.seed == null ? default_seed : BigInt(params.seed),
-    union: null,
-    serialized: null
+    seed: params.seed == null ? default_seed : BigInt(params.seed)
   };
   reserveBuffer(Module.compact_theta_sketch.getMaxSerializedSizeBytes(state.lg_k));
   return state;
@@ -113,8 +111,8 @@ export function serialize(state) {
   } finally {
     if (state.union != null) {
       state.union.delete();
+      delete state.union;
     }
-    state.union = null;
   }
 }
 
@@ -129,7 +127,7 @@ export function merge(state, other_state) {
     reserveBuffer(other_state.serialized.length);
     Module.HEAPU8.subarray(buffer.ptr, buffer.ptr + other_state.serialized.length).set(other_state.serialized);
     state.union.updateWithBuffer(buffer.ptr, other_state.serialized.length, other_state.seed);
-    other_state.serialized = null;
+    delete other_state.serialized;
   } catch (e) {
     if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));

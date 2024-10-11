@@ -48,7 +48,7 @@ function ensureUnion(state) {
     }
     if (state.serialized != null) {
       state.union.updateWithBytes(state.serialized, state.seed);
-      state.serialized = null;
+      delete state.serialized;
     }
   } catch (e) {
     if (e.message != null) throw e;
@@ -65,14 +65,13 @@ export function initialState(params) {
 }
 
 export function aggregate(state, sketch) {
-  if (sketch != null) {
-    ensureUnion(state);
-    try {
-      state.union.updateWithBytes(sketch, state.seed);
-    } catch (e) {
-      if (e.message != null) throw e;
-      throw new Error(Module.getExceptionMessage(e));
-    }
+  if (sketch == null) return;
+  ensureUnion(state);
+  try {
+    state.union.updateWithBytes(sketch, state.seed);
+  } catch (e) {
+    if (e.message != null) throw e;
+    throw new Error(Module.getExceptionMessage(e));
   }
 }
 
@@ -81,20 +80,16 @@ export function serialize(state) {
   try {
     if (state.serialized != null) {
       state.union.updateWithBytes(state.serialized, state.seed);
-      state.serialized = null;
     }
-    return {
-      lg_k: state.lg_k,
-      seed: state.seed,
-      mode: state.mode,
-      serialized: state.union.getResultAsUint8Array()
-    };
+    state.serialized = state.union.getResultAsUint8Array();
+    state.union.delete();
+    delete state.union;
+    return state;
   } catch (e) {
     if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));
   } finally {
-    state.union.delete();
-    state.union = null;
+    if (state.union != null) state.union.delete();
   }
 }
 
@@ -104,10 +99,10 @@ export function deserialize(state) {
 
 export function merge(state, other_state) {
   ensureUnion(state);
-  if (other_state.serialized) {
+  if (other_state.serialized != null) {
     try {
       state.union.updateWithBytes(other_state.serialized, other_state.seed);
-      other_state.serialized = null;
+      delete other_state.serialized;
     } catch (e) {
       if (e.message != null) throw e;
       throw new Error(Module.getExceptionMessage(e));
