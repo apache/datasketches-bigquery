@@ -69,18 +69,20 @@ export function serialize(state) {
   try {
     // for prior transition deserialize-aggregate
     // merge aggregated and serialized state
-    if (state.sketch != null && state.serialized != null) {
-      var u = null;
-      try {
-        u = new Module.theta_union(state.lg_k, state.seed);
-        u.updateWithUpdateSketch(state.sketch);
-        u.updateWithBytes(state.serialized, state.seed);
-        state.serialized = u.getResultAsUint8ArrayCompressed();
-      } finally {
-        if (u != null) u.delete();
+    if (state.sketch != null) {
+      if (state.serialized != null) {
+        var u = null;
+        try {
+          u = new Module.theta_union(state.lg_k, state.seed);
+          u.updateWithUpdateSketch(state.sketch);
+          u.updateWithBytes(state.serialized, state.seed);
+          state.serialized = u.getResultAsUint8ArrayCompressed();
+        } finally {
+          if (u != null) u.delete();
+        }
+      } else {
+        state.serialized = state.sketch.serializeAsUint8ArrayCompressed();
       }
-    } else if (state.sketch != null) {
-      state.serialized = state.sketch.serializeAsUint8ArrayCompressed();
       state.sketch.delete();
       delete state.sketch;
     } else if (state.union != null) {
