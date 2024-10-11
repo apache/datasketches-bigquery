@@ -47,31 +47,18 @@ const default_lg_k = Number(Module.DEFAULT_LG_K);
 const default_seed = BigInt(Module.DEFAULT_SEED);
 const default_p = 1.0;
 
-function destroyState(state) {
-  if (state.sketch) {
-    state.sketch.delete();
-    state.sketch = null;
-  }
-  if (state.union) {
-    state.union.delete();
-    state.union = null;
-  }
-  state.serialized = null;
-}
-
 // UDAF interface
 export function initialState(params) {
-  var state = {
+  return {
     lg_k: params.lg_k == null ? default_lg_k : Number(params.lg_k),
     seed: params.seed == null ? default_seed : BigInt(params.seed),
     p: params.p == null ? default_p : params.p,
     mode: params.mode == null ? "" : params.mode
   };
-  state.sketch = new Module.update_tuple_sketch_int64(state.lg_k, state.seed, state.p, state.mode);
-  return state;
 }
 
 export function aggregate(state, key, value) {
+  if (key == null) return;
   try {
     if (state.sketch == null) {
       state.sketch = new Module.update_tuple_sketch_int64(state.lg_k, state.seed, state.p, state.mode);
@@ -88,32 +75,34 @@ export function serialize(state) {
   try {
     // for prior transition deserialize-aggregate
     // merge aggregated and serialized state
-    if (state.sketch != null && state.serialized != null) {
-      var u = null;
-      try {
-        u = new Module.tuple_union_int64(state.lg_k, state.seed, state.mode);
-        u.updateWithUpdateSketch(state.sketch);
-        u.updateWithBytes(state.serialized, state.seed);
-        state.serialized = u.getResultAsUint8Array();
-      } finally {
-        if (u != null) u.delete();
+    if (state.sketch != null) {
+      if (state.serialized != null) {
+        var u = null;
+        try {
+          u = new Module.tuple_union_int64(state.lg_k, state.seed, state.mode);
+          u.updateWithUpdateSketch(state.sketch);
+          u.updateWithBytes(state.serialized, state.seed);
+          state.serialized = u.getResultAsUint8Array();
+        } finally {
+          if (u != null) u.delete();
+        }
+      } else {
+        state.serialized = state.sketch.serializeAsUint8Array();
       }
-    } else if (state.sketch != null) {
-      state.serialized = state.sketch.serializeAsUint8Array();
+      state.sketch.delete();
+      delete state.sketch;
     } else if (state.union != null) {
       state.serialized = state.union.getResultAsUint8Array();
+      state.union.delete();
+      delete state.union;
     }
-    return {
-      lg_k: state.lg_k,
-      seed: state.seed,
-      mode: state.mode,
-      serialized: state.serialized
-    };
+    return state;
   } catch (e) {
     if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));
   } finally {
-    destroyState(state);
+    if (state.sketch != null) state.sketch.delete();
+    if (state.union != null) state.unon.delete();
   }
 }
 
@@ -123,16 +112,16 @@ export function deserialize(state) {
 
 export function merge(state, other_state) {
   try {
-    if (!state.union) {
+    if (state.union == null) {
       state.union = new Module.tuple_union_int64(state.lg_k, state.seed, state.mode);
     }
-    if (state.serialized) {
+    if (state.serialized != null) {
       state.union.updateWithBytes(state.serialized, state.seed);
-      state.serialized = null;
+      delete state.serialized;
     }
-    if (other_state.serialized) {
-      state.union.updateWithBytes(other_state.serialized, state.seed);
-      other_state.serialized = null;
+    if (other_state.serialized != null) {
+      state.union.updateWithBytes(other_state.serialized, other_state.seed);
+      delete other_state.serialized;
     }
   } catch (e) {
     if (e.message != null) throw e;
