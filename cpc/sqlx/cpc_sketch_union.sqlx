@@ -33,5 +33,5 @@ For more information:
  - https://datasketches.apache.org/docs/CPC/CpcSketches.html
 '''
 ) AS (
-  $BQ_DATASET.cpc_sketch_union_lgk_seed(sketchA, sketchB, NULL, NULL)
+  ${ref("cpc_sketch_union_lgk_seed")}(sketchA, sketchB, NULL, NULL)
 );

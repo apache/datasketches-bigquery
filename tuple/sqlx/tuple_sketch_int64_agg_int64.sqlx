@@ -36,5 +36,5 @@ For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
 '''
 ) AS (
-  $BQ_DATASET.tuple_sketch_int64_agg_int64_lgk_seed_p_mode(key, value, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(NULL, NULL, NULL, NULL))
+  ${ref("tuple_sketch_int64_agg_int64_lgk_seed_p_mode")}(key, value, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(NULL, NULL, NULL, NULL))
 );

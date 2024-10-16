@@ -41,5 +41,5 @@ For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
 '''
 ) AS (
-  $BQ_DATASET.tuple_sketch_int64_get_sum_estimate_and_bounds_seed(sketch, num_std_devs, NULL)
+  ${ref("tuple_sketch_int64_get_sum_estimate_and_bounds_seed")}(sketch, num_std_devs, NULL)
 );

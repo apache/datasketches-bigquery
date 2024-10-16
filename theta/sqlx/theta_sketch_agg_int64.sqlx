@@ -32,5 +32,5 @@ For more information:
  - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
  '''
 ) AS (
-  $BQ_DATASET.theta_sketch_agg_int64_lgk_seed_p(value, STRUCT<BYTEINT, INT64, FLOAT64>(NULL, NULL, NULL))
+  ${ref("theta_sketch_agg_int64_lgk_seed_p")}(value, STRUCT<BYTEINT, INT64, FLOAT64>(NULL, NULL, NULL))
 );

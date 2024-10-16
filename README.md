@@ -42,11 +42,12 @@ page for how to contact us.
 
 - Requires setting environment variables 
     - GCS_BUCKET: to hold compiled artifacts
+    - BQ_PROJECT: location of stored SQL functions (routines)
     - BQ_DATASET: location of stored SQL functions (routines)
 
 ```
 make          # performs compilation
-make install  # upload to $GCS_BUCKET & create functions in $BQ_DATASET
+make install  # upload to $GCS_BUCKET & create functions in $BQ_PROJECT.$BQ_DATASET
 make test     # runs predefined tests in BQ
 ```
 

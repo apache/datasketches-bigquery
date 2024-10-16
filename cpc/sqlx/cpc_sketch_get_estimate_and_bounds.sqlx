@@ -35,5 +35,5 @@ For more information:
  - https://datasketches.apache.org/docs/CPC/CpcSketches.html
 '''
 ) AS (
-  $BQ_DATASET.cpc_sketch_get_estimate_and_bounds_seed(sketch, num_std_devs, NULL)
+  ${ref("cpc_sketch_get_estimate_and_bounds_seed")}(sketch, num_std_devs, NULL)
 );

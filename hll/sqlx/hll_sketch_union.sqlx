@@ -33,5 +33,5 @@ For more information:
  - https://datasketches.apache.org/docs/HLL/HllSketches.html
 '''
 ) AS (
-  $BQ_DATASET.hll_sketch_union_lgk_type(sketchA, sketchB, NULL, NULL)
+  ${ref("hll_sketch_union_lgk_type")}(sketchA, sketchB, NULL, NULL)
 );
