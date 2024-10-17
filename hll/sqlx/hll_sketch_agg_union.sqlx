@@ -32,5 +32,5 @@ For more information:
  - https://datasketches.apache.org/docs/HLL/HllSketches.html
 '''
 ) AS (
-  $BQ_DATASET.hll_sketch_agg_union_lgk_type(sketch, STRUCT<BYTEINT, STRING>(NULL, NULL))
+  ${ref("hll_sketch_agg_union_lgk_type")}(sketch, STRUCT<BYTEINT, STRING>(NULL, NULL))
 );

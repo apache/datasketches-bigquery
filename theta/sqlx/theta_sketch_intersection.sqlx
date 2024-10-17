@@ -33,5 +33,5 @@ For more information:
  - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
 '''
 ) AS (
-  $BQ_DATASET.theta_sketch_intersection_seed(sketchA, sketchB, NULL)
+  ${ref("theta_sketch_intersection_seed")}(sketchA, sketchB, NULL)
 );

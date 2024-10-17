@@ -37,5 +37,5 @@ For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
  '''
 ) AS (
-  $BQ_DATASET.tuple_sketch_int64_jaccard_similarity_seed(sketchA, sketchB, null)
+  ${ref("tuple_sketch_int64_jaccard_similarity_seed")}(sketchA, sketchB, null)
 );

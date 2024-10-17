@@ -36,5 +36,5 @@ For more information:
 '''
 ) 
 AS (
-  $BQ_DATASET.tuple_sketch_int64_union_lgk_seed_mode(sketchA, sketchB, NULL, NULL, NULL)
+  ${ref("tuple_sketch_int64_union_lgk_seed_mode")}(sketchA, sketchB, NULL, NULL, NULL)
 );

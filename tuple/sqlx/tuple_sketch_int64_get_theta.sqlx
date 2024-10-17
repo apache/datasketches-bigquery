@@ -34,5 +34,5 @@ For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
 '''
 ) AS (
-  $BQ_DATASET.tuple_sketch_int64_get_theta_seed(sketch, NULL)
+  ${ref("tuple_sketch_int64_get_theta_seed")}(sketch, NULL)
 );
