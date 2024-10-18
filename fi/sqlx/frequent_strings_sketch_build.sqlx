@@ -23,7 +23,7 @@ CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(item STRING, weight INT64, lg_max
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
-  library=["gs://$GCS_BUCKET/fs_sketch.mjs"],
+  library=["gs://$JS_BUCKET/fs_sketch.mjs"],
   description = '''Creates a sketch that represents frequencies of the given column.
 
 Param item: the column of STRING values.
@@ -35,7 +35,7 @@ For more information:
  - https://datasketches.apache.org/docs/Frequency/FrequencySketches.html
 '''
 ) AS R"""
-import ModuleFactory from "gs://$GCS_BUCKET/fs_sketch.mjs";
+import ModuleFactory from "gs://$JS_BUCKET/fs_sketch.mjs";
 var Module = await ModuleFactory();
 
 // UDAF interface
