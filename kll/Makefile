@@ -46,7 +46,7 @@ clean:
 
 upload: all
 	@for file in $(ARTIFACTS); do \
-	  gcloud storage cp $$file gs://$(GCS_BUCKET)/ ; \
+	  gcloud storage cp $$file gs://$(JS_BUCKET)/ ; \
 	done
 
 create:

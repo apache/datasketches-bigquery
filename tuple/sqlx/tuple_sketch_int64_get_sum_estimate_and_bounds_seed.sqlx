@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, num_std_devs BYTEINT, seed IN
 RETURNS STRUCT<sum_estimate FLOAT64, sum_lower_bound FLOAT64, sum_upper_bound FLOAT64>
 LANGUAGE js
 OPTIONS (
-  library=["gs://$GCS_BUCKET/tuple_sketch_int64.js"],
+  library=["gs://$JS_BUCKET/tuple_sketch_int64.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns the estimate and bounds for the sum of the INT64 summary column
 scaled to the original population from the given Tuple Sketch.

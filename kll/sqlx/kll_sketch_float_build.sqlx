@@ -23,7 +23,7 @@ CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(value FLOAT64, k INT NOT AGGREGAT
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
-  library=["gs://$GCS_BUCKET/kll_sketch.mjs"],
+  library=["gs://$JS_BUCKET/kll_sketch.mjs"],
   description = '''Creates a sketch that represents the distribution of the given column.
 
 Param value: the column of FLOAT64 values.
@@ -34,7 +34,7 @@ For more information:
  - https://datasketches.apache.org/docs/KLL/KLLSketch.html
 '''
 ) AS R"""
-import ModuleFactory from "gs://$GCS_BUCKET/kll_sketch.mjs";
+import ModuleFactory from "gs://$JS_BUCKET/kll_sketch.mjs";
 var Module = await ModuleFactory();
 const default_k = Number(Module.DEFAULT_K);
 

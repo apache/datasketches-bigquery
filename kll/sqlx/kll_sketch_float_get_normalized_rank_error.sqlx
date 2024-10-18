@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, pmf BOOL)
 RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (
-  library=["gs://$GCS_BUCKET/kll_sketch.js"],
+  library=["gs://$JS_BUCKET/kll_sketch.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns the approximate rank error of the given sketch normalized as a fraction between zero and one.
 Param sketch: the given sketch as BYTES.
