@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, split_points ARRAY<FLOAT64>, 
 RETURNS ARRAY<FLOAT64>
 LANGUAGE js
 OPTIONS (
-  library=["gs://$JS_BUCKET/kll_sketch.js"],
+  library=["gs://$JS_BUCKET/kll_sketch_float.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns an approximation to the Cumulative Distribution Function (CDF) 
 of the input stream as an array of cumulative probabilities defined by the given split_points.
