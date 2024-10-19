@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, num_std_devs BYTEINT, seed IN
 RETURNS STRUCT<estimate FLOAT64, lower_bound FLOAT64, upper_bound FLOAT64>
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/theta_sketch.js"],
+  library=["${JS_BUCKET}/apache_theta_sketch.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Gets cardinality estimate and bounds from given sketch.
 

@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, seed INT64)
 RETURNS INT
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/theta_sketch.js"],
+  library=["${JS_BUCKET}/apache_theta_sketch.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns the number of retained entries in the given sketch.
   

@@ -31,14 +31,14 @@ ARTIFACTS=theta_sketch.mjs theta_sketch.js theta_sketch.wasm
 all: $(ARTIFACTS)
 
 %.mjs: %.cpp
-	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o $@
+	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o apache_$@
 
 # this rule creates a non-es6 loadable library
 %.js: %.cpp
-	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o $@
+	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o apache_$@
 
 %.wasm: %.cpp
-	$(EMCC) $< $(EMCFLAGS) -sSTANDALONE_WASM=1 -o $@
+	$(EMCC) $< $(EMCFLAGS) -sSTANDALONE_WASM=1 -o apache_$@
 
 clean:
 	$(RM) $(ARTIFACTS)

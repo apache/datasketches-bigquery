@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, seed INT64)
 RETURNS STRING
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/theta_sketch.js"],
+  library=["${JS_BUCKET}/apache_theta_sketch.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns a summary string that represents the state of the given sketch.
 

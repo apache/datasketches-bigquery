@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES, seed INT64)
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/theta_sketch.js"],
+  library=["${JS_BUCKET}/apache_theta_sketch.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Computes a sketch that represents the scalar intersection of the two given sketches.
 

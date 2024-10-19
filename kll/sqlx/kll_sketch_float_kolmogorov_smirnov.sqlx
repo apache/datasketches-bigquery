@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES, pvalue FLOAT6
 RETURNS BOOL
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/kll_sketch.js"],
+  library=["${JS_BUCKET}/apache_kll_sketch.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Performs the Kolmogorov-Smirnov Test between two KLL sketches of type FLOAT64.
 If the given sketches have insufficient data or if the sketch sizes are too small, this will return false.

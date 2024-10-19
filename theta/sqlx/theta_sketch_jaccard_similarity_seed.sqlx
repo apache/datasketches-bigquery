@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES, seed INT64)
 RETURNS STRUCT<lower_bound FLOAT64, estimate FLOAT64, upper_bound FLOAT64>
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/theta_sketch.js"],
+  library=["${JS_BUCKET}/apache_theta_sketch.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Computes the Jaccard similarity index with upper and lower bounds.
 The Jaccard similarity index J(A,B) = (A ^ B)/(A U B) is used to measure how similar the two sketches are to each other.

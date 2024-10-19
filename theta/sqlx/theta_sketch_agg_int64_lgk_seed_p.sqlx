@@ -23,7 +23,7 @@ CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(value INT64, params STRUCT<lg_k B
 RETURNS BYTES 
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/theta_sketch.mjs"],
+  library=["${JS_BUCKET}/apache_theta_sketch.mjs"],
   description = '''Creates a sketch that represents the cardinality of the given INT64 column.
 
 Param value: the INT64 column of identifiers.
@@ -36,7 +36,7 @@ For more information:
  - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
  '''
 ) AS R"""
-import ModuleFactory from "${JS_BUCKET}/theta_sketch.mjs";
+import ModuleFactory from "${JS_BUCKET}/apache_theta_sketch.mjs";
 var Module = await ModuleFactory();
 const default_lg_k = Number(Module.DEFAULT_LG_K);
 const default_seed = BigInt(Module.DEFAULT_SEED);

@@ -23,7 +23,7 @@ CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(sketch BYTES, lg_max_map_size BYT
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/fs_sketch.mjs"],
+  library=["${JS_BUCKET}/apache_fs_sketch.mjs"],
   description = '''Merges sketches from the given column.
 
 Param sketch: the column of values.
@@ -34,7 +34,7 @@ For more information:
  - https://datasketches.apache.org/docs/Frequency/FrequencySketches.html
 '''
 ) AS R"""
-import ModuleFactory from "${JS_BUCKET}/fs_sketch.mjs";
+import ModuleFactory from "${JS_BUCKET}/apache_fs_sketch.mjs";
 var Module = await ModuleFactory();
 
 // UDAF interface
