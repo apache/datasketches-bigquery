@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, low INT64, high INT64, seed I
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
-  library=["gs://$JS_BUCKET/tuple_sketch_int64.js"],
+  library=["${JS_BUCKET}/tuple_sketch_int64.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns a Tuple Sketch computed from the given sketch filtered by the given low and high values. 
 This returns a compact tuple sketch that contains the subset of rows of the give sketch where the

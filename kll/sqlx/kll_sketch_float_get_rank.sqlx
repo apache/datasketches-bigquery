@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, value FLOAT64, inclusive BOOL
 RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (
-  library=["gs://$JS_BUCKET/kll_sketch.js"],
+  library=["${JS_BUCKET}/kll_sketch.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns an approximation to the normalized rank, on the interval [0.0, 1.0], of the given value.
 
