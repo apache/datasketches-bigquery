@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES)
 RETURNS INT64
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/apache_kll_sketch.js"],
+  library=["${JS_BUCKET}/kll_sketch_float.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns the number of retained items (samples) in the sketch.
 

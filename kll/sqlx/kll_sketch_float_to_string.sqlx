@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES)
 RETURNS STRING
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/apache_kll_sketch.js"],
+  library=["${JS_BUCKET}/kll_sketch_float.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns a summary string that represents the state of the given sketch.
 

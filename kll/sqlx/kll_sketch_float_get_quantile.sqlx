@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, rank FLOAT64, inclusive BOOL)
 RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/apache_kll_sketch.js"],
+  library=["${JS_BUCKET}/kll_sketch_float.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns a value from the sketch that is the best approximation to a value from the original stream with the given rank.
 
