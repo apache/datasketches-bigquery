@@ -27,19 +27,19 @@ EMCFLAGS=-I../datasketches-cpp/common/include \
 	--bind \
 	--pre-js crypto.js
 
-ARTIFACTS=apache_kll_sketch.mjs apache_kll_sketch.js apache_kll_sketch.wasm
+ARTIFACTS=kll_sketch_float.mjs kll_sketch_float.js kll_sketch_float.wasm
 
 all: $(ARTIFACTS)
 
 %.mjs: %.cpp
-	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o apache_$@
+	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o $@
 
 # this rule creates a non-es6 loadable library
 %.js: %.cpp
-	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o apache_$@
+	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o $@
 
 %.wasm: %.cpp
-	$(EMCC) $< $(EMCFLAGS) -sSTANDALONE_WASM=1 -o apache_$@
+	$(EMCC) $< $(EMCFLAGS) -sSTANDALONE_WASM=1 -o $@
 
 clean:
 	$(RM) $(ARTIFACTS)
