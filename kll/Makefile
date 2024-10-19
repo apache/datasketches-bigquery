@@ -27,7 +27,7 @@ EMCFLAGS=-I../datasketches-cpp/common/include \
 	--bind \
 	--pre-js crypto.js
 
-ARTIFACTS=kll_sketch.mjs kll_sketch.js kll_sketch.wasm
+ARTIFACTS=apache_kll_sketch.mjs apache_kll_sketch.js apache_kll_sketch.wasm
 
 all: $(ARTIFACTS)
 
@@ -46,7 +46,7 @@ clean:
 
 upload: all
 	@for file in $(ARTIFACTS); do \
-	  gcloud storage cp $$file gs://$(JS_BUCKET)/ ; \
+	  gcloud storage cp $$file $(JS_BUCKET)/ ; \
 	done
 
 create:

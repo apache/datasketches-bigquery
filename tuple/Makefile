@@ -27,7 +27,7 @@ EMCFLAGS=-I../datasketches-cpp/common/include \
 	-O3 \
 	--bind
 
-ARTIFACTS=tuple_sketch_int64.mjs tuple_sketch_int64.js tuple_sketch_int64.wasm
+ARTIFACTS=apache_tuple_sketch_int64.mjs apache_tuple_sketch_int64.js apache_tuple_sketch_int64.wasm
 
 all: $(ARTIFACTS)
 
@@ -46,7 +46,7 @@ clean:
 
 upload: all
 	@for file in $(ARTIFACTS); do \
-	  gcloud storage cp $$file gs://$(JS_BUCKET)/ ; \
+	  gcloud storage cp $$file $(JS_BUCKET)/ ; \
 	done
 
 # some functions (with shorter name) can call other functions (with suffix)

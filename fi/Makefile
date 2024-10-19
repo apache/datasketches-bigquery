@@ -26,7 +26,7 @@ EMCFLAGS=-I../datasketches-cpp/common/include \
 	-O3 \
 	--bind
 
-ARTIFACTS=fs_sketch.mjs fs_sketch.js fs_sketch.wasm
+ARTIFACTS=apache_fs_sketch.mjs apache_fs_sketch.js apache_fs_sketch.wasm
 
 all: $(ARTIFACTS)
 
@@ -45,7 +45,7 @@ clean:
 
 upload: all
 	@for file in $(ARTIFACTS); do \
-	  gcloud storage cp $$file gs://$(JS_BUCKET)/ ; \
+	  gcloud storage cp $$file $(JS_BUCKET)/ ; \
 	done
 
 # some functions (with shorter name) can call other functions (with suffix)
