@@ -27,7 +27,7 @@ EMCFLAGS=-I../datasketches-cpp/common/include \
 	--bind \
 	--pre-js crypto.js
 
-ARTIFACTS=kll_sketch.mjs kll_sketch.js kll_sketch.wasm
+ARTIFACTS=kll_sketch_float.mjs kll_sketch_float.js kll_sketch_float.wasm
 
 all: $(ARTIFACTS)
 
