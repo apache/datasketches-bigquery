@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, seed INT64)
 RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (
-  library=["gs://$JS_BUCKET/tuple_sketch_int64.js"],
+  library=["${JS_BUCKET}/tuple_sketch_int64.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns the cardinality estimate of the given Tuple Sketch.
 Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.

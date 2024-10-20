@@ -23,7 +23,7 @@ CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(key STRING, value INT64, params S
 RETURNS BYTES 
 LANGUAGE js
 OPTIONS (
-  library=["gs://$JS_BUCKET/tuple_sketch_int64.mjs"],
+  library=["${JS_BUCKET}/tuple_sketch_int64.mjs"],
   description = '''Builds a Tuple Sketch from an STRING Key column and an INT64 value column.
 Multiple values for the same key are aggregated using one of the selectable operations: SUM, MIN, MAX, ONE.
 Note that cardinality estimation accuracy, plots, error tables, and sampling probability p are the same as the Theta Sketch.
@@ -41,7 +41,7 @@ For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
 '''
 ) AS R"""
-import ModuleFactory from "gs://$JS_BUCKET/tuple_sketch_int64.mjs";
+import ModuleFactory from "${JS_BUCKET}/tuple_sketch_int64.mjs";
 var Module = await ModuleFactory();
 const default_lg_k = Number(Module.DEFAULT_LG_K);
 const default_seed = BigInt(Module.DEFAULT_SEED);
