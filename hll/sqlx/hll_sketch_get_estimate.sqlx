@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES)
 RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (
-  library=["gs://$JS_BUCKET/hll_sketch.js"],
+  library=["${JS_BUCKET}/hll_sketch.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns a summary string that represents the state of the given sketch.
 

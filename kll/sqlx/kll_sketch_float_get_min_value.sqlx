@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES)
 RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (
-  library=["gs://$JS_BUCKET/kll_sketch_float.js"],
+  library=["${JS_BUCKET}/kll_sketch_float.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns the minimum value of the input stream.
 
