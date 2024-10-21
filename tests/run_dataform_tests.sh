@@ -23,7 +23,7 @@
 #
 # Globals:
 #     BQ_DATASET - BigQuery dataset ID (required)
-#     BQ_LOCATION - BigQuery location (e.g., US, EU) (optional, defaults to US)
+#     BQ_LOCATION - BigQuery location (required - should be same as your BQ_DATASET location)
 #     BQ_PROJECT - BigQuery project ID (required)
 # Arguments:
 #     None
