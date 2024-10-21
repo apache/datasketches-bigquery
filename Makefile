@@ -45,3 +45,6 @@ $(MODTEST): %.test:
 	$(MAKE) -C $* test
 
 test: $(MODTEST)
+
+readme:
+	python3 readme_generator.py
