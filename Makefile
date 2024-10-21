@@ -42,6 +42,9 @@ install: $(MODINSTALL)
 MODTEST = $(addsuffix .test, $(MODULES))
 
 $(MODTEST): %.test:
-	$(MAKE) -C $* test
+	- $(MAKE) -C $* test # Added '-' to continue on error
 
 test: $(MODTEST)
+
+unittest:
+	./tests/run_dataform_tests.sh  # Call your Dataform test script

@@ -46,9 +46,14 @@ page for how to contact us.
     - BQ_DATASET: location of stored SQL functions (routines)
 
 ```
+gcloud auth application-default login # for authentication
 make          # performs compilation
 make install  # upload to $JS_BUCKET & create functions in $BQ_PROJECT.$BQ_DATASET
 make test     # runs predefined tests in BQ
+
+# To run unit tests: 
+npm install -g @dataform/cli
+make unittest
 ```
 
 The above steps can be executed in the root directory to install everything, or can be run from an individual sketch directory to install only that particular sketch.
