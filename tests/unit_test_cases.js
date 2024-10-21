@@ -33,3 +33,34 @@ generate_udaf_test("frequent_strings_sketch_merge", {
     ]) AS sketch`,
   expected_output: `FROM_BASE64('BAEKBQMAAAACAAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAIAAAAAAAAAAQAAAGEBAAAAYw==')`,
 });
+
+
+generate_udaf_test("cpc_sketch_agg_union", {
+  input_columns: [`sketch`],
+  input_rows: `SELECT * FROM UNNEST([FROM_BASE64('CAEQCwAOzJMDAAAAAgAAAAAAAACA+59AHHqBFCABCEDW1da4FQAAAA=='), FROM_BASE64('CAEQCwAOzJMDAAAAAgAAAAAAAAAA+59AKMABFAABCEByjCNtCgAAAA==')]) AS sketch`,
+  expected_output: `FROM_BASE64('BAEQCwAKzJMGAAAAAwAAAOQwS9sgxTzSAAAAAA==')`,
+});
+
+generate_udaf_test("cpc_sketch_agg_string", {
+  input_columns: [`str`],
+  input_rows: `SELECT * FROM UNNEST(['foo', 'bar', 'baz']) AS str`,
+  expected_output: `FROM_BASE64('CAEQCwAOzJMDAAAAAgAAAAAAAAAA+59AKMABFAABCEByjCNtCgAAAA==')`,
+});
+
+generate_udaf_test("cpc_sketch_agg_int64", {
+  input_columns: [`value`],
+  input_rows: `SELECT * FROM UNNEST([1, 2, 3]) AS value`,
+  expected_output: `FROM_BASE64('CAEQCwAOzJMDAAAAAgAAAAAAAACA+59AHHqBFCABCEDW1da4FQAAAA==')`,
+});
+
+generate_udaf_test("cpc_sketch_agg_string_lgk_seed", {
+  input_columns: [`str`, 'STRUCT(12 AS lgk, 9001 AS seed) NOT AGGREGATE'],
+  input_rows: `SELECT * FROM UNNEST(['foo', 'bar', 'baz']) AS str`,
+  expected_output: `FROM_BASE64('CAEQDAAOzJMDAAAAAgAAAAAAAACA/a9AAjgABYAACEByFI5kUwAAAA==')`,
+});
+
+generate_udaf_test("cpc_sketch_agg_union_lgk_seed", {
+  input_columns: [`sketch`, `STRUCT(12 AS lgk, 9001 AS seed) NOT AGGREGATE`],
+  input_rows: `SELECT * FROM UNNEST([FROM_BASE64('CAEQCwAOzJMDAAAAAgAAAAAAAACA+59AHHqBFCABCEDW1da4FQAAAA==')]) AS sketch`,
+  expected_output: `FROM_BASE64('BAEQCwAKzJMDAAAAAgAAANbV1rgVAAAA')`,
+});
