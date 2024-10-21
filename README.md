@@ -103,19 +103,19 @@ distinct events.
 
 # using defaults
 # expected 5
-select $BQ_DATASET.cpc_sketch_get_estimate(
-  $BQ_DATASET.cpc_sketch_union(
-    (select $BQ_DATASET.cpc_sketch_agg_string(str) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.cpc_sketch_agg_string(str) from unnest(["c", "d", "e"]) as str)
+select `$BQ_DATASET`.cpc_sketch_get_estimate(
+  `$BQ_DATASET`.cpc_sketch_union(
+    (select `$BQ_DATASET`.cpc_sketch_agg_string(str) from unnest(["a", "b", "c"]) as str),
+    (select `$BQ_DATASET`.cpc_sketch_agg_string(str) from unnest(["c", "d", "e"]) as str)
   )
 );
 
 # using full signatures
 # expected 5
-select $BQ_DATASET.cpc_sketch_get_estimate_seed(
-  $BQ_DATASET.cpc_sketch_union_lgk_seed(
-    (select $BQ_DATASET.cpc_sketch_agg_string_lgk_seed(str, struct<byteint, int64>(10, 111)) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.cpc_sketch_agg_string_lgk_seed(str, struct<byteint, int64>(10, 111)) from unnest(["c", "d", "e"]) as str),
+select `$BQ_DATASET`.cpc_sketch_get_estimate_seed(
+  `$BQ_DATASET`.cpc_sketch_union_lgk_seed(
+    (select `$BQ_DATASET`.cpc_sketch_agg_string_lgk_seed(str, struct<byteint, int64>(10, 111)) from unnest(["a", "b", "c"]) as str),
+    (select `$BQ_DATASET`.cpc_sketch_agg_string_lgk_seed(str, struct<byteint, int64>(10, 111)) from unnest(["c", "d", "e"]) as str),
     10,
     111
   ),
@@ -123,50 +123,50 @@ select $BQ_DATASET.cpc_sketch_get_estimate_seed(
 );
 
 # using defaults
-create or replace table $BQ_DATASET.cpc_sketch(sketch bytes);
+create or replace table `$BQ_DATASET`.cpc_sketch(sketch bytes);
 
-insert into $BQ_DATASET.cpc_sketch
-(select $BQ_DATASET.cpc_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
-insert into $BQ_DATASET.cpc_sketch
-(select $BQ_DATASET.cpc_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+insert into `$BQ_DATASET`.cpc_sketch
+(select `$BQ_DATASET`.cpc_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+insert into `$BQ_DATASET`.cpc_sketch
+(select `$BQ_DATASET`.cpc_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
-select $BQ_DATASET.cpc_sketch_to_string(sketch) from $BQ_DATASET.cpc_sketch;
+select `$BQ_DATASET`.cpc_sketch_to_string(sketch) from `$BQ_DATASET`.cpc_sketch;
 
 # expected about 20000
-select $BQ_DATASET.cpc_sketch_get_estimate(
-  $BQ_DATASET.cpc_sketch_agg_union(sketch)
-) from $BQ_DATASET.cpc_sketch;
+select `$BQ_DATASET`.cpc_sketch_get_estimate(
+  `$BQ_DATASET`.cpc_sketch_agg_union(sketch)
+) from `$BQ_DATASET`.cpc_sketch;
 
-select $BQ_DATASET.cpc_sketch_get_estimate_and_bounds(
-  $BQ_DATASET.cpc_sketch_agg_union(sketch),
+select `$BQ_DATASET`.cpc_sketch_get_estimate_and_bounds(
+  `$BQ_DATASET`.cpc_sketch_agg_union(sketch),
   3
-) from $BQ_DATASET.cpc_sketch;
+) from `$BQ_DATASET`.cpc_sketch;
 
-drop table $BQ_DATASET.cpc_sketch;
+drop table `$BQ_DATASET`.cpc_sketch;
 
 # using full signatures
-create or replace table $BQ_DATASET.cpc_sketch(sketch bytes);
+create or replace table `$BQ_DATASET`.cpc_sketch(sketch bytes);
 
-insert into $BQ_DATASET.cpc_sketch
-(select $BQ_DATASET.cpc_sketch_agg_int64_lgk_seed(value, struct<byteint, int64>(10, 111)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
-insert into $BQ_DATASET.cpc_sketch
-(select $BQ_DATASET.cpc_sketch_agg_int64_lgk_seed(value, struct<byteint, int64>(10, 111)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+insert into `$BQ_DATASET`.cpc_sketch
+(select `$BQ_DATASET`.cpc_sketch_agg_int64_lgk_seed(value, struct<byteint, int64>(10, 111)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+insert into `$BQ_DATASET`.cpc_sketch
+(select `$BQ_DATASET`.cpc_sketch_agg_int64_lgk_seed(value, struct<byteint, int64>(10, 111)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
-select $BQ_DATASET.cpc_sketch_to_string_seed(sketch, 111) from $BQ_DATASET.cpc_sketch;
+select `$BQ_DATASET`.cpc_sketch_to_string_seed(sketch, 111) from `$BQ_DATASET`.cpc_sketch;
 
 # expected about 20000
-select $BQ_DATASET.cpc_sketch_get_estimate_seed(
-  $BQ_DATASET.cpc_sketch_agg_union_lgk_seed(sketch, struct<byteint, int64>(10, 111)),
+select `$BQ_DATASET`.cpc_sketch_get_estimate_seed(
+  `$BQ_DATASET`.cpc_sketch_agg_union_lgk_seed(sketch, struct<byteint, int64>(10, 111)),
   111
-) from $BQ_DATASET.cpc_sketch;
+) from `$BQ_DATASET`.cpc_sketch;
 
-select $BQ_DATASET.cpc_sketch_get_estimate_and_bounds_seed(
-  $BQ_DATASET.cpc_sketch_agg_union_lgk_seed(sketch, struct<byteint, int64>(10, 111)),
+select `$BQ_DATASET`.cpc_sketch_get_estimate_and_bounds_seed(
+  `$BQ_DATASET`.cpc_sketch_agg_union_lgk_seed(sketch, struct<byteint, int64>(10, 111)),
   3,
   111
-) from $BQ_DATASET.cpc_sketch;
+) from `$BQ_DATASET`.cpc_sketch;
 
-drop table $BQ_DATASET.cpc_sketch;
+drop table `$BQ_DATASET`.cpc_sketch;
 ```
 
 
@@ -188,19 +188,19 @@ queries.
 
 ```sql
 
-select $BQ_DATASET.frequent_strings_sketch_to_string($BQ_DATASET.frequent_strings_sketch_build(str, 1, 5)) from unnest(["a", "b", "c"]) as str;
+select `$BQ_DATASET`.frequent_strings_sketch_to_string(`$BQ_DATASET`.frequent_strings_sketch_build(str, 1, 5)) from unnest(["a", "b", "c"]) as str;
 
-create or replace table $BQ_DATASET.fs_sketch(sketch bytes);
+create or replace table `$BQ_DATASET`.fs_sketch(sketch bytes);
 
-insert into $BQ_DATASET.fs_sketch
-(select $BQ_DATASET.frequent_strings_sketch_build(str, 1, 5) from unnest(["a", "b", "c", "d"]) as str);
+insert into `$BQ_DATASET`.fs_sketch
+(select `$BQ_DATASET`.frequent_strings_sketch_build(str, 1, 5) from unnest(["a", "b", "c", "d"]) as str);
 
-insert into $BQ_DATASET.fs_sketch
-(select $BQ_DATASET.frequent_strings_sketch_build(str, 1, 5) from unnest(["a", "a", "c"]) as str);
+insert into `$BQ_DATASET`.fs_sketch
+(select `$BQ_DATASET`.frequent_strings_sketch_build(str, 1, 5) from unnest(["a", "a", "c"]) as str);
 
-select $BQ_DATASET.frequent_strings_sketch_get_result($BQ_DATASET.frequent_strings_sketch_merge(sketch, 5), "NO_FALSE_NEGATIVES", null) from $BQ_DATASET.fs_sketch;
+select `$BQ_DATASET`.frequent_strings_sketch_get_result(`$BQ_DATASET`.frequent_strings_sketch_merge(sketch, 5), "NO_FALSE_NEGATIVES", null) from `$BQ_DATASET`.fs_sketch;
 
-drop table $BQ_DATASET.fs_sketch;
+drop table `$BQ_DATASET`.fs_sketch;
 ```
 
 
@@ -229,61 +229,61 @@ consumption, making them suitable for large datasets and real-time analytics.
 ```sql
 
 # expected 3
-select $BQ_DATASET.hll_sketch_get_estimate($BQ_DATASET.hll_sketch_agg_string(s)) from unnest(["a", "b", "c"]) as s;
+select `$BQ_DATASET`.hll_sketch_get_estimate(`$BQ_DATASET`.hll_sketch_agg_string(s)) from unnest(["a", "b", "c"]) as s;
 
-select $BQ_DATASET.hll_sketch_to_string($BQ_DATASET.hll_sketch_agg_string(s)) from unnest(["a", "b", "c"]) as s;
+select `$BQ_DATASET`.hll_sketch_to_string(`$BQ_DATASET`.hll_sketch_agg_string(s)) from unnest(["a", "b", "c"]) as s;
 
 # expected 5
-select $BQ_DATASET.hll_sketch_get_estimate_and_bounds(
-  $BQ_DATASET.hll_sketch_union_lgk_type(
-    (select $BQ_DATASET.hll_sketch_agg_string_lgk_type(str, struct<byteint, string>(10, "HLL_8")) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.hll_sketch_agg_string_lgk_type(str, struct<byteint, string>(10, "HLL_8")) from unnest(["c", "d", "e"]) as str),
+select `$BQ_DATASET`.hll_sketch_get_estimate_and_bounds(
+  `$BQ_DATASET`.hll_sketch_union_lgk_type(
+    (select `$BQ_DATASET`.hll_sketch_agg_string_lgk_type(str, struct<byteint, string>(10, "HLL_8")) from unnest(["a", "b", "c"]) as str),
+    (select `$BQ_DATASET`.hll_sketch_agg_string_lgk_type(str, struct<byteint, string>(10, "HLL_8")) from unnest(["c", "d", "e"]) as str),
     10,
     "HLL_8"
   ),
   2
 );
 
-select $BQ_DATASET.hll_sketch_to_string(
-  $BQ_DATASET.hll_sketch_union_lgk_type(
-    (select $BQ_DATASET.hll_sketch_agg_string_lgk_type(str, struct<byteint, string>(10, "HLL_8")) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.hll_sketch_agg_string_lgk_type(str, struct<byteint, string>(10, "HLL_8")) from unnest(["c", "d", "e"]) as str),
+select `$BQ_DATASET`.hll_sketch_to_string(
+  `$BQ_DATASET`.hll_sketch_union_lgk_type(
+    (select `$BQ_DATASET`.hll_sketch_agg_string_lgk_type(str, struct<byteint, string>(10, "HLL_8")) from unnest(["a", "b", "c"]) as str),
+    (select `$BQ_DATASET`.hll_sketch_agg_string_lgk_type(str, struct<byteint, string>(10, "HLL_8")) from unnest(["c", "d", "e"]) as str),
     10,
     "HLL_8"
   )
 );
 
-create or replace table $BQ_DATASET.hll_sketch(sketch bytes);
+create or replace table `$BQ_DATASET`.hll_sketch(sketch bytes);
 
-insert into $BQ_DATASET.hll_sketch
-(select $BQ_DATASET.hll_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
-insert into $BQ_DATASET.hll_sketch
-(select $BQ_DATASET.hll_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
-
-# expected estimate about 20000
-select $BQ_DATASET.hll_sketch_to_string(
-  $BQ_DATASET.hll_sketch_agg_union(sketch)
-) from $BQ_DATASET.hll_sketch;
-
-select $BQ_DATASET.hll_sketch_to_string(
-  $BQ_DATASET.hll_sketch_agg_union_lgk_type(sketch, struct<byteint, string>(10, "HLL_6"))
-) from $BQ_DATASET.hll_sketch;
-
-drop table $BQ_DATASET.hll_sketch;
-
-create or replace table $BQ_DATASET.hll_sketch(sketch bytes);
-
-insert into $BQ_DATASET.hll_sketch
-(select $BQ_DATASET.hll_sketch_agg_int64_lgk_type(value, struct<int, string>(8, "HLL_6")) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
-insert into $BQ_DATASET.hll_sketch
-(select $BQ_DATASET.hll_sketch_agg_int64_lgk_type(value, struct<int, string>(8, "HLL_6")) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+insert into `$BQ_DATASET`.hll_sketch
+(select `$BQ_DATASET`.hll_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+insert into `$BQ_DATASET`.hll_sketch
+(select `$BQ_DATASET`.hll_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
 # expected estimate about 20000
-select $BQ_DATASET.hll_sketch_to_string(
-  $BQ_DATASET.hll_sketch_agg_union_lgk_type(sketch, struct<byteint, string>(8, "HLL_6"))
-) from $BQ_DATASET.hll_sketch;
+select `$BQ_DATASET`.hll_sketch_to_string(
+  `$BQ_DATASET`.hll_sketch_agg_union(sketch)
+) from `$BQ_DATASET`.hll_sketch;
 
-drop table $BQ_DATASET.hll_sketch;
+select `$BQ_DATASET`.hll_sketch_to_string(
+  `$BQ_DATASET`.hll_sketch_agg_union_lgk_type(sketch, struct<byteint, string>(10, "HLL_6"))
+) from `$BQ_DATASET`.hll_sketch;
+
+drop table `$BQ_DATASET`.hll_sketch;
+
+create or replace table `$BQ_DATASET`.hll_sketch(sketch bytes);
+
+insert into `$BQ_DATASET`.hll_sketch
+(select `$BQ_DATASET`.hll_sketch_agg_int64_lgk_type(value, struct<int, string>(8, "HLL_6")) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+insert into `$BQ_DATASET`.hll_sketch
+(select `$BQ_DATASET`.hll_sketch_agg_int64_lgk_type(value, struct<int, string>(8, "HLL_6")) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+
+# expected estimate about 20000
+select `$BQ_DATASET`.hll_sketch_to_string(
+  `$BQ_DATASET`.hll_sketch_agg_union_lgk_type(sketch, struct<byteint, string>(8, "HLL_6"))
+) from `$BQ_DATASET`.hll_sketch;
+
+drop table `$BQ_DATASET`.hll_sketch;
 ```
 
 
@@ -313,54 +313,54 @@ data and calculating percentiles, such as the median or 95th percentile.
 
 ```sql
 
-create or replace table $BQ_DATASET.kll_sketch(sketch bytes);
+create or replace table `$BQ_DATASET`.kll_sketch(sketch bytes);
 
-insert into $BQ_DATASET.kll_sketch
-(select $BQ_DATASET.kll_sketch_float_build(value, 200) from unnest([1,2,3,4,5,6,7,8,9,10]) as value);
-insert into $BQ_DATASET.kll_sketch
-(select $BQ_DATASET.kll_sketch_float_build(value, 200) from unnest([11,12,13,14,15,16,17,18,19,20]) as value);
+insert into `$BQ_DATASET`.kll_sketch
+(select `$BQ_DATASET`.kll_sketch_float_build(value, 200) from unnest([1,2,3,4,5,6,7,8,9,10]) as value);
+insert into `$BQ_DATASET`.kll_sketch
+(select `$BQ_DATASET`.kll_sketch_float_build(value, 200) from unnest([11,12,13,14,15,16,17,18,19,20]) as value);
 
-select $BQ_DATASET.kll_sketch_float_to_string(sketch) from $BQ_DATASET.kll_sketch;
+select `$BQ_DATASET`.kll_sketch_float_to_string(sketch) from `$BQ_DATASET`.kll_sketch;
 
 # expected 0.5
-select $BQ_DATASET.kll_sketch_float_get_rank($BQ_DATASET.kll_sketch_float_merge(sketch, null), 10, true) from $BQ_DATASET.kll_sketch;
+select `$BQ_DATASET`.kll_sketch_float_get_rank(`$BQ_DATASET`.kll_sketch_float_merge(sketch, null), 10, true) from `$BQ_DATASET`.kll_sketch;
 
 # expected 10
-select $BQ_DATASET.kll_sketch_float_get_quantile($BQ_DATASET.kll_sketch_float_merge(sketch, null), 0.5, true) from $BQ_DATASET.kll_sketch;
+select `$BQ_DATASET`.kll_sketch_float_get_quantile(`$BQ_DATASET`.kll_sketch_float_merge(sketch, null), 0.5, true) from `$BQ_DATASET`.kll_sketch;
 
 # expected 20
-select $BQ_DATASET.kll_sketch_float_get_n($BQ_DATASET.kll_sketch_float_merge(sketch, null)) from $BQ_DATASET.kll_sketch;
+select `$BQ_DATASET`.kll_sketch_float_get_n(`$BQ_DATASET`.kll_sketch_float_merge(sketch, null)) from `$BQ_DATASET`.kll_sketch;
 
 # expected 0.5, 0.5
-select $BQ_DATASET.kll_sketch_float_get_pmf($BQ_DATASET.kll_sketch_float_merge(sketch, null), [10.0], true) from $BQ_DATASET.kll_sketch;
+select `$BQ_DATASET`.kll_sketch_float_get_pmf(`$BQ_DATASET`.kll_sketch_float_merge(sketch, null), [10.0], true) from `$BQ_DATASET`.kll_sketch;
 
 # expected 0.5, 1
-select $BQ_DATASET.kll_sketch_float_get_cdf($BQ_DATASET.kll_sketch_float_merge(sketch, null), [10.0], true) from $BQ_DATASET.kll_sketch;
+select `$BQ_DATASET`.kll_sketch_float_get_cdf(`$BQ_DATASET`.kll_sketch_float_merge(sketch, null), [10.0], true) from `$BQ_DATASET`.kll_sketch;
 
 # expected 1
-select $BQ_DATASET.kll_sketch_float_get_min_value($BQ_DATASET.kll_sketch_float_merge(sketch, null)) from $BQ_DATASET.kll_sketch;
+select `$BQ_DATASET`.kll_sketch_float_get_min_value(`$BQ_DATASET`.kll_sketch_float_merge(sketch, null)) from `$BQ_DATASET`.kll_sketch;
 
 # expected 20
-select $BQ_DATASET.kll_sketch_float_get_max_value($BQ_DATASET.kll_sketch_float_merge(sketch, null)) from $BQ_DATASET.kll_sketch;
+select `$BQ_DATASET`.kll_sketch_float_get_max_value(`$BQ_DATASET`.kll_sketch_float_merge(sketch, null)) from `$BQ_DATASET`.kll_sketch;
 
-drop table $BQ_DATASET.kll_sketch;
+drop table `$BQ_DATASET`.kll_sketch;
 
 # expected about 1.3%
-select $BQ_DATASET.kll_sketch_float_get_normalized_rank_error($BQ_DATASET.kll_sketch_float_build(value, null), false) from unnest(generate_array(1, 10000)) as value;
+select `$BQ_DATASET`.kll_sketch_float_get_normalized_rank_error(`$BQ_DATASET`.kll_sketch_float_build(value, null), false) from unnest(generate_array(1, 10000)) as value;
 
-select $BQ_DATASET.kll_sketch_float_get_num_retained($BQ_DATASET.kll_sketch_float_build(value, null)) from unnest(generate_array(1, 10000)) as value;
+select `$BQ_DATASET`.kll_sketch_float_get_num_retained(`$BQ_DATASET`.kll_sketch_float_build(value, null)) from unnest(generate_array(1, 10000)) as value;
 
 # expected false
-select $BQ_DATASET.kll_sketch_float_kolmogorov_smirnov(
-  (select $BQ_DATASET.kll_sketch_float_build(value, null) from unnest([1,2,3,4,5,6,7,8,9,10]) as value),
-  (select $BQ_DATASET.kll_sketch_float_build(value, null) from unnest([1,2,3,4,5,6,7,8,9,10]) as value),
+select `$BQ_DATASET`.kll_sketch_float_kolmogorov_smirnov(
+  (select `$BQ_DATASET`.kll_sketch_float_build(value, null) from unnest([1,2,3,4,5,6,7,8,9,10]) as value),
+  (select `$BQ_DATASET`.kll_sketch_float_build(value, null) from unnest([1,2,3,4,5,6,7,8,9,10]) as value),
   0.05
 );
 
 # expected true
-select $BQ_DATASET.kll_sketch_float_kolmogorov_smirnov(
-  (select $BQ_DATASET.kll_sketch_float_build(value, null) from unnest([1,2,3,4,5,6,7,8,9,10]) as value),
-  (select $BQ_DATASET.kll_sketch_float_build(value, null) from unnest([11,12,13,14,15,16,17,18,19,20]) as value),
+select `$BQ_DATASET`.kll_sketch_float_kolmogorov_smirnov(
+  (select `$BQ_DATASET`.kll_sketch_float_build(value, null) from unnest([1,2,3,4,5,6,7,8,9,10]) as value),
+  (select `$BQ_DATASET`.kll_sketch_float_build(value, null) from unnest([11,12,13,14,15,16,17,18,19,20]) as value),
   0.05
 );
 ```
@@ -405,82 +405,82 @@ overlap or comparing different groups.
 ```sql
 
 # using defaults
-create or replace table $BQ_DATASET.theta_sketch(sketch bytes);
+create or replace table `$BQ_DATASET`.theta_sketch(sketch bytes);
 
-insert into $BQ_DATASET.theta_sketch
-(select $BQ_DATASET.theta_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
-insert into $BQ_DATASET.theta_sketch
-(select $BQ_DATASET.theta_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+insert into `$BQ_DATASET`.theta_sketch
+(select `$BQ_DATASET`.theta_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+insert into `$BQ_DATASET`.theta_sketch
+(select `$BQ_DATASET`.theta_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
 # expected about 20000
-select $BQ_DATASET.theta_sketch_get_estimate_and_bounds(
-  $BQ_DATASET.theta_sketch_agg_union(sketch),
+select `$BQ_DATASET`.theta_sketch_get_estimate_and_bounds(
+  `$BQ_DATASET`.theta_sketch_agg_union(sketch),
   2
-) from $BQ_DATASET.theta_sketch;
+) from `$BQ_DATASET`.theta_sketch;
 
 # expected estimate about 20000
-select $BQ_DATASET.theta_sketch_to_string(
-  $BQ_DATASET.theta_sketch_agg_union(sketch)
-) from $BQ_DATASET.theta_sketch;
+select `$BQ_DATASET`.theta_sketch_to_string(
+  `$BQ_DATASET`.theta_sketch_agg_union(sketch)
+) from `$BQ_DATASET`.theta_sketch;
 
-select $BQ_DATASET.theta_sketch_get_theta(
-  $BQ_DATASET.theta_sketch_agg_union(sketch)
-) from $BQ_DATASET.theta_sketch;
+select `$BQ_DATASET`.theta_sketch_get_theta(
+  `$BQ_DATASET`.theta_sketch_agg_union(sketch)
+) from `$BQ_DATASET`.theta_sketch;
 
-select $BQ_DATASET.theta_sketch_get_num_retained(
-  $BQ_DATASET.theta_sketch_agg_union(sketch)
-) from $BQ_DATASET.theta_sketch;
+select `$BQ_DATASET`.theta_sketch_get_num_retained(
+  `$BQ_DATASET`.theta_sketch_agg_union(sketch)
+) from `$BQ_DATASET`.theta_sketch;
 
-drop table $BQ_DATASET.theta_sketch;
+drop table `$BQ_DATASET`.theta_sketch;
 
 # using full signatures
-create or replace table $BQ_DATASET.theta_sketch(sketch bytes);
+create or replace table `$BQ_DATASET`.theta_sketch(sketch bytes);
 
-insert into $BQ_DATASET.theta_sketch
-(select $BQ_DATASET.theta_sketch_agg_int64_lgk_seed_p(value, struct<int, int, float64>(14, 111, 0.9)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
-insert into $BQ_DATASET.theta_sketch
-(select $BQ_DATASET.theta_sketch_agg_int64_lgk_seed_p(value, struct<int, int, float64>(14, 111, 0.9)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+insert into `$BQ_DATASET`.theta_sketch
+(select `$BQ_DATASET`.theta_sketch_agg_int64_lgk_seed_p(value, struct<int, int, float64>(14, 111, 0.9)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+insert into `$BQ_DATASET`.theta_sketch
+(select `$BQ_DATASET`.theta_sketch_agg_int64_lgk_seed_p(value, struct<int, int, float64>(14, 111, 0.9)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
 # expected about 20000
-select $BQ_DATASET.theta_sketch_get_estimate_and_bounds_seed(
-  $BQ_DATASET.theta_sketch_agg_union_lgk_seed(sketch, struct<int, int>(10, 111)),
+select `$BQ_DATASET`.theta_sketch_get_estimate_and_bounds_seed(
+  `$BQ_DATASET`.theta_sketch_agg_union_lgk_seed(sketch, struct<int, int>(10, 111)),
   2,
   111
-) from $BQ_DATASET.theta_sketch;
+) from `$BQ_DATASET`.theta_sketch;
 
 # expected estimate about 20000
-select $BQ_DATASET.theta_sketch_to_string_seed(
-  $BQ_DATASET.theta_sketch_agg_union_lgk_seed(sketch, struct<int, int>(10, 111)),
+select `$BQ_DATASET`.theta_sketch_to_string_seed(
+  `$BQ_DATASET`.theta_sketch_agg_union_lgk_seed(sketch, struct<int, int>(10, 111)),
   111
-) from $BQ_DATASET.theta_sketch;
+) from `$BQ_DATASET`.theta_sketch;
 
-select $BQ_DATASET.theta_sketch_get_theta_seed(
-  $BQ_DATASET.theta_sketch_agg_union_lgk_seed(sketch, struct<int, int>(10, 111)),
+select `$BQ_DATASET`.theta_sketch_get_theta_seed(
+  `$BQ_DATASET`.theta_sketch_agg_union_lgk_seed(sketch, struct<int, int>(10, 111)),
   111
-) from $BQ_DATASET.theta_sketch;
+) from `$BQ_DATASET`.theta_sketch;
 
-select $BQ_DATASET.theta_sketch_get_num_retained_seed(
-  $BQ_DATASET.theta_sketch_agg_union_lgk_seed(sketch, struct<int, int>(10, 111)),
+select `$BQ_DATASET`.theta_sketch_get_num_retained_seed(
+  `$BQ_DATASET`.theta_sketch_agg_union_lgk_seed(sketch, struct<int, int>(10, 111)),
   111
-) from $BQ_DATASET.theta_sketch;
+) from `$BQ_DATASET`.theta_sketch;
 
-drop table $BQ_DATASET.theta_sketch;
+drop table `$BQ_DATASET`.theta_sketch;
 
 # using defaults
 # expected 5
-select $BQ_DATASET.theta_sketch_get_estimate(
-  $BQ_DATASET.theta_sketch_union(
-    (select $BQ_DATASET.theta_sketch_agg_string(str) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.theta_sketch_agg_string(str) from unnest(["c", "d", "e"]) as str)
+select `$BQ_DATASET`.theta_sketch_get_estimate(
+  `$BQ_DATASET`.theta_sketch_union(
+    (select `$BQ_DATASET`.theta_sketch_agg_string(str) from unnest(["a", "b", "c"]) as str),
+    (select `$BQ_DATASET`.theta_sketch_agg_string(str) from unnest(["c", "d", "e"]) as str)
   )
 );
 
 # full signatures
 # expected 5
-select $BQ_DATASET.theta_sketch_get_estimate_seed(
-  $BQ_DATASET.theta_sketch_union_lgk_seed(
-    (select $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["c", "d", "e"]) as str),
+select `$BQ_DATASET`.theta_sketch_get_estimate_seed(
+  `$BQ_DATASET`.theta_sketch_union_lgk_seed(
+    (select `$BQ_DATASET`.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["a", "b", "c"]) as str),
+    (select `$BQ_DATASET`.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["c", "d", "e"]) as str),
     10,
     111
   ),
@@ -489,19 +489,19 @@ select $BQ_DATASET.theta_sketch_get_estimate_seed(
 
 # using defaults
 # expected 1
-select $BQ_DATASET.theta_sketch_get_estimate(
-  $BQ_DATASET.theta_sketch_intersection(
-    (select $BQ_DATASET.theta_sketch_agg_string(str) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.theta_sketch_agg_string(str) from unnest(["c", "d", "e"]) as str)
+select `$BQ_DATASET`.theta_sketch_get_estimate(
+  `$BQ_DATASET`.theta_sketch_intersection(
+    (select `$BQ_DATASET`.theta_sketch_agg_string(str) from unnest(["a", "b", "c"]) as str),
+    (select `$BQ_DATASET`.theta_sketch_agg_string(str) from unnest(["c", "d", "e"]) as str)
   )
 );
 
 # full signatures
 # expected 1
-select $BQ_DATASET.theta_sketch_get_estimate_seed(
-  $BQ_DATASET.theta_sketch_intersection_seed(
-    (select $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["c", "d", "e"]) as str),
+select `$BQ_DATASET`.theta_sketch_get_estimate_seed(
+  `$BQ_DATASET`.theta_sketch_intersection_seed(
+    (select `$BQ_DATASET`.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["a", "b", "c"]) as str),
+    (select `$BQ_DATASET`.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["c", "d", "e"]) as str),
     111
   ),
   111
@@ -509,19 +509,19 @@ select $BQ_DATASET.theta_sketch_get_estimate_seed(
 
 # using defaults
 # expected 2
-select $BQ_DATASET.theta_sketch_get_estimate(
-  $BQ_DATASET.theta_sketch_a_not_b(
-    (select $BQ_DATASET.theta_sketch_agg_string(str) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.theta_sketch_agg_string(str) from unnest(["c", "d", "e"]) as str)
+select `$BQ_DATASET`.theta_sketch_get_estimate(
+  `$BQ_DATASET`.theta_sketch_a_not_b(
+    (select `$BQ_DATASET`.theta_sketch_agg_string(str) from unnest(["a", "b", "c"]) as str),
+    (select `$BQ_DATASET`.theta_sketch_agg_string(str) from unnest(["c", "d", "e"]) as str)
   )
 );
 
 # full signatures
 # expected 2
-select $BQ_DATASET.theta_sketch_get_estimate_seed(
-  $BQ_DATASET.theta_sketch_a_not_b_seed(
-    (select $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["c", "d", "e"]) as str),
+select `$BQ_DATASET`.theta_sketch_get_estimate_seed(
+  `$BQ_DATASET`.theta_sketch_a_not_b_seed(
+    (select `$BQ_DATASET`.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["a", "b", "c"]) as str),
+    (select `$BQ_DATASET`.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["c", "d", "e"]) as str),
     111
   ),
   111
@@ -529,16 +529,16 @@ select $BQ_DATASET.theta_sketch_get_estimate_seed(
 
 # using defaults
 # expected 0.2
-select $BQ_DATASET.theta_sketch_jaccard_similarity(
-  (select $BQ_DATASET.theta_sketch_agg_string(str) from unnest(["a", "b", "c"]) as str),
-  (select $BQ_DATASET.theta_sketch_agg_string(str) from unnest(["c", "d", "e"]) as str)
+select `$BQ_DATASET`.theta_sketch_jaccard_similarity(
+  (select `$BQ_DATASET`.theta_sketch_agg_string(str) from unnest(["a", "b", "c"]) as str),
+  (select `$BQ_DATASET`.theta_sketch_agg_string(str) from unnest(["c", "d", "e"]) as str)
 );
 
 # using full signatures
 # expected 0.2
-select $BQ_DATASET.theta_sketch_jaccard_similarity_seed(
-  (select $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["a", "b", "c"]) as str),
-  (select $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["c", "d", "e"]) as str),
+select `$BQ_DATASET`.theta_sketch_jaccard_similarity_seed(
+  (select `$BQ_DATASET`.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["a", "b", "c"]) as str),
+  (select `$BQ_DATASET`.theta_sketch_agg_string_lgk_seed_p(str, struct<int, int, float64>(10, 111, 0.999)) from unnest(["c", "d", "e"]) as str),
   111
 );
 ```
@@ -589,111 +589,111 @@ the distinct items.
 ```sql
 
 # using defaults
-create or replace table $BQ_DATASET.tuple_sketch(sketch bytes);
+create or replace table `$BQ_DATASET`.tuple_sketch(sketch bytes);
 
-insert into $BQ_DATASET.tuple_sketch
-(select $BQ_DATASET.tuple_sketch_int64_from_theta_sketch($BQ_DATASET.theta_sketch_agg_string(cast(value as string)), 1) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
-insert into $BQ_DATASET.tuple_sketch
-(select $BQ_DATASET.tuple_sketch_int64_from_theta_sketch($BQ_DATASET.theta_sketch_agg_string(cast(value as string)), 1) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
+insert into `$BQ_DATASET`.tuple_sketch
+(select `$BQ_DATASET`.tuple_sketch_int64_from_theta_sketch(`$BQ_DATASET`.theta_sketch_agg_string(cast(value as string)), 1) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
+insert into `$BQ_DATASET`.tuple_sketch
+(select `$BQ_DATASET`.tuple_sketch_int64_from_theta_sketch(`$BQ_DATASET`.theta_sketch_agg_string(cast(value as string)), 1) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
 # expected about 20000
-select $BQ_DATASET.tuple_sketch_int64_get_estimate(
-  $BQ_DATASET.tuple_sketch_int64_agg_union(sketch)
-) from $BQ_DATASET.tuple_sketch;
+select `$BQ_DATASET`.tuple_sketch_int64_get_estimate(
+  `$BQ_DATASET`.tuple_sketch_int64_agg_union(sketch)
+) from `$BQ_DATASET`.tuple_sketch;
 
-select $BQ_DATASET.tuple_sketch_int64_get_estimate_and_bounds(
-  $BQ_DATASET.tuple_sketch_int64_agg_union(sketch),
+select `$BQ_DATASET`.tuple_sketch_int64_get_estimate_and_bounds(
+  `$BQ_DATASET`.tuple_sketch_int64_agg_union(sketch),
   2
-) from $BQ_DATASET.tuple_sketch;
+) from `$BQ_DATASET`.tuple_sketch;
 
-select $BQ_DATASET.tuple_sketch_int64_get_sum_estimate_and_bounds(
-  $BQ_DATASET.tuple_sketch_int64_agg_union(sketch),
+select `$BQ_DATASET`.tuple_sketch_int64_get_sum_estimate_and_bounds(
+  `$BQ_DATASET`.tuple_sketch_int64_agg_union(sketch),
   2
-) from $BQ_DATASET.tuple_sketch;
+) from `$BQ_DATASET`.tuple_sketch;
 
 # expected estimate about 20000
-select $BQ_DATASET.tuple_sketch_int64_to_string(
-  $BQ_DATASET.tuple_sketch_int64_agg_union(sketch)
-) from $BQ_DATASET.tuple_sketch;
+select `$BQ_DATASET`.tuple_sketch_int64_to_string(
+  `$BQ_DATASET`.tuple_sketch_int64_agg_union(sketch)
+) from `$BQ_DATASET`.tuple_sketch;
 
-select $BQ_DATASET.tuple_sketch_int64_get_theta(
-  $BQ_DATASET.tuple_sketch_int64_agg_union(sketch)
-) from $BQ_DATASET.tuple_sketch;
+select `$BQ_DATASET`.tuple_sketch_int64_get_theta(
+  `$BQ_DATASET`.tuple_sketch_int64_agg_union(sketch)
+) from `$BQ_DATASET`.tuple_sketch;
 
-select $BQ_DATASET.tuple_sketch_int64_get_num_retained(
-  $BQ_DATASET.tuple_sketch_int64_agg_union(sketch)
-) from $BQ_DATASET.tuple_sketch;
+select `$BQ_DATASET`.tuple_sketch_int64_get_num_retained(
+  `$BQ_DATASET`.tuple_sketch_int64_agg_union(sketch)
+) from `$BQ_DATASET`.tuple_sketch;
 
-drop table $BQ_DATASET.tuple_sketch;
+drop table `$BQ_DATASET`.tuple_sketch;
 
 # using full signatures
-create or replace table $BQ_DATASET.tuple_sketch(sketch bytes);
+create or replace table `$BQ_DATASET`.tuple_sketch(sketch bytes);
 
-insert into $BQ_DATASET.tuple_sketch
-(select $BQ_DATASET.tuple_sketch_int64_from_theta_sketch_seed(
-  $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(cast(value as string), STRUCT<BYTEINT, INT64, FLOAT64>(10, 111, 0.999)),
+insert into `$BQ_DATASET`.tuple_sketch
+(select `$BQ_DATASET`.tuple_sketch_int64_from_theta_sketch_seed(
+  `$BQ_DATASET`.theta_sketch_agg_string_lgk_seed_p(cast(value as string), STRUCT<BYTEINT, INT64, FLOAT64>(10, 111, 0.999)),
   1,
   111
 ) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
-insert into $BQ_DATASET.tuple_sketch
-(select $BQ_DATASET.tuple_sketch_int64_from_theta_sketch_seed(
-  $BQ_DATASET.theta_sketch_agg_string_lgk_seed_p(cast(value as string), STRUCT<BYTEINT, INT64, FLOAT64>(10, 111, 0.999)),
+insert into `$BQ_DATASET`.tuple_sketch
+(select `$BQ_DATASET`.tuple_sketch_int64_from_theta_sketch_seed(
+  `$BQ_DATASET`.theta_sketch_agg_string_lgk_seed_p(cast(value as string), STRUCT<BYTEINT, INT64, FLOAT64>(10, 111, 0.999)),
   1,
   111
 ) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
 # expected about 20000
-select $BQ_DATASET.tuple_sketch_int64_get_estimate_seed(
-  $BQ_DATASET.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
+select `$BQ_DATASET`.tuple_sketch_int64_get_estimate_seed(
+  `$BQ_DATASET`.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
   111
-) from $BQ_DATASET.tuple_sketch;
+) from `$BQ_DATASET`.tuple_sketch;
 
-select $BQ_DATASET.tuple_sketch_int64_get_estimate_and_bounds_seed(
-  $BQ_DATASET.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
+select `$BQ_DATASET`.tuple_sketch_int64_get_estimate_and_bounds_seed(
+  `$BQ_DATASET`.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
   2,
   111
-) from $BQ_DATASET.tuple_sketch;
+) from `$BQ_DATASET`.tuple_sketch;
 
-select $BQ_DATASET.tuple_sketch_int64_get_sum_estimate_and_bounds_seed(
-  $BQ_DATASET.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
+select `$BQ_DATASET`.tuple_sketch_int64_get_sum_estimate_and_bounds_seed(
+  `$BQ_DATASET`.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
   2,
   111
-) from $BQ_DATASET.tuple_sketch;
+) from `$BQ_DATASET`.tuple_sketch;
 
 # expected estimate about 20000
-select $BQ_DATASET.tuple_sketch_int64_to_string_seed(
-  $BQ_DATASET.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
+select `$BQ_DATASET`.tuple_sketch_int64_to_string_seed(
+  `$BQ_DATASET`.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
   111
-) from $BQ_DATASET.tuple_sketch;
+) from `$BQ_DATASET`.tuple_sketch;
 
-select $BQ_DATASET.tuple_sketch_int64_get_theta_seed(
-  $BQ_DATASET.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
+select `$BQ_DATASET`.tuple_sketch_int64_get_theta_seed(
+  `$BQ_DATASET`.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
   111
-) from $BQ_DATASET.tuple_sketch;
+) from `$BQ_DATASET`.tuple_sketch;
 
-select $BQ_DATASET.tuple_sketch_int64_get_num_retained_seed(
-  $BQ_DATASET.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
+select `$BQ_DATASET`.tuple_sketch_int64_get_num_retained_seed(
+  `$BQ_DATASET`.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
   111
-) from $BQ_DATASET.tuple_sketch;
+) from `$BQ_DATASET`.tuple_sketch;
 
-drop table $BQ_DATASET.tuple_sketch;
+drop table `$BQ_DATASET`.tuple_sketch;
 
 
 # using defaluts
 # expected 5
-select $BQ_DATASET.tuple_sketch_int64_get_estimate(
-  $BQ_DATASET.tuple_sketch_int64_union(
-    (select $BQ_DATASET.tuple_sketch_int64_agg_int64(key, 1) from unnest([1, 2, 3]) as key),
-    (select $BQ_DATASET.tuple_sketch_int64_agg_int64(key, 1) from unnest([3, 4, 5]) as key)
+select `$BQ_DATASET`.tuple_sketch_int64_get_estimate(
+  `$BQ_DATASET`.tuple_sketch_int64_union(
+    (select `$BQ_DATASET`.tuple_sketch_int64_agg_int64(key, 1) from unnest([1, 2, 3]) as key),
+    (select `$BQ_DATASET`.tuple_sketch_int64_agg_int64(key, 1) from unnest([3, 4, 5]) as key)
   )
 );
 
 # using full signatures
 # expected 5
-select $BQ_DATASET.tuple_sketch_int64_get_estimate_seed(
-  $BQ_DATASET.tuple_sketch_int64_union_lgk_seed_mode(
-    (select $BQ_DATASET.tuple_sketch_int64_agg_int64_lgk_seed_p_mode(key, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "MIN")) from unnest([1, 2, 3]) as key),
-    (select $BQ_DATASET.tuple_sketch_int64_agg_int64_lgk_seed_p_mode(key, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "MIN")) from unnest([3, 4, 5]) as key),
+select `$BQ_DATASET`.tuple_sketch_int64_get_estimate_seed(
+  `$BQ_DATASET`.tuple_sketch_int64_union_lgk_seed_mode(
+    (select `$BQ_DATASET`.tuple_sketch_int64_agg_int64_lgk_seed_p_mode(key, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "MIN")) from unnest([1, 2, 3]) as key),
+    (select `$BQ_DATASET`.tuple_sketch_int64_agg_int64_lgk_seed_p_mode(key, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "MIN")) from unnest([3, 4, 5]) as key),
     10,
     111,
     "MIN"
@@ -703,19 +703,19 @@ select $BQ_DATASET.tuple_sketch_int64_get_estimate_seed(
 
 # using defaluts
 # expected 1
-select $BQ_DATASET.tuple_sketch_int64_get_estimate(
-  $BQ_DATASET.tuple_sketch_int64_intersection(
-    (select $BQ_DATASET.tuple_sketch_int64_agg_string(str, 1) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.tuple_sketch_int64_agg_string(str, 1) from unnest(["c", "d", "e"]) as str)
+select `$BQ_DATASET`.tuple_sketch_int64_get_estimate(
+  `$BQ_DATASET`.tuple_sketch_int64_intersection(
+    (select `$BQ_DATASET`.tuple_sketch_int64_agg_string(str, 1) from unnest(["a", "b", "c"]) as str),
+    (select `$BQ_DATASET`.tuple_sketch_int64_agg_string(str, 1) from unnest(["c", "d", "e"]) as str)
   )
 );
 
 # using full signatures
 # expected 1
-select $BQ_DATASET.tuple_sketch_int64_get_estimate_seed(
-  $BQ_DATASET.tuple_sketch_int64_intersection_seed_mode(
-    (select $BQ_DATASET.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "MIN")) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "MIN")) from unnest(["c", "d", "e"]) as str),
+select `$BQ_DATASET`.tuple_sketch_int64_get_estimate_seed(
+  `$BQ_DATASET`.tuple_sketch_int64_intersection_seed_mode(
+    (select `$BQ_DATASET`.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "MIN")) from unnest(["a", "b", "c"]) as str),
+    (select `$BQ_DATASET`.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "MIN")) from unnest(["c", "d", "e"]) as str),
     111,
     "MIN"
   ),
@@ -724,19 +724,19 @@ select $BQ_DATASET.tuple_sketch_int64_get_estimate_seed(
 
 # using defaluts
 # expected 2
-select $BQ_DATASET.tuple_sketch_int64_get_estimate(
-  $BQ_DATASET.tuple_sketch_int64_a_not_b(
-    (select $BQ_DATASET.tuple_sketch_int64_agg_string(str, 1) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.tuple_sketch_int64_agg_string(str, 1) from unnest(["c", "d", "e"]) as str)
+select `$BQ_DATASET`.tuple_sketch_int64_get_estimate(
+  `$BQ_DATASET`.tuple_sketch_int64_a_not_b(
+    (select `$BQ_DATASET`.tuple_sketch_int64_agg_string(str, 1) from unnest(["a", "b", "c"]) as str),
+    (select `$BQ_DATASET`.tuple_sketch_int64_agg_string(str, 1) from unnest(["c", "d", "e"]) as str)
   )
 );
 
 # using full signatures
 # expected 2
-select $BQ_DATASET.tuple_sketch_int64_get_estimate_seed(
-  $BQ_DATASET.tuple_sketch_int64_a_not_b_seed(
-    (select $BQ_DATASET.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "MIN")) from unnest(["a", "b", "c"]) as str),
-    (select $BQ_DATASET.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "MIN")) from unnest(["c", "d", "e"]) as str),
+select `$BQ_DATASET`.tuple_sketch_int64_get_estimate_seed(
+  `$BQ_DATASET`.tuple_sketch_int64_a_not_b_seed(
+    (select `$BQ_DATASET`.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "MIN")) from unnest(["a", "b", "c"]) as str),
+    (select `$BQ_DATASET`.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "MIN")) from unnest(["c", "d", "e"]) as str),
     111
   ),
   111
@@ -744,24 +744,24 @@ select $BQ_DATASET.tuple_sketch_int64_get_estimate_seed(
 
 # using defaluts
 # expected 0.2
-select $BQ_DATASET.tuple_sketch_int64_jaccard_similarity(
-  (select $BQ_DATASET.tuple_sketch_int64_agg_string(str, 1) from unnest(["a", "b", "c"]) as str),
-  (select $BQ_DATASET.tuple_sketch_int64_agg_string(str, 1) from unnest(["c", "d", "e"]) as str)
+select `$BQ_DATASET`.tuple_sketch_int64_jaccard_similarity(
+  (select `$BQ_DATASET`.tuple_sketch_int64_agg_string(str, 1) from unnest(["a", "b", "c"]) as str),
+  (select `$BQ_DATASET`.tuple_sketch_int64_agg_string(str, 1) from unnest(["c", "d", "e"]) as str)
 );
 
 # using full signatures
 # expected 0.2
-select $BQ_DATASET.tuple_sketch_int64_jaccard_similarity_seed(
-  (select $BQ_DATASET.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "NOP")) from unnest(["a", "b", "c"]) as str),
-  (select $BQ_DATASET.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "NOP")) from unnest(["c", "d", "e"]) as str),
+select `$BQ_DATASET`.tuple_sketch_int64_jaccard_similarity_seed(
+  (select `$BQ_DATASET`.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "NOP")) from unnest(["a", "b", "c"]) as str),
+  (select `$BQ_DATASET`.tuple_sketch_int64_agg_string_lgk_seed_p_mode(str, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "NOP")) from unnest(["c", "d", "e"]) as str),
   111
 );
 
 # using defaults
 # expected 1 entry
-select $BQ_DATASET.tuple_sketch_int64_to_string(
-  $BQ_DATASET.tuple_sketch_int64_filter_low_high(
-    $BQ_DATASET.tuple_sketch_int64_agg_string(key, 1),
+select `$BQ_DATASET`.tuple_sketch_int64_to_string(
+  `$BQ_DATASET`.tuple_sketch_int64_filter_low_high(
+    `$BQ_DATASET`.tuple_sketch_int64_agg_string(key, 1),
     2,
     2
   )
@@ -769,9 +769,9 @@ select $BQ_DATASET.tuple_sketch_int64_to_string(
 
 # using full signatures
 # expected 1 entry
-select $BQ_DATASET.tuple_sketch_int64_to_string_seed(
-  $BQ_DATASET.tuple_sketch_int64_filter_low_high_seed(
-    $BQ_DATASET.tuple_sketch_int64_agg_string_lgk_seed_p_mode(key, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "SUM")),
+select `$BQ_DATASET`.tuple_sketch_int64_to_string_seed(
+  `$BQ_DATASET`.tuple_sketch_int64_filter_low_high_seed(
+    `$BQ_DATASET`.tuple_sketch_int64_agg_string_lgk_seed_p_mode(key, 1, STRUCT<BYTEINT, INT64, FLOAT64, STRING>(10, 111, 0.999, "SUM")),
     2,
     2,
     111

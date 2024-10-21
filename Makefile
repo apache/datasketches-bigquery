@@ -42,7 +42,7 @@ install: $(MODINSTALL)
 MODTEST = $(addsuffix .test, $(MODULES))
 
 $(MODTEST): %.test:
-	$(MAKE) -C $* test
+	- $(MAKE) -C $* test
 
 test: $(MODTEST)
 
