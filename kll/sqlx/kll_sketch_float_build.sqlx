@@ -19,95 +19,18 @@
 
 config { hasOutput: true }
 
-CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(value FLOAT64, k INT NOT AGGREGATE)
+CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(value FLOAT64)
 RETURNS BYTES
-LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/kll_sketch_float.mjs"],
   description = '''Creates a sketch that represents the distribution of the given column.
 
 Param value: the column of FLOAT64 values.
-Param k: the sketch accuracy/size parameter as an INT in the range [8, 65535].
+Defaults: k = 200.
 Returns: a KLL Sketch, as bytes.
 
 For more information:
  - https://datasketches.apache.org/docs/KLL/KLLSketch.html
 '''
-) AS R"""
-import ModuleFactory from "${JS_BUCKET}/kll_sketch_float.mjs";
-var Module = await ModuleFactory();
-const default_k = Number(Module.DEFAULT_K);
-
-// UDAF interface
-export function initialState(k) {
-  try {
-    var state = {
-      k: k == null ? default_k : Number(k),
-    };
-    state.sketch = new Module.kll_sketch_float(state.k);
-    return state;
-  } catch (e) {
-    if (e.message != null) throw e;
-    throw new Error(Module.getExceptionMessage(e));
-  }
-}
-
-export function aggregate(state, value) {
-  try {
-    if (state.sketch == null) { // for transition deserialize-aggregate
-      state.sketch = new Module.kll_sketch_float(state.k);
-    }
-    state.sketch.update(value);
-  } catch (e) {
-    if (e.message != null) throw e;
-    throw new Error(Module.getExceptionMessage(e));
-  }
-}
-
-export function serialize(state) {
-  if (state.sketch == null) return state; // for transition deserialize-serialize
-  try {
-    // for prior transition deserialize-aggregate
-    // merge aggregated and serialized state
-    if (state.sketch != null && state.serialized != null) {
-      sketch.merge(state.serialized);
-    }
-    return {
-      k: state.k,
-      serialized: state.sketch.serializeAsUint8Array()
-    };
-  } catch (e) {
-    if (e.message != null) throw e;
-    throw new Error(Module.getExceptionMessage(e));
-  } finally {
-    state.sketch.delete();
-  }
-}
-
-export function deserialize(serialized) {
-  return serialized;
-}
-
-export function merge(state, other_state) {
-  try {
-    if (state.sketch == null) {
-      state.sketch = new Module.kll_sketch_float(state.k);
-    }
-    if (state.serialized != null) {
-      state.sketch.merge(state.serialized);
-      state.serialized = null;
-    }
-    if (other_state.serialized != null) {
-      state.sketch.merge(other_state.serialized);
-      other_state.serialized = null;
-    }
-  } catch (e) {
-    if (e.message != null) throw e;
-    throw new Error(Module.getExceptionMessage(e));
-  }
-}
-
-export function finalize(state) {
-  return serialize(state).serialized;
-}
-""";
+) AS (
+  ${ref("kll_sketch_float_build_k")}(value, NULL)
+);

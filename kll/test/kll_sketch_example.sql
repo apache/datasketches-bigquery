@@ -32,7 +32,7 @@ CREATE OR REPLACE TABLE `$BQ_DATASET`.agg_sample_data AS
 SELECT
   group_key,
   count(*) AS total_count,
-  `$BQ_DATASET`.kll_sketch_float_build(x, 250) AS kll_sketch
+  `$BQ_DATASET`.kll_sketch_float_build_k(x, 250) AS kll_sketch
 FROM `$BQ_DATASET`.sample_data
 GROUP BY group_key;
 
@@ -40,7 +40,7 @@ GROUP BY group_key;
 
 WITH agg_data AS (
   SELECT
-    `$BQ_DATASET`.kll_sketch_float_merge(kll_sketch, 250) as merged_kll_sketch,
+    `$BQ_DATASET`.kll_sketch_float_merge_k(kll_sketch, 250) as merged_kll_sketch,
     SUM(total_count) as total_count
   FROM `$BQ_DATASET`.agg_sample_data
 )

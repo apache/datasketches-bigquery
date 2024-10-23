@@ -108,7 +108,7 @@ select `$BQ_DATASET`.tuple_sketch_int64_get_num_retained_seed(
 drop table `$BQ_DATASET`.tuple_sketch;
 
 
-# using defaluts
+# using defaults
 # expected 5
 select `$BQ_DATASET`.tuple_sketch_int64_get_estimate(
   `$BQ_DATASET`.tuple_sketch_int64_union(
@@ -130,7 +130,7 @@ select `$BQ_DATASET`.tuple_sketch_int64_get_estimate_seed(
   111
 );
 
-# using defaluts
+# using defaults
 # expected 1
 select `$BQ_DATASET`.tuple_sketch_int64_get_estimate(
   `$BQ_DATASET`.tuple_sketch_int64_intersection(
@@ -151,7 +151,7 @@ select `$BQ_DATASET`.tuple_sketch_int64_get_estimate_seed(
   111
 );
 
-# using defaluts
+# using defaults
 # expected 2
 select `$BQ_DATASET`.tuple_sketch_int64_get_estimate(
   `$BQ_DATASET`.tuple_sketch_int64_a_not_b(
@@ -171,7 +171,7 @@ select `$BQ_DATASET`.tuple_sketch_int64_get_estimate_seed(
   111
 );
 
-# using defaluts
+# using defaults
 # expected 0.2
 select `$BQ_DATASET`.tuple_sketch_int64_jaccard_similarity(
   (select `$BQ_DATASET`.tuple_sketch_int64_agg_string(str, 1) from unnest(["a", "b", "c"]) as str),
