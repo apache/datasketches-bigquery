@@ -19,7 +19,7 @@
 
 create or replace table `$BQ_DATASET`.kll_sketch(sketch bytes);
 
-# using defalut
+# using default
 insert into `$BQ_DATASET`.kll_sketch
 (select `$BQ_DATASET`.kll_sketch_float_build(value) from unnest([1,2,3,4,5,6,7,8,9,10]) as value);
 

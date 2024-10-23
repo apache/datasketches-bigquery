@@ -317,7 +317,7 @@ data and calculating percentiles, such as the median or 95th percentile.
 
 create or replace table `$BQ_DATASET`.kll_sketch(sketch bytes);
 
-# using defalut
+# using default
 insert into `$BQ_DATASET`.kll_sketch
 (select `$BQ_DATASET`.kll_sketch_float_build(value) from unnest([1,2,3,4,5,6,7,8,9,10]) as value);
 
@@ -690,7 +690,7 @@ select `$BQ_DATASET`.tuple_sketch_int64_get_num_retained_seed(
 drop table `$BQ_DATASET`.tuple_sketch;
 
 
-# using defaluts
+# using defaults
 # expected 5
 select `$BQ_DATASET`.tuple_sketch_int64_get_estimate(
   `$BQ_DATASET`.tuple_sketch_int64_union(
@@ -712,7 +712,7 @@ select `$BQ_DATASET`.tuple_sketch_int64_get_estimate_seed(
   111
 );
 
-# using defaluts
+# using defaults
 # expected 1
 select `$BQ_DATASET`.tuple_sketch_int64_get_estimate(
   `$BQ_DATASET`.tuple_sketch_int64_intersection(
@@ -733,7 +733,7 @@ select `$BQ_DATASET`.tuple_sketch_int64_get_estimate_seed(
   111
 );
 
-# using defaluts
+# using defaults
 # expected 2
 select `$BQ_DATASET`.tuple_sketch_int64_get_estimate(
   `$BQ_DATASET`.tuple_sketch_int64_a_not_b(
@@ -753,7 +753,7 @@ select `$BQ_DATASET`.tuple_sketch_int64_get_estimate_seed(
   111
 );
 
-# using defaluts
+# using defaults
 # expected 0.2
 select `$BQ_DATASET`.tuple_sketch_int64_jaccard_similarity(
   (select `$BQ_DATASET`.tuple_sketch_int64_agg_string(str, 1) from unnest(["a", "b", "c"]) as str),
