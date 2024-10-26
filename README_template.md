@@ -34,7 +34,7 @@ page for how to contact us.
 ## Requirements
 
 - Requires [Emscripten (emcc compiler)](https://emscripten.org/)
-- Requires a link to **/datasketches-cpp** in this repository
+- Requires a link to **datasketches-cpp** in this repository
 - Requires make utility
 - Requires [Google Cloud CLI](https://cloud.google.com/sdk/docs/install)
 
@@ -71,6 +71,7 @@ This package includes BigQuery UD(A)Fs for the following Sketch types:
 | [**KLL Sketch**](#kll-sketch-functions)           |  Estimates the distribution of values, allowing you to find quantiles (like median, percentiles) without storing all the data. |
 | [**Theta Sketch**](#theta-sketch-functions)       |  Estimates unique items and supports set operations (union, intersection, difference) on those items. |
 | [**Tuple Sketch**](#tuple-sketch-functions)       |  Similar to Theta Sketch but allows associating values with each unique item, enabling operations like sum, min, max on those values. |
+| [**TDigest**](#tdigest-functions)               |  Another algorithm and very compact data structure for estimating quantiles and ranks of numeric values. |
 
 ## CPC Sketch Functions
 
@@ -127,6 +128,14 @@ overlap or comparing different groups.
 allowing you to associate a summary value with each item in the set. This
 enables calculations like the sum, minimum, or maximum of values associated with
 the distinct items.
+
+| Function Name | Function Type | Signature | Description |
+|---|---|---|---|
+
+## TDigest Functions
+
+**Description:** Similar to KLL sketch, estimates distributions of numeric values,
+provides approximate quantiles and ranks.
 
 | Function Name | Function Type | Signature | Description |
 |---|---|---|---|

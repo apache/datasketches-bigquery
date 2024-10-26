@@ -34,7 +34,7 @@ page for how to contact us.
 ## Requirements
 
 - Requires [Emscripten (emcc compiler)](https://emscripten.org/)
-- Requires a link to **/datasketches-cpp** in this repository
+- Requires a link to **datasketches-cpp** in this repository
 - Requires make utility
 - Requires [Google Cloud CLI](https://cloud.google.com/sdk/docs/install)
 
@@ -71,6 +71,7 @@ This package includes BigQuery UD(A)Fs for the following Sketch types:
 | [**KLL Sketch**](#kll-sketch-functions)           |  Estimates the distribution of values, allowing you to find quantiles (like median, percentiles) without storing all the data. |
 | [**Theta Sketch**](#theta-sketch-functions)       |  Estimates unique items and supports set operations (union, intersection, difference) on those items. |
 | [**Tuple Sketch**](#tuple-sketch-functions)       |  Similar to Theta Sketch but allows associating values with each unique item, enabling operations like sum, min, max on those values. |
+| [**TDigest**](#tdigest-functions)               |  Another algorithm and very compact data structure for estimating quantiles and ranks of numeric values. |
 
 ## CPC Sketch Functions
 
@@ -790,3 +791,63 @@ select `$BQ_DATASET`.tuple_sketch_int64_to_string_seed(
   111
 ) from unnest(["a", "b", "c", "c"]) as key;
 ```
+
+
+## TDigest Functions
+
+**Description:** Similar to KLL sketch, estimates distributions of numeric values,
+provides approximate quantiles and ranks.
+
+| Function Name | Function Type | Signature | Description |
+|---|---|---|---|
+| [tdigest_double_build](tdigest/sqlx/tdigest_double_build.sqlx) | AGGREGATE | (value FLOAT64) -> BYTES | Creates a sketch that represents the distribution of the given column.<br><br>Param value: the column of FLOAT64 values.<br>Defaults: k = 200.<br>Returns: a t\-Digest, as bytes.<br><br>For more information:<br> \- https://github.com/tdunning/t\-digest |
+| [tdigest_double_merge](tdigest/sqlx/tdigest_double_merge.sqlx) | AGGREGATE | (sketch BYTES) -> BYTES | Merges sketches from the given column.<br><br>Param sketch: the column of values.<br>Defaults: k = 200.<br>Returns: a serialized t\-Digest as BYTES.<br><br>For more information:<br> \- https://github.com/tdunning/t\-digest |
+| [tdigest_double_merge_k](tdigest/sqlx/tdigest_double_merge_k.sqlx) | AGGREGATE | (sketch BYTES, k INT NOT AGGREGATE) -> BYTES | Merges sketches from the given column.<br><br>Param sketch: the column of values.<br>Param k: the sketch accuracy/size parameter as an integer in the range \[10, 65535\].<br>Returns: a serialized t\-Digest as BYTES.<br><br>For more information:<br> \- https://github.com/tdunning/t\-digest |
+| [tdigest_double_build_k](tdigest/sqlx/tdigest_double_build_k.sqlx) | AGGREGATE | (value FLOAT64, k INT NOT AGGREGATE) -> BYTES | Creates a sketch that represents the distribution of the given column.<br><br>Param value: the column of FLOAT64 values.<br>Param k: the sketch accuracy/size parameter as an INT in the range \[10, 65535\].<br>Returns: a t\-Digest, as bytes.<br><br>For more information:<br> \- https://github.com/tdunning/t\-digest |
+| [tdigest_double_get_max_value](tdigest/sqlx/tdigest_double_get_max_value.sqlx) | SCALAR | (sketch BYTES) -> FLOAT64 | Returns the maximum value of the input stream.<br><br>Param sketch: the given sketch as BYTES.<br>Returns: max value as FLOAT64<br><br>For more information:<br> \- https://github.com/tdunning/t\-digest |
+| [tdigest_double_to_string](tdigest/sqlx/tdigest_double_to_string.sqlx) | SCALAR | (sketch BYTES) -> STRING | Returns a summary string that represents the state of the given sketch.<br><br>Param sketch: the given sketch as sketch encoded bytes.<br>Returns: a string that represents the state of the given sketch.<br><br>For more information:<br> \- https://github.com/tdunning/t\-digest |
+| [tdigest_double_get_total_weight](tdigest/sqlx/tdigest_double_get_total_weight.sqlx) | SCALAR | (sketch BYTES) -> INT64 | Returns the total weight of the input stream.<br><br>Param sketch: the given sketch as BYTES.<br>Returns: total weight as INT64<br><br>For more information:<br> \- https://github.com/tdunning/t\-digest |
+| [tdigest_double_get_min_value](tdigest/sqlx/tdigest_double_get_min_value.sqlx) | SCALAR | (sketch BYTES) -> FLOAT64 | Returns the minimum value of the input stream.<br><br>Param sketch: the given sketch as BYTES.<br>Returns: min value as FLOAT64<br><br>For more information:<br> \- https://github.com/tdunning/t\-digest |
+| [tdigest_double_get_rank](tdigest/sqlx/tdigest_double_get_rank.sqlx) | SCALAR | (sketch BYTES, value FLOAT64) -> FLOAT64 | Returns an approximation to the normalized rank, on the interval \[0.0, 1.0\], of the given value.<br><br>Param sketch: the given sketch in serialized form.<br>Param value: value to be ranked.<br>Returns: an approximate rank of the given value.<br><br>For more information:<br> \- https://github.com/tdunning/t\-digest |
+| [tdigest_double_get_quantile](tdigest/sqlx/tdigest_double_get_quantile.sqlx) | SCALAR | (sketch BYTES, rank FLOAT64) -> FLOAT64 | Returns a value from the sketch that is the best approximation to a value from the original stream with the given rank.<br><br>Param sketch: the given sketch in serialized form.<br>Param rank: rank of a value in the hypothetical sorted stream.<br>Returns: an approximate quantile associated with the given rank.<br><br>For more information:<br> \- https://github.com/tdunning/t\-digest |
+
+**Examples:**
+
+```sql
+
+create or replace table `$BQ_DATASET`.tdigest_double(sketch bytes);
+
+# using default
+insert into `$BQ_DATASET`.tdigest_double
+(select `$BQ_DATASET`.tdigest_double_build(value) from unnest([1,2,3,4,5,6,7,8,9,10]) as value);
+
+# using full signature
+insert into `$BQ_DATASET`.tdigest_double
+(select `$BQ_DATASET`.tdigest_double_build_k(value, 100) from unnest([11,12,13,14,15,16,17,18,19,20]) as value);
+
+select `$BQ_DATASET`.tdigest_double_to_string(sketch) from `$BQ_DATASET`.tdigest_double;
+
+# using default
+select `$BQ_DATASET`.tdigest_double_to_string(`$BQ_DATASET`.tdigest_double_merge(sketch)) from `$BQ_DATASET`.tdigest_double;
+
+# using full signature
+select `$BQ_DATASET`.tdigest_double_to_string(`$BQ_DATASET`.tdigest_double_merge_k(sketch, 100)) from `$BQ_DATASET`.tdigest_double;
+
+# expected 0.5
+select `$BQ_DATASET`.tdigest_double_get_rank(`$BQ_DATASET`.tdigest_double_merge(sketch), 10) from `$BQ_DATASET`.tdigest_double;
+
+# expected 10
+select `$BQ_DATASET`.tdigest_double_get_quantile(`$BQ_DATASET`.tdigest_double_merge(sketch), 0.5) from `$BQ_DATASET`.tdigest_double;
+
+# expected 20
+select `$BQ_DATASET`.tdigest_double_get_total_weight(`$BQ_DATASET`.tdigest_double_merge(sketch)) from `$BQ_DATASET`.tdigest_double;
+
+# expected 1
+select `$BQ_DATASET`.tdigest_double_get_min_value(`$BQ_DATASET`.tdigest_double_merge(sketch)) from `$BQ_DATASET`.tdigest_double;
+
+# expected 20
+select `$BQ_DATASET`.tdigest_double_get_max_value(`$BQ_DATASET`.tdigest_double_merge(sketch)) from `$BQ_DATASET`.tdigest_double;
+
+drop table `$BQ_DATASET`.tdigest_double;
+```
+
