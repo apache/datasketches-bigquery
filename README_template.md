@@ -149,7 +149,7 @@ For more information: [Tuple sketches](https://datasketches.apache.org/docs/Tupl
 **Description:** Similar to KLL sketch, estimates distributions of numeric values,
 provides approximate quantiles and ranks.
 
-For more information: [t-digest](https://github.com/tdunning/t-digest)
+For more information: [t-digest](https://datasketches.apache.org/docs/tdigest/tdigest.html)
 
 | Function Name | Function Type | Signature | Description |
 |---|---|---|---|
