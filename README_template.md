@@ -81,6 +81,8 @@ accurate estimates with low memory usage and are particularly useful for
 applications like counting unique users, analyzing website traffic, or tracking
 distinct events.
 
+For more information: [CPC Sketches](https://datasketches.apache.org/docs/CPC/CpcSketches.html)
+
 | Function Name | Function Type | Signature | Description |
 |---|---|---|---|
 
@@ -91,6 +93,8 @@ frequencies of items in a dataset. They are effective for identifying the most
 frequent items, such as the top products purchased or the most popular search
 queries.
 
+For more information: [Frequency Sketches](https://datasketches.apache.org/docs/Frequency/FrequencySketches.html)
+
 | Function Name | Function Type | Signature | Description |
 |---|---|---|---|
 
@@ -99,6 +103,8 @@ queries.
 **Description:** HyperLogLog (HLL) sketches are another type of cardinality
 estimation sketch. They are known for their high accuracy and low memory
 consumption, making them suitable for large datasets and real-time analytics.
+
+For more information: [HLL Sketches](https://datasketches.apache.org/docs/HLL/HllSketches.html)
 
 | Function Name | Function Type | Signature | Description |
 |---|---|---|---|
@@ -109,25 +115,31 @@ consumption, making them suitable for large datasets and real-time analytics.
 quantiles for a dataset. They are useful for understanding the distribution of
 data and calculating percentiles, such as the median or 95th percentile.
 
+For more information: [KLL Sketches](https://datasketches.apache.org/docs/KLL/KLLSketch.html)
+
 | Function Name | Function Type | Signature | Description |
 |---|---|---|---|
 
-## THETA Sketch Functions
+## Theta Sketch Functions
 
 **Description:** Theta sketches are used for set operations like union,
 intersection, and difference. They are efficient for estimating the size of
 these operations on large datasets, enabling applications like analyzing user
 overlap or comparing different groups.
 
+For more information: [Theta sketches](https://datasketches.apache.org/docs/Theta/ThetaSketches.html)
+
 | Function Name | Function Type | Signature | Description |
 |---|---|---|---|
 
-## TUPLE Sketch Functions
+## Tuple Sketch Functions
 
 **Description:** Tuple sketches extend the functionality of Theta sketches by
 allowing you to associate a summary value with each item in the set. This
 enables calculations like the sum, minimum, or maximum of values associated with
 the distinct items.
+
+For more information: [Tuple sketches](https://datasketches.apache.org/docs/Tuple/TupleSketches.html)
 
 | Function Name | Function Type | Signature | Description |
 |---|---|---|---|
@@ -136,6 +148,8 @@ the distinct items.
 
 **Description:** Similar to KLL sketch, estimates distributions of numeric values,
 provides approximate quantiles and ranks.
+
+For more information: [t-digest](https://github.com/tdunning/t-digest)
 
 | Function Name | Function Type | Signature | Description |
 |---|---|---|---|

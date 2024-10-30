@@ -75,6 +75,7 @@ def parse_sqlx(file_content: str, filename: str) -> dict:
 
   # Format multiline descriptions for Markdown and escape them
   description = escape_markdown(description)
+  description = re.compile(r'\n*For more info.*', re.M | re.S).sub('', description) # remove repetitive links
   description = description.replace('\n', '<br>')  # Replace newlines with <br> tags
 
   # Extract function arguments and their types
