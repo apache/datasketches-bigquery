@@ -44,7 +44,10 @@ MODTEST = $(addsuffix .test, $(MODULES))
 $(MODTEST): %.test:
 	- $(MAKE) -C $* test
 
-test: $(MODTEST)
+unittest:
+	./tests/run_dataform_tests.sh
+
+test: $(MODTEST) unittest
 
 readme:
 	python3 readme_generator.py

@@ -37,6 +37,7 @@ page for how to contact us.
 - Requires a link to **datasketches-cpp** in this repository
 - Requires make utility
 - Requires [Google Cloud CLI](https://cloud.google.com/sdk/docs/install)
+- Requires npm and @dataform/cli package `npm install -g @dataform/cli`
 
 
 ## Building, Installing, and Testing
@@ -45,8 +46,10 @@ page for how to contact us.
     - JS_BUCKET: to hold compiled artifacts
     - BQ_PROJECT: location of stored SQL functions (routines)
     - BQ_DATASET: location of stored SQL functions (routines)
+    - BQ_LOCATION: location of BQ_DATASET 
 
 ```
+gcloud auth application-default login # for authentication
 make          # performs compilation
 make install  # upload to $JS_BUCKET & create functions in $BQ_PROJECT.$BQ_DATASET
 make test     # runs predefined tests in BQ
