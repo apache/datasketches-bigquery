@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-MODULES := theta tuple cpc hll kll fi
+MODULES := theta tuple cpc hll kll fi tdigest
 
 $(MODULES):
 	$(MAKE) -C $@
@@ -42,9 +42,12 @@ install: $(MODINSTALL)
 MODTEST = $(addsuffix .test, $(MODULES))
 
 $(MODTEST): %.test:
-	- $(MAKE) -C $* test # Added '-' to continue on error
+	- $(MAKE) -C $* test
 
 unittest:
 	./tests/run_dataform_tests.sh
 
 test: $(MODTEST) unittest
+
+readme:
+	python3 readme_generator.py

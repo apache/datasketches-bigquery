@@ -1,0 +1,106 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+config { hasOutput: true }
+
+CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(sketch BYTES, k INT NOT AGGREGATE)
+RETURNS BYTES
+LANGUAGE js
+OPTIONS (
+  library=["${JS_BUCKET}/tdigest_double.mjs"],
+  description = '''Merges sketches from the given column.
+
+Param sketch: the column of values.
+Param k: the sketch accuracy/size parameter as an integer in the range [10, 65535].
+Returns: a serialized t-Digest as BYTES.
+
+For more information:
+ - https://github.com/tdunning/t-digest
+'''
+) AS R"""
+import ModuleFactory from "${JS_BUCKET}/tdigest_double.mjs";
+var Module = await ModuleFactory();
+const default_k = Number(Module.DEFAULT_K);
+
+// UDAF interface
+export function initialState(k) {
+  return {
+    k: k == null ? default_k : Number(k),
+  };
+}
+
+export function aggregate(state, sketch) {
+  try {
+    if (state.sketch == null) {
+      state.sketch = new Module.tdigest_double(state.k);
+    }
+    state.sketch.merge(sketch);
+  } catch (e) {
+    if (e.message != null) throw e;
+    throw new Error(Module.getExceptionMessage(e));
+  }
+}
+
+export function serialize(state) {
+  if (state.sketch == null) return state; // for transition deserialize-serialize
+  try {
+    // for prior transition deserialize-aggregate
+    // merge aggregated and serialized state
+    if (state.sketch != null && state.serialized != null) {
+      sketch.merge(state.serialized);
+    }
+    return {
+      k: state.k,
+      serialized: state.sketch.serializeAsUint8Array()
+    };
+  } catch (e) {
+    if (e.message != null) throw e;
+    throw new Error(Module.getExceptionMessage(e));
+  } finally {
+    state.sketch.delete();
+  }
+}
+
+export function deserialize(serialized) {
+  return serialized;
+}
+
+export function merge(state, other_state) {
+  try {
+    if (state.sketch == null) {
+      state.sketch = new Module.tdigest_double(state.k);
+    }
+    if (state.serialized != null) {
+      state.sketch.merge(state.serialized);
+      delete state.serialized;
+    }
+    if (other_state.serialized != null) {
+      state.sketch.merge(other_state.serialized);
+      delete other_state.serialized;
+    }
+  } catch (e) {
+    if (e.message != null) throw e;
+    throw new Error(Module.getExceptionMessage(e));
+  }
+}
+
+export function finalize(state) {
+  return serialize(state).serialized;
+}
+""";

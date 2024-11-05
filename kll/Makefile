@@ -46,11 +46,15 @@ clean:
 
 upload: all
 	@for file in $(ARTIFACTS); do \
-	  gcloud storage cp $$file gs://$(JS_BUCKET)/ ; \
+	  gcloud storage cp $$file $(JS_BUCKET)/ ; \
 	done
 
+# some functions (with shorter name) can call other functions (with suffix)
+# so reversing the order should create full-signature functions first
+reverse = $(if $(wordlist 2,2,$(1)),$(call reverse,$(wordlist 2,$(words $(1)),$(1))) $(firstword $(1)),$(1))
+
 create:
-	@for file in $(wildcard sqlx/*.sqlx); do \
+	@for file in $(call reverse,$(wildcard sqlx/*.sqlx)); do \
 	  echo creating $$file; \
 	  ../substitute_and_run.sh $$file ; \
 	done

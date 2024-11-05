@@ -17,16 +17,16 @@
  * under the License.
  */
 
-select $BQ_DATASET.frequent_strings_sketch_to_string($BQ_DATASET.frequent_strings_sketch_build(str, 1, 5)) from unnest(["a", "b", "c"]) as str;
+select `$BQ_DATASET`.frequent_strings_sketch_to_string(`$BQ_DATASET`.frequent_strings_sketch_build(str, 1, 5)) from unnest(["a", "b", "c"]) as str;
 
-create or replace table $BQ_DATASET.fs_sketch(sketch bytes);
+create or replace table `$BQ_DATASET`.fs_sketch(sketch bytes);
 
-insert into $BQ_DATASET.fs_sketch
-(select $BQ_DATASET.frequent_strings_sketch_build(str, 1, 5) from unnest(["a", "b", "c", "d"]) as str);
+insert into `$BQ_DATASET`.fs_sketch
+(select `$BQ_DATASET`.frequent_strings_sketch_build(str, 1, 5) from unnest(["a", "b", "c", "d"]) as str);
 
-insert into $BQ_DATASET.fs_sketch
-(select $BQ_DATASET.frequent_strings_sketch_build(str, 1, 5) from unnest(["a", "a", "c"]) as str);
+insert into `$BQ_DATASET`.fs_sketch
+(select `$BQ_DATASET`.frequent_strings_sketch_build(str, 1, 5) from unnest(["a", "a", "c"]) as str);
 
-select $BQ_DATASET.frequent_strings_sketch_get_result($BQ_DATASET.frequent_strings_sketch_merge(sketch, 5), "NO_FALSE_NEGATIVES", null) from $BQ_DATASET.fs_sketch;
+select `$BQ_DATASET`.frequent_strings_sketch_get_result(`$BQ_DATASET`.frequent_strings_sketch_merge(sketch, 5), "NO_FALSE_NEGATIVES", null) from `$BQ_DATASET`.fs_sketch;
 
-drop table $BQ_DATASET.fs_sketch;
+drop table `$BQ_DATASET`.fs_sketch;

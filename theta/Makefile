@@ -26,7 +26,7 @@ EMCFLAGS=-I../datasketches-cpp/common/include \
 	-O3 \
 	--bind
 
-ARTIFACTS=theta_sketch.mjs theta_sketch.js theta_sketch.wasm
+ARTIFACTS=theta.mjs theta.js theta.wasm
 
 all: $(ARTIFACTS)
 
@@ -45,7 +45,7 @@ clean:
 
 upload: all
 	@for file in $(ARTIFACTS); do \
-	  gcloud storage cp $$file gs://$(JS_BUCKET)/ ; \
+	  gcloud storage cp $$file $(JS_BUCKET)/ ; \
 	done
 
 # some functions (with shorter name) can call other functions (with suffix)
