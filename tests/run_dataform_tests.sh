@@ -56,8 +56,7 @@ EOF
   mkdir "$TEST_DIR/definitions"
 
   # Copy the test files to the definitions directory
-  cp unit_test_cases.js "$TEST_DIR/definitions/"
-  cp unit_test_utils.js "$TEST_DIR/definitions/"
+  cp *.js "$TEST_DIR/definitions/"
 
   # Run Dataform tests
   cd "$TEST_DIR"
