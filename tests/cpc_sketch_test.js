@@ -123,6 +123,21 @@ generate_udf_test("cpc_sketch_get_estimate_seed", [{
   expected_output: 5.003258518185566
 }]);
 
+generate_udf_test("cpc_sketch_to_string_seed", [{
+  inputs: [ cpc_union_10_111_1, 111 ],
+  expected_output: `'''### CPC sketch summary:
+   lg_k           : 10
+   seed hash      : d38c
+   C              : 5
+   flavor         : 1
+   merged         : true
+   interesting col: 0
+   table entries  : 5
+   window         : not allocated
+### End sketch summary
+'''`
+}]);
+
 const cpc_10_111_3 = `FROM_BASE64('CgEQCgAejNObDgAAEwAAAAAAAODTamJAEuxQsYzzw0AHAAAAkwAAAItbgcaBtLoCnGenKGkCETFyOS7wvKi2gMwNzDqqRZ/mxry4yzw35mVS/KqEzafPfdfa8cjkrnqKux4nnm/ltHoIYSSxQBrnJnF0nYvhGpSt2Kp7XVBocExL1HRWxmbzSsURbgKE2j3kvk7a0cp33F5fskKIRnam+oovpGrsDvAITGp0QhFm72qi3Cwfu6bWwX727GC96atVa1q4EQuKH90kW+QA8PoNyJkDMeW9W5NsZ0ivKwiIW43R1x0aJkJ66UvCCrRBzGvIqml9M02+vmq6aiQCi8uMnpFsXLPku+E4Wh6iI/eERBdqvcdKkkcmUNZXe5Edqp5jfrW+riW6lZYhByM3Nwmq5RqJE3fdGMQyXialhnb3IZZWhiotTGUIl6lz7XcxMGaNFWAhPM4sVW/t4+BtUh72Hy3J9KhK3ZjtcYRMda7zzVS5AmTuNc9N6BiIM2XKyzVxQdpBEHSx3qeWYRqmVV+V8ZBuoOnE12Qe7xwdOYF6taxaL5tVnlxKj8QWgRZSPM9tVbNfYGRlRsuC1akOcYGMExSx3n7aC8M0TxF4jX0xhIoEeBTwcgIM2IENzFLQ1lUqwn4QvfR4NpZFWG7RIZYhAlap3BfXD2y4FK8loK3y5B7MdDNUj4sQ7byZG8/PFVIZsjx3kkgbtIl7JB4hVrDXvtzoZE4aKyWnpCA0krOh8R6KqPL2MGUo0s3oj2CEUGKsuyqkp5RPlyS6aEZ20ymARFDQAkypc4Xldfag9JcWXBCPFHU5Br7AZEgcy9NHDtwYjAsAAJYck0x87eE8f9bOVIbz2yM8Ic83vIhPAwAAAAA=')`;
 
 generate_udaf_test("cpc_sketch_agg_int64_lgk_seed", {
