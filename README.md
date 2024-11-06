@@ -43,7 +43,7 @@ page for how to contact us.
 ## Building, Installing, and Testing
 
 - Requires setting environment variables
-    - JS_BUCKET: to hold compiled artifacts
+    - JS_BUCKET: to hold compiled artifacts (must include gs://)
     - BQ_PROJECT: location of stored SQL functions (routines)
     - BQ_DATASET: location of stored SQL functions (routines)
     - BQ_LOCATION: location of BQ_DATASET 
