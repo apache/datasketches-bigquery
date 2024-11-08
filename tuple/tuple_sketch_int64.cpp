@@ -36,7 +36,10 @@ class tuple_update_policy {
 public:
   tuple_update_policy(tuple_mode mode): mode_(mode) {}
   Summary create() const {
-    return S();
+    if (mode_ == ONE) return 1;
+    else if (mode_ == MIN) return std::numeric_limits<Summary>::max();
+    else if (mode_ == MAX) return std::numeric_limits<Summary>::min();
+    return 0;
   }
   void update(S& summary, const U& update) const {
     if (mode_ == SUM) summary += update;
