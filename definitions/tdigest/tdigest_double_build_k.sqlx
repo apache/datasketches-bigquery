@@ -31,7 +31,7 @@ Param k: the sketch accuracy/size parameter as an INT in the range [10, 65535].
 Returns: a t-Digest, as bytes.
 
 For more information:
- - https://github.com/tdunning/t-digest
+ - https://datasketches.apache.org/docs/tdigest/tdigest.html
 '''
 ) AS R"""
 import ModuleFactory from "${JS_BUCKET}/tdigest_double.mjs";
