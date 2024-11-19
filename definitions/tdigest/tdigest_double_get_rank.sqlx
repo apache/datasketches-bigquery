@@ -32,7 +32,7 @@ Param value: value to be ranked.
 Returns: an approximate rank of the given value.
 
 For more information:
- - https://github.com/tdunning/t-digest
+ - https://datasketches.apache.org/docs/tdigest/tdigest.html
 '''
 ) AS R"""
 try {

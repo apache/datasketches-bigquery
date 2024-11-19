@@ -31,7 +31,7 @@ Param sketch: the given sketch as BYTES.
 Returns: max value as FLOAT64
 
 For more information:
- - https://github.com/tdunning/t-digest
+ - https://datasketches.apache.org/docs/tdigest/tdigest.html
 '''
 ) AS R"""
 try {
