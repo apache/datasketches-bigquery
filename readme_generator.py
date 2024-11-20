@@ -111,14 +111,12 @@ def process_folder(input_folder: str, sketch_type: str) -> dict:
         parsed_data = parse_sqlx(content, file)
         logging.info(f"Parsed data for {file}: {parsed_data}")
 
-        # Update function index with relative path
-        relative_path = os.path.relpath(sqlx_path, input_folder)
         function_index[sketch_type].append({
             'function_name': parsed_data['function_name'],
             'signature': parsed_data['signature'],
             'function_type':parsed_data['function_type'],
             'description': parsed_data['description'],
-            'path': relative_path  # Store relative path for linking
+            'path': sqlx_path
         })
   return function_index
 
@@ -136,7 +134,7 @@ def generate_readme(template_path: str, function_index: dict, examples_path: str
   # Sort functions by function type (AGGREGATE first, then SCALAR) and then by number of arguments
   sorted_functions = sorted(function_index, key=lambda x: (x['function_type'], len(x['signature'].split(','))), reverse=False)
   for function in sorted_functions:
-    function_link = f"[{function['function_name']}]({function['path']})"
+    function_link = f"[{function['function_name']}](../{function['path']})"
     output_lines += f"| {function_link} | {function['function_type']} | {function['signature']} | {function['description']} |\n"
 
   # Add examples section
