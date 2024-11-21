@@ -1,0 +1,71 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+config { hasOutput: true, tags: ["req", "udfs"] }
+
+CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, split_points ARRAY<FLOAT64>, inclusive BOOL)
+RETURNS ARRAY<FLOAT64>
+LANGUAGE js
+OPTIONS (
+  library=["${dataform.projectConfig.vars.jsBucket}/req_sketch_float.js"],
+  js_parameter_encoding_mode='STANDARD',
+  description = '''Returns an approximation to the Cumulative Distribution Function (CDF) 
+of the input stream as an array of cumulative probabilities defined by the given split_points.
+
+Param sketch: the given sketch as BYTES.
+
+Param split_points: an array of M unique, monotonically increasing values
+  (of the same type as the input values to the sketch)
+  that divide the input value domain into M+1 overlapping intervals.
+  
+  The start of each interval is below the lowest input value retained by the sketch
+  (corresponding to a zero rank or zero probability).
+  
+  The end of each interval is the associated split-point except for the top interval
+  where the end is the maximum input value of the stream.
+
+Param inclusive: if true and the upper boundary of an interval equals a value retained by the sketch, the interval will include that value. 
+  If the lower boundary of an interval equals a value retained by the sketch, the interval will exclude that value.
+
+  If false and the upper boundary of an interval equals a value retained by the sketch, the interval will exclude that value. 
+  If the lower boundary of an interval equals a value retained by the sketch, the interval will include that value.
+
+Returns: the CDF as a monotonically increasing FLOAT64 array of M+1 cumulative probablities on the interval [0.0, 1.0].
+  The top-most probability of the returned array is always 1.0.
+
+For more information:
+ - https://datasketches.apache.org/docs/REQ/ReqSketch.html
+'''
+) AS R"""
+try {
+  var sketchObject = null;
+  try {
+    sketchObject = Module.req_sketch_float.deserialize(sketch);
+    if (sketchObject.isEmpty()) return null;
+    var vectorFloat = new Module.VectorFloat();
+    split_points.forEach(value => vectorFloat.push_back(value));
+    return sketchObject.getCDF(vectorFloat, inclusive);
+  } finally {
+    if (sketchObject != null) sketchObject.delete();
+  }
+} catch (e) {
+  if (e.message != null) throw e;
+  throw new Error(Module.getExceptionMessage(e));
+}
+""";
