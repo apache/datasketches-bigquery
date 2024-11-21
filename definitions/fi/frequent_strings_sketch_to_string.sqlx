@@ -17,13 +17,13 @@
  * under the License.
  */
 
-config { hasOutput: true }
+config { hasOutput: true, tags: ["fi", "udfs"] }
 
 CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES)
 RETURNS STRING
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/fs_sketch.js"],
+  library=["${dataform.projectConfig.vars.jsBucket}/fs_sketch.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns a summary string that represents the state of the given sketch.
 

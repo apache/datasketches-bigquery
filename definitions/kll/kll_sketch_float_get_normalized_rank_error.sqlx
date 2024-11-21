@@ -17,13 +17,13 @@
  * under the License.
  */
 
-config { hasOutput: true }
+config { hasOutput: true, tags: ["kll", "udfs"] }
 
 CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, pmf BOOL)
 RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/kll_sketch_float.js"],
+  library=["${dataform.projectConfig.vars.jsBucket}/kll_sketch_float.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns the approximate rank error of the given sketch normalized as a fraction between zero and one.
 Param sketch: the given sketch as BYTES.

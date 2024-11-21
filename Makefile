@@ -20,7 +20,7 @@ MODULES := theta tuple cpc hll kll fi tdigest
 $(MODULES):
 	$(MAKE) -C $@
 
-.PHONY: all clean $(MODULES)
+.PHONY: all clean init $(MODULES)
 .DEFAULT_GOAL := all
 
 all: $(MODULES)
@@ -31,13 +31,19 @@ $(MODCLEAN): %.clean:
 	$(MAKE) -C $* clean
 
 clean: $(MODCLEAN)
+	rm .df-credentials.json
+	rm workflow_settings.yaml
+
+init:
+	./init_dataform.sh
 
 MODINSTALL = $(addsuffix .install, $(MODULES))
 
 $(MODINSTALL): %.install:
 	$(MAKE) -C $* install
 
-install: $(MODINSTALL)
+install: init $(MODINSTALL)
+	dataform run --tags "udfs"
 
 MODTEST = $(addsuffix .test, $(MODULES))
 
@@ -45,7 +51,7 @@ $(MODTEST): %.test:
 	- $(MAKE) -C $* test
 
 unittest:
-	./tests/run_dataform_tests.sh
+	dataform test
 
 test: $(MODTEST) unittest
 

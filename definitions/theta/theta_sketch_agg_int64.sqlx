@@ -17,7 +17,7 @@
  * under the License.
  */
 
-config { hasOutput: true }
+config { hasOutput: true, tags: ["theta", "udfs"] }
 
 CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(value INT64)
 RETURNS BYTES

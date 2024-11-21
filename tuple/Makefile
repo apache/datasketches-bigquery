@@ -54,12 +54,9 @@ upload: all
 reverse = $(if $(wordlist 2,2,$(1)),$(call reverse,$(wordlist 2,$(words $(1)),$(1))) $(firstword $(1)),$(1))
 
 create:
-	@for file in $(call reverse,$(wildcard ../definitions/tuple/*.sqlx)); do \
-	  echo creating $$file; \
-	  ../substitute_and_run.sh $$file ; \
-	done
+	cd .. && dataform run --tags "tuple"
 
-install: upload create
+install: upload
 
 test:
 	@for file in $(wildcard test/*sql); do \

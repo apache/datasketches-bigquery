@@ -17,13 +17,13 @@
  * under the License.
  */
 
-config { hasOutput: true }
+config { hasOutput: true, tags: ["tdigest", "udfs"] }
 
 CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, value FLOAT64)
 RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/tdigest_double.js"],
+  library=["${dataform.projectConfig.vars.jsBucket}/tdigest_double.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns an approximation to the normalized rank, on the interval [0.0, 1.0], of the given value.
 

@@ -16,7 +16,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-const { generate_udf_test, generate_udaf_test } = require('./unit_test_utils');
+const { generate_udf_test, generate_udaf_test } = require('../unit_test_utils');
 
 const td_1 = `FROM_BASE64('AgEUyAAEAAAKAAAAAAAAAAAAAAAAAPA/AAAAAAAAJEAAAAAAAADwPwEAAAAAAAAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAhAAQAAAAAAAAAAAAAAAAAQQAEAAAAAAAAAAAAAAAAAFEABAAAAAAAAAAAAAAAAABhAAQAAAAAAAAAAAAAAAAAcQAEAAAAAAAAAAAAAAAAAIEABAAAAAAAAAAAAAAAAACJAAQAAAAAAAAAAAAAAAAAkQAEAAAAAAAAA')`;
 

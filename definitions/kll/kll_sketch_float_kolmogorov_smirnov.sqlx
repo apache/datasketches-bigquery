@@ -17,13 +17,13 @@
  * under the License.
  */
 
-config { hasOutput: true }
+config { hasOutput: true, tags: ["kll", "udfs"] }
 
 CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES, pvalue FLOAT64)
 RETURNS BOOL
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/kll_sketch_float.js"],
+  library=["${dataform.projectConfig.vars.jsBucket}/kll_sketch_float.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Performs the Kolmogorov-Smirnov Test between two KLL sketches of type FLOAT64.
 If the given sketches have insufficient data or if the sketch sizes are too small, this will return false.
