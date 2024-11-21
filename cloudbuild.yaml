@@ -1,0 +1,28 @@
+steps:
+  ###########################################################
+  # Deploy UDFs and run unit tests
+  ###########################################################
+- name: gcr.io/bqutil/bq_udf_ci:infrastructure-public-image-bqutil
+  id: deploy_udfs
+  entrypoint: bash
+  args:
+    - '-c'
+    - |
+      git clone https://github.com/emscripten-core/emsdk.git
+      cd emsdk
+      ./emsdk install latest
+      ./emsdk activate latest
+      source ./emsdk_env.sh
+      cd ..
+      git clone --recursive https://github.com/danieldeleo/datasketches-bigquery.git
+      cd datasketches-bigquery
+      make
+      make install
+      make test
+  env:
+    - BQ_PROJECT=${PROJECT_ID} # PROJECT_ID is derived from Cloud Build project
+    - BQ_DATASET=${_BQ_DATASET}
+    - BQ_LOCATION=${_BQ_LOCATION}
+    - JS_BUCKET=${_JS_BUCKET}
+
+timeout: 1800s # 30 minutes

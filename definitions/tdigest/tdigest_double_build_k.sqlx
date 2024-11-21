@@ -17,13 +17,13 @@
  * under the License.
  */
 
-config { hasOutput: true }
+config { hasOutput: true, tags: ["tdigest", "udfs"] }
 
 CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(value FLOAT64, k INT NOT AGGREGATE)
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/tdigest_double.mjs"],
+  library=["${dataform.projectConfig.vars.jsBucket}/tdigest_double.mjs"],
   description = '''Creates a sketch that represents the distribution of the given column.
 
 Param value: the column of FLOAT64 values.
@@ -34,7 +34,7 @@ For more information:
  - https://datasketches.apache.org/docs/tdigest/tdigest.html
 '''
 ) AS R"""
-import ModuleFactory from "${JS_BUCKET}/tdigest_double.mjs";
+import ModuleFactory from "${dataform.projectConfig.vars.jsBucket}/tdigest_double.mjs";
 var Module = await ModuleFactory();
 const default_k = Number(Module.DEFAULT_K);
 

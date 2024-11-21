@@ -17,13 +17,13 @@
  * under the License.
  */
 
-config { hasOutput: true }
+config { hasOutput: true, tags: ["tuple", "udfs"] }
 
 CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, num_std_devs BYTEINT, seed INT64)
 RETURNS STRUCT<estimate FLOAT64, lower_bound FLOAT64, upper_bound FLOAT64>
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/tuple_sketch_int64.js"],
+  library=["${dataform.projectConfig.vars.jsBucket}/tuple_sketch_int64.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns the cardinality estimate and bounds from the given Tuple Sketch.
 Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.

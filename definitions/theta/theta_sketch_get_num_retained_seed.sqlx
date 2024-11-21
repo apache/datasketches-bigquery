@@ -17,13 +17,13 @@
  * under the License.
  */
 
-config { hasOutput: true }
+config { hasOutput: true, tags: ["theta", "udfs"] }
 
 CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, seed INT64)
 RETURNS INT
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/theta.js"],
+  library=["${dataform.projectConfig.vars.jsBucket}/theta.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns the number of retained entries in the given sketch.
   

@@ -17,13 +17,13 @@
  * under the License.
  */
 
-config { hasOutput: true }
+config { hasOutput: true, tags: ["theta", "udfs"] }
 
 CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, num_std_devs BYTEINT, seed INT64)
 RETURNS STRUCT<estimate FLOAT64, lower_bound FLOAT64, upper_bound FLOAT64>
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/theta.js"],
+  library=["${dataform.projectConfig.vars.jsBucket}/theta.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Gets cardinality estimate and bounds from given sketch.
 

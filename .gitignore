@@ -11,4 +11,8 @@
 **/*.mjs
 **/*.wasm
 
+# Dataform files
+.df-credentials.json
+node_modules/
+
 *.log

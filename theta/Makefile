@@ -53,11 +53,9 @@ upload: all
 reverse = $(if $(wordlist 2,2,$(1)),$(call reverse,$(wordlist 2,$(words $(1)),$(1))) $(firstword $(1)),$(1))
 
 create:
-	@for file in $(call reverse,$(wildcard ../definitions/theta/*.sqlx)); do \
-	  ../substitute_and_run.sh $$file ; \
-	done
+	cd .. && dataform run --tags "theta"
 
-install: upload create
+install: upload
 
 test:
 	@for file in $(wildcard test/*sql); do \

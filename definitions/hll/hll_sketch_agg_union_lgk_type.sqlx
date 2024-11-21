@@ -17,13 +17,13 @@
  * under the License.
  */
 
-config { hasOutput: true }
+config { hasOutput: true, tags: ["hll", "udfs"] }
 
 CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(sketch BYTES, params STRUCT<lg_k BYTEINT, tgt_type STRING> NOT AGGREGATE)
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/hll_sketch.mjs"],
+  library=["${dataform.projectConfig.vars.jsBucket}/hll_sketch.mjs"],
   description = '''Creates a sketch that represents the union of the given column of sketches.
 
 Param sketch: the column of sketches. Each as BYTES.
@@ -35,7 +35,7 @@ For more information:
  - https://datasketches.apache.org/docs/HLL/HllSketches.html
 '''
 ) AS R"""
-import ModuleFactory from "${JS_BUCKET}/hll_sketch.mjs";
+import ModuleFactory from "${dataform.projectConfig.vars.jsBucket}/hll_sketch.mjs";
 var Module = await ModuleFactory();
 const default_lg_k = Number(12);
 

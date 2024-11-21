@@ -17,7 +17,7 @@
  * under the License.
  */
 
-config { hasOutput: true }
+config { hasOutput: true, tags: ["cpc", "udfs"] }
 
 CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES)
 RETURNS FLOAT64

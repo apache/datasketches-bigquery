@@ -17,13 +17,13 @@
  * under the License.
  */
 
-config { hasOutput: true }
+config { hasOutput: true, tags: ["fi", "udfs"] }
 
 CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, error_type STRING, threshold INT64)
 RETURNS ARRAY<STRUCT<item STRING, estimate INT64, lower_bound INT64, upper_bound INT64>>
 LANGUAGE js
 OPTIONS (
-  library=["${JS_BUCKET}/fs_sketch.js"],
+  library=["${dataform.projectConfig.vars.jsBucket}/fs_sketch.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Returns an array of rows that include frequent items, estimates, lower and upper bounds
 given an error_type and a threshold.
