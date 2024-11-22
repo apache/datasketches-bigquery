@@ -162,7 +162,7 @@ def generate_readme(template_path: str, function_index: dict, examples_path: str
   return output_content
 
 if __name__ == "__main__":
-  sketch_types = ["cpc", "fi", "hll", "kll", "tdigest", "theta", "tuple"]
+  sketch_types = ["cpc", "fi", "hll", "kll", "tdigest", "theta", "tuple", "req"]
   template_name = "README_template.md"
   readme_name = "README.md"
   for sketch_type in sketch_types:

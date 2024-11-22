@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-MODULES := theta tuple cpc hll kll fi tdigest
+MODULES := theta tuple cpc hll kll fi tdigest req
 
 $(MODULES):
 	$(MAKE) -C $@
