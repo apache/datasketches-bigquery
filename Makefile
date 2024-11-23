@@ -31,11 +31,13 @@ $(MODCLEAN): %.clean:
 	$(MAKE) -C $* clean
 
 clean: $(MODCLEAN)
-	rm .df-credentials.json
-	rm workflow_settings.yaml
+	$(RM) .df-credentials.json
+	$(RM) workflow_settings.yaml
+	$(RM) -r definitions
+	$(RM) -r includes
 
 init:
-	./init_dataform.sh
+	(cd cicd && ./init_dataform.sh)
 
 MODINSTALL = $(addsuffix .install, $(MODULES))
 
