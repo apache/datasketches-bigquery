@@ -54,9 +54,9 @@ create:
 
 install: upload
 
-test:
+example:
 	@for file in $(wildcard test/*sql); do \
 	  ../substitute_and_run.sh $$file ; \
 	done
 
-.PHONY: all clean install upload create test
+.PHONY: all clean install upload create example

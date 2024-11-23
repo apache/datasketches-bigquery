@@ -39,17 +39,58 @@ page for how to contact us.
 ## Requirements
 
 - Requires [Emscripten (emcc compiler)](https://emscripten.org/)
+  ```bash
+  git clone https://github.com/emscripten-core/emsdk.git \
+  && cd emsdk \
+  && ./emsdk install latest \
+  && ./emsdk activate latest \
+  && source ./emsdk_env.sh \
+  && cd ..
+  ```
 - Requires a link to **datasketches-cpp** in this repository
+  ```bash
+  # Run the following if you've already cloned this repo
+  git submodule update --init --recursive
+  ```
+  ```bash
+  # Otherwise clone this repo with --recursive flag
+  git clone --recursive https://github.com/apache/datasketches-bigquery.git
+  ```
 - Requires make utility
 - Requires [Google Cloud CLI](https://cloud.google.com/sdk/docs/install)
-- Requires npm and @dataform/cli package `npm install -g @dataform/cli`
+  ```bash
+  curl https://sdk.cloud.google.com | bash 
+  ```
+- Requires npm and @dataform/cli package
+  ```bash
+  npm install -g @dataform/cli
+  ```
 - Requires setting the following environment variables to your own values:
-  - JS_BUCKET: to hold compiled artifacts (must include gs://)
-  - BQ_PROJECT: location of stored SQL functions (routines)
-  - BQ_DATASET: location of stored SQL functions (routines)
-  - BQ_LOCATION: location of BQ_DATASET
+  ```bash
+  export JS_BUCKET=    # GCS bucket to hold compiled artifacts (must include gs://)
+  export BQ_PROJECT=   # location of stored SQL functions (routines)
+  export BQ_DATASET=   # location of stored SQL functions (routines)
+  export BQ_LOCATION=  # location of BQ_DATASET
+  ```
 
 ## Building, Installing, and Testing
+
+<details><summary><b>On Google Cloud Build</b></summary>
+
+### Install All DataSketches
+
+Run the following steps in this repo's root directory to install everything via
+Cloud Build:
+```bash
+gcloud builds submit \ 
+  --project=$BQ_PROJECT \
+  --substitutions=_BQ_LOCATION=$BQ_LOCATION,_BQ_DATASET=$BQ_DATASET,_JS_BUCKET=$JS_BUCKET \
+  .
+```
+
+</details>
+
+<details><summary><b>On your local machine</b></summary>
 
 ### Install All DataSketches
 
@@ -60,6 +101,7 @@ make          # performs compilation
 make install  # upload to $JS_BUCKET & create functions in $BQ_PROJECT.$BQ_DATASET
 make test     # runs predefined tests in BQ
 ```
+
 ### Install Specific DataSketches
 
 To install a specific sketch, change into an individual sketch directory and run
@@ -69,5 +111,6 @@ gcloud auth application-default login # for authentication
 make          # performs compilation
 make install  # upload to $JS_BUCKET 
 make create   # create functions in $BQ_PROJECT.$BQ_DATASET
-make test     # runs predefined tests in BQ
 ```
+
+</details>

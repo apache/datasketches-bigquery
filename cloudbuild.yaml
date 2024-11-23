@@ -14,8 +14,7 @@ steps:
       ./emsdk activate latest
       source ./emsdk_env.sh
       cd ..
-      git clone --recursive https://github.com/apache/datasketches-bigquery.git
-      cd datasketches-bigquery
+      git submodule update --init --recursive
       make
       make install
       make test
