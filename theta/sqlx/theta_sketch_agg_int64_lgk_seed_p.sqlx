@@ -92,6 +92,7 @@ export function serialize(state) {
     }
     return state;
   } catch (e) {
+    if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));
   } finally {
     if (state.sketch != null) state.sketch.delete();
