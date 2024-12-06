@@ -18,4 +18,4 @@ fi
 FUNC=${FILE##*/}
 FUNC=${FUNC%%.*}
 
-sed -e "s/\${self()}/\`${BQ_PROJECT}.${BQ_DATASET}.${FUNC}\`/;s|\${JS_BUCKET}|${JS_BUCKET}|g;s/\$BQ_DATASET/${BQ_DATASET}/g;s/\${ref(\"\([^\"]*\)\")}/\`${BQ_PROJECT}.${BQ_DATASET}.\1\`/g" "${FILE}" | grep -v -e"^config" | bq --project_id ${BQ_PROJECT} query --nouse_legacy_sql
+sed -e "s/\${self()}/\`${BQ_PROJECT}.${BQ_DATASET}.${FUNC}\`/;s|\${JS_BUCKET}|${JS_BUCKET}|g;s/\$BQ_DATASET/${BQ_DATASET}/g;s/\${ref(\"\([^\"]*\)\")}/\`${BQ_PROJECT}.${BQ_DATASET}.\1\`/g;s|\${dataform.projectConfig.vars.jsBucket}|${JS_BUCKET}|g" "${FILE}" | grep -v -e"^config" | bq --project_id ${BQ_PROJECT} query --nouse_legacy_sql
