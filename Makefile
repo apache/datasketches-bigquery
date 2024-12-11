@@ -20,10 +20,17 @@ MODULES := theta tuple cpc hll kll fi tdigest req
 $(MODULES):
 	$(MAKE) -C $@
 
-.PHONY: all clean init $(MODULES)
+.PHONY: all clean init test unittest readme $(MODULES)
 .DEFAULT_GOAL := all
 
-all: $(MODULES)
+all: datasketches-cpp $(MODULES)
+
+DATASKETCHES_CPP_VERSION = 5.1.0
+datasketches-cpp:
+	wget https://github.com/apache/datasketches-cpp/archive/refs/tags/$(DATASKETCHES_CPP_VERSION).zip
+	mv $(DATASKETCHES_CPP_VERSION).zip datasketches-cpp-$(DATASKETCHES_CPP_VERSION).zip
+	unzip datasketches-cpp-$(DATASKETCHES_CPP_VERSION).zip
+	ln -s datasketches-cpp-$(DATASKETCHES_CPP_VERSION) datasketches-cpp
 
 MODCLEAN = $(addsuffix .clean, $(MODULES))
 
