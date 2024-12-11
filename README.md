@@ -49,13 +49,11 @@ page for how to contact us.
   ```
 - Requires a link to **datasketches-cpp** in this repository
   ```bash
-  # Run the following if you've already cloned this repo
-  git submodule update --init --recursive
+  # Run the following
+  make datasketches-cpp
   ```
-  ```bash
-  # Otherwise clone this repo with --recursive flag
-  git clone --recursive https://github.com/apache/datasketches-bigquery.git
-  ```
+  This target is a part of the default target 'all'
+  This requires wget and unzip
 - Requires make utility
 - Requires [Google Cloud CLI](https://cloud.google.com/sdk/docs/install)
   ```bash
