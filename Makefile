@@ -30,6 +30,7 @@ datasketches-cpp:
 	wget https://github.com/apache/datasketches-cpp/archive/refs/tags/$(DATASKETCHES_CPP_VERSION).zip
 	mv $(DATASKETCHES_CPP_VERSION).zip datasketches-cpp-$(DATASKETCHES_CPP_VERSION).zip
 	unzip datasketches-cpp-$(DATASKETCHES_CPP_VERSION).zip
+	rm datasketches-cpp-$(DATASKETCHES_CPP_VERSION).zip
 	ln -s datasketches-cpp-$(DATASKETCHES_CPP_VERSION) datasketches-cpp
 
 MODCLEAN = $(addsuffix .clean, $(MODULES))
