@@ -8,7 +8,7 @@ steps:
   args:
     - '-c'
     - |
-      apt-get install -y wget
+      apt-get install -y wget unzip
       git clone https://github.com/emscripten-core/emsdk.git
       cd emsdk
       ./emsdk install latest
