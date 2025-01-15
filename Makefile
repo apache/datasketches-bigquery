@@ -25,7 +25,7 @@ $(MODULES):
 
 all: datasketches-cpp $(MODULES)
 
-DATASKETCHES_CPP_VERSION = 5.1.0
+DATASKETCHES_CPP_VERSION = 5.2.0
 datasketches-cpp:
 	wget https://github.com/apache/datasketches-cpp/archive/refs/tags/$(DATASKETCHES_CPP_VERSION).zip
 	mv $(DATASKETCHES_CPP_VERSION).zip datasketches-cpp-$(DATASKETCHES_CPP_VERSION).zip
