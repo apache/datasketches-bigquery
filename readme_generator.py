@@ -167,7 +167,7 @@ if __name__ == "__main__":
   readme_name = "README.md"
   for sketch_type in sketch_types:
     logging.info("processing sketch type " + sketch_type)
-    function_index = process_folder(os.path.join("definitions", sketch_type), sketch_type)
+    function_index = process_folder(sketch_type, sketch_type)
     sketch_type_readme_name = os.path.join(sketch_type, readme_name)
     logging.info("generating " + sketch_type_readme_name)
     readme_content = generate_readme(os.path.join(sketch_type, template_name), function_index[sketch_type], os.path.join(sketch_type, "test"))
