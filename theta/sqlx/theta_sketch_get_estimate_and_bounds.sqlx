@@ -22,7 +22,7 @@ config { hasOutput: true, tags: ["theta", "udfs"] }
 CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, num_std_devs BYTEINT)
 RETURNS STRUCT<estimate FLOAT64, lower_bound FLOAT64, upper_bound FLOAT64>
 OPTIONS (
-  description = '''Gets cardinality estimate and bounds from given sketch.
+  description = '''Gets distinct count estimate and bounds from a given sketch.
 
 Param sketch: The given sketch to query as BYTES.
 Param num_std_devs: The returned bounds will be based on the statistical confidence interval

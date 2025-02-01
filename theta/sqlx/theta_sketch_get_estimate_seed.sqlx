@@ -25,11 +25,11 @@ LANGUAGE js
 OPTIONS (
   library=["${dataform.projectConfig.vars.jsBucket}/theta.js"],
   js_parameter_encoding_mode='STANDARD',
-  description = '''Gets cardinality estimate and bounds from given sketch.
+  description = '''Gets distinct count estimate from a given sketch.
   
 Param sketch: The given sketch to query as BYTES.
 Param seed: This is used to confirm that the given sketch was configured with the correct seed.
-Returns: a FLOAT64 value as the cardinality estimate.
+Returns: distinct count estimate as FLOA64.
 
 For more information:
  - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
