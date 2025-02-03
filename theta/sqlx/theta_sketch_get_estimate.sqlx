@@ -22,11 +22,11 @@ config { hasOutput: true, tags: ["theta", "udfs"] }
 CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES)
 RETURNS FLOAT64
 OPTIONS (
-  description = '''Gets cardinality estimate and bounds from given sketch.
-  
+  description = '''Gets distinct count estimate from a  given sketch.
+
 Param sketch: The given sketch to query as BYTES.
 Defaults: seed = 9001.
-Returns: a FLOAT64 value as the cardinality estimate.
+Returns: distinct count estimate as FLOAT64.
 
 For more information:
  - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
