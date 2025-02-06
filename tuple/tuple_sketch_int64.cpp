@@ -169,6 +169,9 @@ EMSCRIPTEN_BINDINGS(tuple_sketch_int64) {
       const auto policy = tuple_union_policy<Summary>(convert_mode(mode_str));
       return new tuple_union_int64(tuple_union_int64::builder(policy).set_lg_k(lg_k).set_seed(seed).build());
     }))
+    .function("updateWithUpdateSketch", emscripten::optional_override([](tuple_union_int64& self, const update_tuple_sketch_int64& sketch) {
+      self.update(sketch);
+    }))
     .function("updateWithCompactSketch", emscripten::optional_override([](tuple_union_int64& self, const compact_tuple_sketch_int64& sketch) {
       self.update(sketch);
     }))
