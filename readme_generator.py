@@ -72,8 +72,8 @@ def parse_sqlx(file_content: str, filename: str) -> dict:
   description_match = description_pattern.search(file_content)
   description = description_match.group(1).strip() if description_match else "No description available"
   description = re.compile(r'\n*For more info.*', re.M | re.S).sub('', description) # remove repetitive links
-  description = description.replace('\n', '<br>')
   description = escape_markdown(description)
+  description = description.replace('\n', '<br>')
 
   # Extract function arguments and their types
   arg_list = []
