@@ -22,10 +22,10 @@ config { hasOutput: true, tags: ["tuple", "udfs"] }
 CREATE OR REPLACE AGGREGATE FUNCTION ${self()}(key STRING, value INT64)
 RETURNS BYTES 
 OPTIONS (
-  description = '''Builds a Tuple Sketch from an STRING Key column and an INT64 value column.
+  description = '''Builds a Tuple Sketch from a STRING Key column and an INT64 value column.
 Multiple values for the same key are aggregated using the default mode.
 Note that cardinality estimation accuracy, plots, error tables, and sampling probability p are the same as the Theta Sketch.
-This function only applies to Tuple Sketches with an STRING Key column and an INT64 summary column.
+This function only applies to Tuple Sketches with a STRING Key column and an INT64 summary column.
  
 Param key: the STRING column of identifiers. This may not be NULL.
 Param value: the INT64 value column associated with each key. This may not be NULL.
