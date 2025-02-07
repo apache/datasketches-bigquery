@@ -155,6 +155,9 @@ def generate_readme(template_path: str, function_index: dict, examples_path: str
           break
       sql_code_without_license = "\n".join(sql_code_lines[start_index:])
 
+      # add project and dataset available in BQ
+      sql_code_without_license = sql_code_without_license.replace('`$BQ_DATASET`', 'bqutil.datasketches')
+
       # Add the SQL code in a code block
       output_lines.append(f"```sql\n{sql_code_without_license}\n```\n")
 
