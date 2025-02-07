@@ -18,53 +18,53 @@
  */
 
 # using defaults
-create or replace table `$BQ_DATASET`.tuple_sketch(sketch bytes);
+create or replace temp table tuple_sketch(sketch bytes);
 
-insert into `$BQ_DATASET`.tuple_sketch
+insert into tuple_sketch
 (select `$BQ_DATASET`.tuple_sketch_int64_from_theta_sketch(`$BQ_DATASET`.theta_sketch_agg_string(cast(value as string)), 1) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
-insert into `$BQ_DATASET`.tuple_sketch
+insert into tuple_sketch
 (select `$BQ_DATASET`.tuple_sketch_int64_from_theta_sketch(`$BQ_DATASET`.theta_sketch_agg_string(cast(value as string)), 1) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
 # expected about 20000
 select `$BQ_DATASET`.tuple_sketch_int64_get_estimate(
   `$BQ_DATASET`.tuple_sketch_int64_agg_union(sketch)
-) from `$BQ_DATASET`.tuple_sketch;
+) from tuple_sketch;
 
 select `$BQ_DATASET`.tuple_sketch_int64_get_estimate_and_bounds(
   `$BQ_DATASET`.tuple_sketch_int64_agg_union(sketch),
   2
-) from `$BQ_DATASET`.tuple_sketch;
+) from tuple_sketch;
 
 select `$BQ_DATASET`.tuple_sketch_int64_get_sum_estimate_and_bounds(
   `$BQ_DATASET`.tuple_sketch_int64_agg_union(sketch),
   2
-) from `$BQ_DATASET`.tuple_sketch;
+) from tuple_sketch;
 
 # expected estimate about 20000
 select `$BQ_DATASET`.tuple_sketch_int64_to_string(
   `$BQ_DATASET`.tuple_sketch_int64_agg_union(sketch)
-) from `$BQ_DATASET`.tuple_sketch;
+) from tuple_sketch;
 
 select `$BQ_DATASET`.tuple_sketch_int64_get_theta(
   `$BQ_DATASET`.tuple_sketch_int64_agg_union(sketch)
-) from `$BQ_DATASET`.tuple_sketch;
+) from tuple_sketch;
 
 select `$BQ_DATASET`.tuple_sketch_int64_get_num_retained(
   `$BQ_DATASET`.tuple_sketch_int64_agg_union(sketch)
-) from `$BQ_DATASET`.tuple_sketch;
+) from tuple_sketch;
 
-drop table `$BQ_DATASET`.tuple_sketch;
+drop table tuple_sketch;
 
 # using full signatures
-create or replace table `$BQ_DATASET`.tuple_sketch(sketch bytes);
+create or replace temp table tuple_sketch(sketch bytes);
 
-insert into `$BQ_DATASET`.tuple_sketch
+insert into tuple_sketch
 (select `$BQ_DATASET`.tuple_sketch_int64_from_theta_sketch_seed(
   `$BQ_DATASET`.theta_sketch_agg_string_lgk_seed_p(cast(value as string), STRUCT<BYTEINT, INT64, FLOAT64>(10, 111, 0.999)),
   1,
   111
 ) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
-insert into `$BQ_DATASET`.tuple_sketch
+insert into tuple_sketch
 (select `$BQ_DATASET`.tuple_sketch_int64_from_theta_sketch_seed(
   `$BQ_DATASET`.theta_sketch_agg_string_lgk_seed_p(cast(value as string), STRUCT<BYTEINT, INT64, FLOAT64>(10, 111, 0.999)),
   1,
@@ -75,38 +75,37 @@ insert into `$BQ_DATASET`.tuple_sketch
 select `$BQ_DATASET`.tuple_sketch_int64_get_estimate_seed(
   `$BQ_DATASET`.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
   111
-) from `$BQ_DATASET`.tuple_sketch;
+) from tuple_sketch;
 
 select `$BQ_DATASET`.tuple_sketch_int64_get_estimate_and_bounds_seed(
   `$BQ_DATASET`.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
   2,
   111
-) from `$BQ_DATASET`.tuple_sketch;
+) from tuple_sketch;
 
 select `$BQ_DATASET`.tuple_sketch_int64_get_sum_estimate_and_bounds_seed(
   `$BQ_DATASET`.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
   2,
   111
-) from `$BQ_DATASET`.tuple_sketch;
+) from tuple_sketch;
 
 # expected estimate about 20000
 select `$BQ_DATASET`.tuple_sketch_int64_to_string_seed(
   `$BQ_DATASET`.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
   111
-) from `$BQ_DATASET`.tuple_sketch;
+) from tuple_sketch;
 
 select `$BQ_DATASET`.tuple_sketch_int64_get_theta_seed(
   `$BQ_DATASET`.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
   111
-) from `$BQ_DATASET`.tuple_sketch;
+) from tuple_sketch;
 
 select `$BQ_DATASET`.tuple_sketch_int64_get_num_retained_seed(
   `$BQ_DATASET`.tuple_sketch_int64_agg_union_lgk_seed_mode(sketch, STRUCT<BYTEINT, INT64, STRING>(10, 111, "NOP")),
   111
-) from `$BQ_DATASET`.tuple_sketch;
+) from tuple_sketch;
 
-drop table `$BQ_DATASET`.tuple_sketch;
-
+drop table tuple_sketch;
 
 # using defaults
 # expected 5

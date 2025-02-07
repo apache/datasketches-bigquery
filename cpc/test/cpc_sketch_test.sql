@@ -39,47 +39,47 @@ select `$BQ_DATASET`.cpc_sketch_get_estimate_seed(
 );
 
 # using defaults
-create or replace table `$BQ_DATASET`.cpc_sketch(sketch bytes);
+create or replace temp table cpc_sketch(sketch bytes);
 
-insert into `$BQ_DATASET`.cpc_sketch
+insert into cpc_sketch
 (select `$BQ_DATASET`.cpc_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
-insert into `$BQ_DATASET`.cpc_sketch
+insert into cpc_sketch
 (select `$BQ_DATASET`.cpc_sketch_agg_int64(value) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
-select `$BQ_DATASET`.cpc_sketch_to_string(sketch) from `$BQ_DATASET`.cpc_sketch;
+select `$BQ_DATASET`.cpc_sketch_to_string(sketch) from cpc_sketch;
 
 # expected about 20000
 select `$BQ_DATASET`.cpc_sketch_get_estimate(
   `$BQ_DATASET`.cpc_sketch_agg_union(sketch)
-) from `$BQ_DATASET`.cpc_sketch;
+) from cpc_sketch;
 
 select `$BQ_DATASET`.cpc_sketch_get_estimate_and_bounds(
   `$BQ_DATASET`.cpc_sketch_agg_union(sketch),
   3
-) from `$BQ_DATASET`.cpc_sketch;
+) from cpc_sketch;
 
-drop table `$BQ_DATASET`.cpc_sketch;
+drop table cpc_sketch;
 
 # using full signatures
-create or replace table `$BQ_DATASET`.cpc_sketch(sketch bytes);
+create or replace temp table cpc_sketch(sketch bytes);
 
-insert into `$BQ_DATASET`.cpc_sketch
+insert into cpc_sketch
 (select `$BQ_DATASET`.cpc_sketch_agg_int64_lgk_seed(value, struct<byteint, int64>(10, 111)) from unnest(GENERATE_ARRAY(1, 10000, 1)) as value);
-insert into `$BQ_DATASET`.cpc_sketch
+insert into cpc_sketch
 (select `$BQ_DATASET`.cpc_sketch_agg_int64_lgk_seed(value, struct<byteint, int64>(10, 111)) from unnest(GENERATE_ARRAY(100000, 110000, 1)) as value);
 
-select `$BQ_DATASET`.cpc_sketch_to_string_seed(sketch, 111) from `$BQ_DATASET`.cpc_sketch;
+select `$BQ_DATASET`.cpc_sketch_to_string_seed(sketch, 111) from cpc_sketch;
 
 # expected about 20000
 select `$BQ_DATASET`.cpc_sketch_get_estimate_seed(
   `$BQ_DATASET`.cpc_sketch_agg_union_lgk_seed(sketch, struct<byteint, int64>(10, 111)),
   111
-) from `$BQ_DATASET`.cpc_sketch;
+) from cpc_sketch;
 
 select `$BQ_DATASET`.cpc_sketch_get_estimate_and_bounds_seed(
   `$BQ_DATASET`.cpc_sketch_agg_union_lgk_seed(sketch, struct<byteint, int64>(10, 111)),
   3,
   111
-) from `$BQ_DATASET`.cpc_sketch;
+) from cpc_sketch;
 
-drop table `$BQ_DATASET`.cpc_sketch;
+drop table cpc_sketch;
