@@ -19,52 +19,52 @@
 
 # using defaults
 
-create or replace table `$BQ_DATASET`.req_sketch(sketch bytes);
+create or replace temp table req_sketch(sketch bytes);
 
-insert into `$BQ_DATASET`.req_sketch
+insert into req_sketch
 (select `$BQ_DATASET`.req_sketch_float_build(value) from unnest([1,2,3,4,5,6,7,8,9,10]) as value);
 
-insert into `$BQ_DATASET`.req_sketch
+insert into req_sketch
 (select `$BQ_DATASET`.req_sketch_float_build(value) from unnest([11,12,13,14,15,16,17,18,19,20]) as value);
 
-select `$BQ_DATASET`.req_sketch_float_to_string(`$BQ_DATASET`.req_sketch_float_merge(sketch)) from `$BQ_DATASET`.req_sketch;
+select `$BQ_DATASET`.req_sketch_float_to_string(`$BQ_DATASET`.req_sketch_float_merge(sketch)) from req_sketch;
 
 # expected 0.5
-select `$BQ_DATASET`.req_sketch_float_get_rank(`$BQ_DATASET`.req_sketch_float_merge(sketch), 10, true) from `$BQ_DATASET`.req_sketch;
+select `$BQ_DATASET`.req_sketch_float_get_rank(`$BQ_DATASET`.req_sketch_float_merge(sketch), 10, true) from req_sketch;
 
 # expected 10
-select `$BQ_DATASET`.req_sketch_float_get_quantile(`$BQ_DATASET`.req_sketch_float_merge(sketch), 0.5, true) from `$BQ_DATASET`.req_sketch;
+select `$BQ_DATASET`.req_sketch_float_get_quantile(`$BQ_DATASET`.req_sketch_float_merge(sketch), 0.5, true) from req_sketch;
 
 # expected 0.5, 0.5
-select `$BQ_DATASET`.req_sketch_float_get_pmf(`$BQ_DATASET`.req_sketch_float_merge(sketch), [10.0], true) from `$BQ_DATASET`.req_sketch;
+select `$BQ_DATASET`.req_sketch_float_get_pmf(`$BQ_DATASET`.req_sketch_float_merge(sketch), [10.0], true) from req_sketch;
 
 # expected 0.5, 1
-select `$BQ_DATASET`.req_sketch_float_get_cdf(`$BQ_DATASET`.req_sketch_float_merge(sketch), [10.0], true) from `$BQ_DATASET`.req_sketch;
+select `$BQ_DATASET`.req_sketch_float_get_cdf(`$BQ_DATASET`.req_sketch_float_merge(sketch), [10.0], true) from req_sketch;
 
 # expected 1
-select `$BQ_DATASET`.req_sketch_float_get_min_value(`$BQ_DATASET`.req_sketch_float_merge(sketch)) from `$BQ_DATASET`.req_sketch;
+select `$BQ_DATASET`.req_sketch_float_get_min_value(`$BQ_DATASET`.req_sketch_float_merge(sketch)) from req_sketch;
 
 # expected 20
-select `$BQ_DATASET`.req_sketch_float_get_max_value(`$BQ_DATASET`.req_sketch_float_merge(sketch)) from `$BQ_DATASET`.req_sketch;
+select `$BQ_DATASET`.req_sketch_float_get_max_value(`$BQ_DATASET`.req_sketch_float_merge(sketch)) from req_sketch;
 
 # expected 20
-select `$BQ_DATASET`.req_sketch_float_get_n(`$BQ_DATASET`.req_sketch_float_merge(sketch)) from `$BQ_DATASET`.req_sketch;
+select `$BQ_DATASET`.req_sketch_float_get_n(`$BQ_DATASET`.req_sketch_float_merge(sketch)) from req_sketch;
 
 # expected 20
-select `$BQ_DATASET`.req_sketch_float_get_num_retained(`$BQ_DATASET`.req_sketch_float_merge(sketch)) from `$BQ_DATASET`.req_sketch;
+select `$BQ_DATASET`.req_sketch_float_get_num_retained(`$BQ_DATASET`.req_sketch_float_merge(sketch)) from req_sketch;
 
-drop table `$BQ_DATASET`.req_sketch;
+drop table req_sketch;
 
 # using full signatures
 
-create or replace table `$BQ_DATASET`.req_sketch(sketch bytes);
+create or replace temp table req_sketch(sketch bytes);
 
-insert into `$BQ_DATASET`.req_sketch
+insert into req_sketch
 (select `$BQ_DATASET`.req_sketch_float_build_k_hra(value, struct<int, bool>(10, false)) from unnest([1,2,3,4,5,6,7,8,9,10]) as value);
 
-insert into `$BQ_DATASET`.req_sketch
+insert into req_sketch
 (select `$BQ_DATASET`.req_sketch_float_build_k_hra(value, struct<int, bool>(10, false)) from unnest([11,12,13,14,15,16,17,18,19,20]) as value);
 
-select `$BQ_DATASET`.req_sketch_float_to_string(`$BQ_DATASET`.req_sketch_float_merge_k_hra(sketch, struct<int, bool>(10, false))) from `$BQ_DATASET`.req_sketch;
+select `$BQ_DATASET`.req_sketch_float_to_string(`$BQ_DATASET`.req_sketch_float_merge_k_hra(sketch, struct<int, bool>(10, false))) from req_sketch;
 
-drop table `$BQ_DATASET`.req_sketch;
+drop table req_sketch;

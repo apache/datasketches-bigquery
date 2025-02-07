@@ -17,37 +17,37 @@
  * under the License.
  */
 
-create or replace table `$BQ_DATASET`.tdigest_double(sketch bytes);
+create or replace temp table tdigest_double(sketch bytes);
 
 # using default
-insert into `$BQ_DATASET`.tdigest_double
+insert into tdigest_double
 (select `$BQ_DATASET`.tdigest_double_build(value) from unnest([1,2,3,4,5,6,7,8,9,10]) as value);
 
 # using full signature
-insert into `$BQ_DATASET`.tdigest_double
+insert into tdigest_double
 (select `$BQ_DATASET`.tdigest_double_build_k(value, 100) from unnest([11,12,13,14,15,16,17,18,19,20]) as value);
 
-select `$BQ_DATASET`.tdigest_double_to_string(sketch) from `$BQ_DATASET`.tdigest_double;
+select `$BQ_DATASET`.tdigest_double_to_string(sketch) from tdigest_double;
 
 # using default
-select `$BQ_DATASET`.tdigest_double_to_string(`$BQ_DATASET`.tdigest_double_merge(sketch)) from `$BQ_DATASET`.tdigest_double;
+select `$BQ_DATASET`.tdigest_double_to_string(`$BQ_DATASET`.tdigest_double_merge(sketch)) from tdigest_double;
 
 # using full signature
-select `$BQ_DATASET`.tdigest_double_to_string(`$BQ_DATASET`.tdigest_double_merge_k(sketch, 100)) from `$BQ_DATASET`.tdigest_double;
+select `$BQ_DATASET`.tdigest_double_to_string(`$BQ_DATASET`.tdigest_double_merge_k(sketch, 100)) from tdigest_double;
 
 # expected 0.5
-select `$BQ_DATASET`.tdigest_double_get_rank(`$BQ_DATASET`.tdigest_double_merge(sketch), 10) from `$BQ_DATASET`.tdigest_double;
+select `$BQ_DATASET`.tdigest_double_get_rank(`$BQ_DATASET`.tdigest_double_merge(sketch), 10) from tdigest_double;
 
 # expected 10
-select `$BQ_DATASET`.tdigest_double_get_quantile(`$BQ_DATASET`.tdigest_double_merge(sketch), 0.5) from `$BQ_DATASET`.tdigest_double;
+select `$BQ_DATASET`.tdigest_double_get_quantile(`$BQ_DATASET`.tdigest_double_merge(sketch), 0.5) from tdigest_double;
 
 # expected 20
-select `$BQ_DATASET`.tdigest_double_get_total_weight(`$BQ_DATASET`.tdigest_double_merge(sketch)) from `$BQ_DATASET`.tdigest_double;
+select `$BQ_DATASET`.tdigest_double_get_total_weight(`$BQ_DATASET`.tdigest_double_merge(sketch)) from tdigest_double;
 
 # expected 1
-select `$BQ_DATASET`.tdigest_double_get_min_value(`$BQ_DATASET`.tdigest_double_merge(sketch)) from `$BQ_DATASET`.tdigest_double;
+select `$BQ_DATASET`.tdigest_double_get_min_value(`$BQ_DATASET`.tdigest_double_merge(sketch)) from tdigest_double;
 
 # expected 20
-select `$BQ_DATASET`.tdigest_double_get_max_value(`$BQ_DATASET`.tdigest_double_merge(sketch)) from `$BQ_DATASET`.tdigest_double;
+select `$BQ_DATASET`.tdigest_double_get_max_value(`$BQ_DATASET`.tdigest_double_merge(sketch)) from tdigest_double;
 
-drop table `$BQ_DATASET`.tdigest_double;
+drop table tdigest_double;
