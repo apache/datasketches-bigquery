@@ -37,16 +37,40 @@ If you are interested in making contributions to this project please see our
 page for how to contact us.
 
 ## Aggregate Functions
+
 ### [frequent_strings_sketch_merge(sketch BYTES, lg_max_map_size BYTEINT NOT AGGREGATE)](../fi/sqlx/frequent_strings_sketch_merge.sqlx)
-Merges sketches from the given column.<br><br>Param sketch: the column of values.<br>Param lg\_max\_map\_size: the sketch accuracy/size parameter as an integer not less than 3.<br>Returns: a serialized Frequent Strings sketch as BYTES.
+Merges sketches from the given column.
+
+* Param sketch: the column of values.
+* Param lg\_max\_map\_size: the sketch accuracy/size parameter as an integer not less than 3.
+* Returns: a serialized Frequent Strings sketch as BYTES.
+
 ### [frequent_strings_sketch_build(item STRING, weight INT64, lg_max_map_size BYTEINT NOT AGGREGATE)](../fi/sqlx/frequent_strings_sketch_build.sqlx)
-Creates a sketch that represents frequencies of the given column.<br><br>Param item: the column of STRING values.<br>Param weight: the amount by which the weight of the item should be increased.<br>Param lg\_max\_map\_size: the sketch accuracy/size parameter as a BYTEINT not less than 3.<br>Returns: a Frequent Strings Sketch, as bytes.
+Creates a sketch that represents frequencies of the given column.
+
+* Param item: the column of STRING values.
+* Param weight: the amount by which the weight of the item should be increased.
+* Param lg\_max\_map\_size: the sketch accuracy/size parameter as a BYTEINT not less than 3.
+* Returns: a Frequent Strings Sketch, as bytes.
 
 ## Scalar Functions
+
 ### [frequent_strings_sketch_to_string(sketch BYTES)](../fi/sqlx/frequent_strings_sketch_to_string.sqlx)
-Returns a summary string that represents the state of the given sketch.<br><br>Param sketch: the given sketch as sketch encoded bytes.<br>Returns: a string that represents the state of the given sketch.
+Returns a summary string that represents the state of the given sketch.
+
+* Param sketch: the given sketch as sketch encoded bytes.
+* Returns: a string that represents the state of the given sketch.
+
 ### [frequent_strings_sketch_get_result(sketch BYTES, error_type STRING, threshold INT64)](../fi/sqlx/frequent_strings_sketch_get_result.sqlx)
-Returns an array of rows that include frequent items, estimates, lower and upper bounds<br>given an error\_type and a threshold.<br><br>Param sketch: the given sketch as sketch encoded bytes.<br>Param error\_type: determines whether no false positives or no false negatives are desired.<br>Param threshold: a threshold to include items in the result list.<br>If NULL, the maximum error of the sketch is used as a threshold.<br>Returns: an array of frequent items with frequency estimates, lower and upper bounds.
+Returns an array of rows that include frequent items, estimates, lower and upper bounds
+given an error\_type and a threshold.
+
+* Param sketch: the given sketch as sketch encoded bytes.
+* Param error\_type: determines whether no false positives or no false negatives are desired.
+* Param threshold: a threshold to include items in the result list.
+If NULL, the maximum error of the sketch is used as a threshold.
+* Returns: an array of frequent items with frequency estimates, lower and upper bounds.
+
 ## Examples
 ```sql
 

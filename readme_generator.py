@@ -73,7 +73,9 @@ def parse_sqlx(file_content: str, filename: str) -> dict:
   description = description_match.group(1).strip() if description_match else "No description available"
   description = re.compile(r'\n*For more info.*', re.M | re.S).sub('', description) # remove repetitive links
   description = escape_markdown(description)
-  description = description.replace('\n', '<br>')
+  description = description.replace('\nParam', '\n* Param')
+  description = description.replace('\nDefault', '\n* Default')
+  description = description.replace('\nReturn', '\n* Return')
 
   # Extract function arguments and their types
   arg_list = []
@@ -109,17 +111,10 @@ def process_folder(input_folder: str, sketch_type: str) -> dict:
           content = f.read()
 
         # Parse the SQLX content
-        parsed_data = parse_sqlx(content, file)
-        logging.info(f"Parsed data for {file}: {parsed_data}")
-
-        function_index[sketch_type].append({
-            'name': parsed_data['name'],
-            'params': parsed_data['params'],
-            'returns': parsed_data['returns'],
-            'type':parsed_data['type'],
-            'description': parsed_data['description'],
-            'path': sqlx_path
-        })
+        data = parse_sqlx(content, file)
+        logging.info(f"Parsed data for {file}: {data}")
+        data['path'] = sqlx_path
+        function_index[sketch_type].append(data)
   return function_index
 
 # Function to generate README content based on the template
@@ -138,12 +133,12 @@ def generate_readme(template_path: str, function_index: dict, examples_path: str
       output_lines += "\n## Scalar Functions\n"
       is_aggregate = False
     function_link = f"[{function['name']}{function['params']}](../{function['path']})"
-    output_lines += f"### {function_link}\n{function['description']}\n"
+    output_lines += f"\n### {function_link}\n{function['description']}\n"
 
   # Add examples section
   example_files = [f for f in os.listdir(examples_path) if f.endswith("_test.sql")]
   if example_files:
-    output_lines.append("## Examples\n")
+    output_lines.append("\n## Examples\n")
     for example_file in example_files:
       # Read the example SQL file
       with open(os.path.join(examples_path, example_file), 'r') as f:

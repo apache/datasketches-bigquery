@@ -35,28 +35,75 @@ If you are interested in making contributions to this project please see our
 page for how to contact us.
 
 ## Aggregate Functions
+
 ### [tdigest_double_build(value FLOAT64)](../tdigest/sqlx/tdigest_double_build.sqlx)
-Creates a sketch that represents the distribution of the given column.<br><br>Param value: the column of FLOAT64 values.<br>Defaults: k = 200.<br>Returns: a t\-Digest, as bytes.
+Creates a sketch that represents the distribution of the given column.
+
+* Param value: the column of FLOAT64 values.
+* Defaults: k = 200.
+* Returns: a t\-Digest, as bytes.
+
 ### [tdigest_double_merge(sketch BYTES)](../tdigest/sqlx/tdigest_double_merge.sqlx)
-Merges sketches from the given column.<br><br>Param sketch: the column of values.<br>Defaults: k = 200.<br>Returns: a serialized t\-Digest as BYTES.
+Merges sketches from the given column.
+
+* Param sketch: the column of values.
+* Defaults: k = 200.
+* Returns: a serialized t\-Digest as BYTES.
+
 ### [tdigest_double_merge_k(sketch BYTES, k INT NOT AGGREGATE)](../tdigest/sqlx/tdigest_double_merge_k.sqlx)
-Merges sketches from the given column.<br><br>Param sketch: the column of values.<br>Param k: the sketch accuracy/size parameter as an integer in the range \[10, 65535\].<br>Returns: a serialized t\-Digest as BYTES.
+Merges sketches from the given column.
+
+* Param sketch: the column of values.
+* Param k: the sketch accuracy/size parameter as an integer in the range \[10, 65535\].
+* Returns: a serialized t\-Digest as BYTES.
+
 ### [tdigest_double_build_k(value FLOAT64, k INT NOT AGGREGATE)](../tdigest/sqlx/tdigest_double_build_k.sqlx)
-Creates a sketch that represents the distribution of the given column.<br><br>Param value: the column of FLOAT64 values.<br>Param k: the sketch accuracy/size parameter as an INT in the range \[10, 65535\].<br>Returns: a t\-Digest, as bytes.
+Creates a sketch that represents the distribution of the given column.
+
+* Param value: the column of FLOAT64 values.
+* Param k: the sketch accuracy/size parameter as an INT in the range \[10, 65535\].
+* Returns: a t\-Digest, as bytes.
 
 ## Scalar Functions
+
 ### [tdigest_double_get_max_value(sketch BYTES)](../tdigest/sqlx/tdigest_double_get_max_value.sqlx)
-Returns the maximum value of the input stream.<br><br>Param sketch: the given sketch as BYTES.<br>Returns: max value as FLOAT64
+Returns the maximum value of the input stream.
+
+* Param sketch: the given sketch as BYTES.
+* Returns: max value as FLOAT64
+
 ### [tdigest_double_to_string(sketch BYTES)](../tdigest/sqlx/tdigest_double_to_string.sqlx)
-Returns a summary string that represents the state of the given sketch.<br><br>Param sketch: the given sketch as sketch encoded bytes.<br>Returns: a string that represents the state of the given sketch.
+Returns a summary string that represents the state of the given sketch.
+
+* Param sketch: the given sketch as sketch encoded bytes.
+* Returns: a string that represents the state of the given sketch.
+
 ### [tdigest_double_get_total_weight(sketch BYTES)](../tdigest/sqlx/tdigest_double_get_total_weight.sqlx)
-Returns the total weight of the input stream.<br><br>Param sketch: the given sketch as BYTES.<br>Returns: total weight as INT64
+Returns the total weight of the input stream.
+
+* Param sketch: the given sketch as BYTES.
+* Returns: total weight as INT64
+
 ### [tdigest_double_get_min_value(sketch BYTES)](../tdigest/sqlx/tdigest_double_get_min_value.sqlx)
-Returns the minimum value of the input stream.<br><br>Param sketch: the given sketch as BYTES.<br>Returns: min value as FLOAT64
+Returns the minimum value of the input stream.
+
+* Param sketch: the given sketch as BYTES.
+* Returns: min value as FLOAT64
+
 ### [tdigest_double_get_rank(sketch BYTES, value FLOAT64)](../tdigest/sqlx/tdigest_double_get_rank.sqlx)
-Returns an approximation to the normalized rank, on the interval \[0.0, 1.0\], of the given value.<br><br>Param sketch: the given sketch in serialized form.<br>Param value: value to be ranked.<br>Returns: an approximate rank of the given value.
+Returns an approximation to the normalized rank, on the interval \[0.0, 1.0\], of the given value.
+
+* Param sketch: the given sketch in serialized form.
+* Param value: value to be ranked.
+* Returns: an approximate rank of the given value.
+
 ### [tdigest_double_get_quantile(sketch BYTES, rank FLOAT64)](../tdigest/sqlx/tdigest_double_get_quantile.sqlx)
-Returns a value from the sketch that is the best approximation to a value from the original stream with the given rank.<br><br>Param sketch: the given sketch in serialized form.<br>Param rank: rank of a value in the hypothetical sorted stream.<br>Returns: an approximate quantile associated with the given rank.
+Returns a value from the sketch that is the best approximation to a value from the original stream with the given rank.
+
+* Param sketch: the given sketch in serialized form.
+* Param rank: rank of a value in the hypothetical sorted stream.
+* Returns: an approximate quantile associated with the given rank.
+
 ## Examples
 ```sql
 

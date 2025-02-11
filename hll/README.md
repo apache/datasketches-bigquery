@@ -36,30 +36,92 @@ If you are interested in making contributions to this project please see our
 page for how to contact us.
 
 ## Aggregate Functions
+
 ### [hll_sketch_agg_string(str STRING)](../hll/sqlx/hll_sketch_agg_string.sqlx)
-Creates a sketch that represents the cardinality of the given STRING column.<br><br>Param str: the STRING column of identifiers.<br>Defaults: lg\_k = 12, tgt\_type = HLL\_4.<br>Returns: an HLL Sketch, as BYTES.
+Creates a sketch that represents the cardinality of the given STRING column.
+
+* Param str: the STRING column of identifiers.
+* Defaults: lg\_k = 12, tgt\_type = HLL\_4.
+* Returns: an HLL Sketch, as BYTES.
+
 ### [hll_sketch_agg_union(sketch BYTES)](../hll/sqlx/hll_sketch_agg_union.sqlx)
-Creates a sketch that represents the union of the given column of sketches.<br><br>Param sketch: the column of sketches. Each as BYTES.<br>Defaults: lg\_k = 12, tgt\_type = HLL\_4.<br>Returns: an HLL Sketch, as BYTES.
+Creates a sketch that represents the union of the given column of sketches.
+
+* Param sketch: the column of sketches. Each as BYTES.
+* Defaults: lg\_k = 12, tgt\_type = HLL\_4.
+* Returns: an HLL Sketch, as BYTES.
+
 ### [hll_sketch_agg_int64(value INT64)](../hll/sqlx/hll_sketch_agg_int64.sqlx)
-Creates a sketch that represents the cardinality of the given INT64 column.<br><br>Param value: the INT64 column of identifiers.<br>Defaults: lg\_k = 12, tgt\_type = HLL\_4.<br>Returns: an HLL Sketch, as BYTES.
+Creates a sketch that represents the cardinality of the given INT64 column.
+
+* Param value: the INT64 column of identifiers.
+* Defaults: lg\_k = 12, tgt\_type = HLL\_4.
+* Returns: an HLL Sketch, as BYTES.
+
 ### [hll_sketch_agg_string_lgk_type(str STRING, params STRUCT<lg_k BYTEINT, tgt_type STRING> NOT AGGREGATE)](../hll/sqlx/hll_sketch_agg_string_lgk_type.sqlx)
-Creates a sketch that represents the cardinality of the given STRING column.<br><br>Param str: the STRING column of identifiers.<br>Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 21\].<br>Param tgt\_type: The HLL type to use: one of {"HLL\_4", "HLL\_6", "HLL\_8"}.<br>Returns: an HLL Sketch, as BYTES.
+Creates a sketch that represents the cardinality of the given STRING column.
+
+* Param str: the STRING column of identifiers.
+* Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 21\].
+* Param tgt\_type: The HLL type to use: one of {"HLL\_4", "HLL\_6", "HLL\_8"}.
+* Returns: an HLL Sketch, as BYTES.
+
 ### [hll_sketch_agg_union_lgk_type(sketch BYTES, params STRUCT<lg_k BYTEINT, tgt_type STRING> NOT AGGREGATE)](../hll/sqlx/hll_sketch_agg_union_lgk_type.sqlx)
-Creates a sketch that represents the union of the given column of sketches.<br><br>Param sketch: the column of sketches. Each as BYTES.<br>Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 21\].<br>Param tgt\_type: The HLL type to use: one of {"HLL\_4", "HLL\_6", "HLL\_8"}.<br>Returns: an HLL Sketch, as BYTES.
+Creates a sketch that represents the union of the given column of sketches.
+
+* Param sketch: the column of sketches. Each as BYTES.
+* Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 21\].
+* Param tgt\_type: The HLL type to use: one of {"HLL\_4", "HLL\_6", "HLL\_8"}.
+* Returns: an HLL Sketch, as BYTES.
+
 ### [hll_sketch_agg_int64_lgk_type(value INT64, params STRUCT<lg_k BYTEINT, tgt_type STRING> NOT AGGREGATE)](../hll/sqlx/hll_sketch_agg_int64_lgk_type.sqlx)
-Creates a sketch that represents the cardinality of the given INT64 column.<br><br>Param value: the INT64 column of identifiers.<br>Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 21\].<br>Param tgt\_type: The HLL type to use: one of {"HLL\_4", "HLL\_6", "HLL\_8"}.<br>Returns: an HLL Sketch, as BYTES.
+Creates a sketch that represents the cardinality of the given INT64 column.
+
+* Param value: the INT64 column of identifiers.
+* Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 21\].
+* Param tgt\_type: The HLL type to use: one of {"HLL\_4", "HLL\_6", "HLL\_8"}.
+* Returns: an HLL Sketch, as BYTES.
 
 ## Scalar Functions
+
 ### [hll_sketch_get_estimate(sketch BYTES)](../hll/sqlx/hll_sketch_get_estimate.sqlx)
-Returns a summary string that represents the state of the given sketch.<br><br>Param sketch: the given sketch as BYTES.<br>Returns: the cardinality estimate as FLOAT64 value.
+Returns a summary string that represents the state of the given sketch.
+
+* Param sketch: the given sketch as BYTES.
+* Returns: the cardinality estimate as FLOAT64 value.
+
 ### [hll_sketch_to_string(sketch BYTES)](../hll/sqlx/hll_sketch_to_string.sqlx)
-Returns a summary string that represents the state of the given sketch.<br><br>Param sketch: the given sketch as BYTES.<br>Returns: a STRING that represents the state of the given sketch.
+Returns a summary string that represents the state of the given sketch.
+
+* Param sketch: the given sketch as BYTES.
+* Returns: a STRING that represents the state of the given sketch.
+
 ### [hll_sketch_union(sketchA BYTES, sketchB BYTES)](../hll/sqlx/hll_sketch_union.sqlx)
-Computes a sketch that represents the union of the two given sketches.<br><br>Param sketchA: the first sketch as bytes.<br>Param sketchB: the second sketch as bytes.<br>Defaults: lg\_k = 12, tgt\_type = HLL\_4.<br>Returns: an HLL Sketch, as BYTES.
+Computes a sketch that represents the union of the two given sketches.
+
+* Param sketchA: the first sketch as bytes.
+* Param sketchB: the second sketch as bytes.
+* Defaults: lg\_k = 12, tgt\_type = HLL\_4.
+* Returns: an HLL Sketch, as BYTES.
+
 ### [hll_sketch_get_estimate_and_bounds(sketch BYTES, num_std_devs BYTEINT)](../hll/sqlx/hll_sketch_get_estimate_and_bounds.sqlx)
-Gets cardinality estimate and bounds from given sketch.<br><br>Param sketch: The given sketch to query as BYTES.<br>Param num\_std\_devs: The returned bounds will be based on the statistical confidence interval determined by the given number of standard deviations<br>  from the returned estimate. This number may be one of {1,2,3}, where 1 represents 68% confidence, 2 represents 95% confidence and 3 represents 99.7% confidence.<br>  For example, if the given num\_std\_devs = 2 and the returned values are {1000, 990, 1010} that means that with 95% confidence, the true value lies within the range \[990, 1010\].<br>Returns: a struct with 3 FLOAT64 values as {estimate, lower\_bound, upper\_bound}.
+Gets cardinality estimate and bounds from given sketch.
+
+* Param sketch: The given sketch to query as BYTES.
+* Param num\_std\_devs: The returned bounds will be based on the statistical confidence interval determined by the given number of standard deviations
+  from the returned estimate. This number may be one of {1,2,3}, where 1 represents 68% confidence, 2 represents 95% confidence and 3 represents 99.7% confidence.
+  For example, if the given num\_std\_devs = 2 and the returned values are {1000, 990, 1010} that means that with 95% confidence, the true value lies within the range \[990, 1010\].
+* Returns: a struct with 3 FLOAT64 values as {estimate, lower\_bound, upper\_bound}.
+
 ### [hll_sketch_union_lgk_type(sketchA BYTES, sketchB BYTES, lg_k BYTEINT, tgt_type STRING)](../hll/sqlx/hll_sketch_union_lgk_type.sqlx)
-Computes a sketch that represents the union of the two given sketches.<br><br>Param sketchA: the first sketch as bytes.<br>Param sketchB: the second sketch as bytes.<br>Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 21\].<br>Param tgt\_type: The HLL type to use: one of {"HLL\_4", "HLL\_6", "HLL\_8"}.<br>Returns: an HLL Sketch, as BYTES.
+Computes a sketch that represents the union of the two given sketches.
+
+* Param sketchA: the first sketch as bytes.
+* Param sketchB: the second sketch as bytes.
+* Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 21\].
+* Param tgt\_type: The HLL type to use: one of {"HLL\_4", "HLL\_6", "HLL\_8"}.
+* Returns: an HLL Sketch, as BYTES.
+
 ## Examples
 ```sql
 
