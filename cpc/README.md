@@ -37,25 +37,121 @@ If you are interested in making contributions to this project please see our
 [Community](https://datasketches.apache.org/docs/Community/) 
 page for how to contact us.
 
-| Function Name | Function Type | Signature | Description |
-|---|---|---|---|
-| [cpc_sketch_agg_union](../cpc/sqlx/cpc_sketch_agg_union.sqlx) | AGGREGATE | (sketch BYTES) -> BYTES | Creates a sketch that represents the union of the given column of sketches.<br><br>Param sketch: the column of sketches. Each as BYTES.<br>Defaults: lg\_k = 12, seed = 9001.<br>Returns: a Compact, Compressed CPC Sketch, as BYTES. |
-| [cpc_sketch_agg_string](../cpc/sqlx/cpc_sketch_agg_string.sqlx) | AGGREGATE | (str STRING) -> BYTES | Creates a sketch that represents the cardinality of the given STRING column.<br><br>Param str: the STRING column of identifiers.<br>Defaults: lg\_k = 12, seed = 9001.<br>Returns: a Compact, Compressed CPC Sketch, as BYTES  |
-| [cpc_sketch_agg_int64](../cpc/sqlx/cpc_sketch_agg_int64.sqlx) | AGGREGATE | (value INT64) -> BYTES | Creates a sketch that represents the cardinality of the given INT64 column.<br><br>Param value: the INT64 column of identifiers.<br>Defaults: lg\_k = 12, seed = 9001.<br>Returns: a Compact, Compressed CPC Sketch, as BYTES  |
-| [cpc_sketch_agg_string_lgk_seed](../cpc/sqlx/cpc_sketch_agg_string_lgk_seed.sqlx) | AGGREGATE | (str STRING, params STRUCT<lg_k BYTEINT, seed INT64> NOT AGGREGATE) -> BYTES | Creates a sketch that represents the cardinality of the given STRING column.<br><br>Param str: the STRING column of identifiers.<br>Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 26\].<br>Param seed: the seed to be used by the underlying hash function.<br>Returns: a Compact, Compressed CPC Sketch, as BYTES  |
-| [cpc_sketch_agg_union_lgk_seed](../cpc/sqlx/cpc_sketch_agg_union_lgk_seed.sqlx) | AGGREGATE | (sketch BYTES, params STRUCT<lg_k BYTEINT, seed INT64> NOT AGGREGATE) -> BYTES | Creates a sketch that represents the union of the given column of sketches.<br><br>Param sketch: the column of sketches. Each as BYTES.<br>Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 26\].<br>Param seed: This is used to confirm that the given sketches were configured with the correct seed.<br>Returns: a Compact, Compressed CPC Sketch, as BYTES. |
-| [cpc_sketch_agg_int64_lgk_seed](../cpc/sqlx/cpc_sketch_agg_int64_lgk_seed.sqlx) | AGGREGATE | (value INT64, params STRUCT<lg_k BYTEINT, seed INT64> NOT AGGREGATE) -> BYTES | Creates a sketch that represents the cardinality of the given INT64 column.<br><br>Param value: the INT64 column of identifiers.<br>Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 26\].<br>Param seed: the seed to be used by the underlying hash function.<br>Returns: a Compact, Compressed CPC Sketch, as BYTES  |
-| [cpc_sketch_get_estimate](../cpc/sqlx/cpc_sketch_get_estimate.sqlx) | SCALAR | (sketch BYTES) -> FLOAT64 | Gets cardinality estimate and bounds from given sketch.<br><br>Param sketch: The given sketch to query as BYTES.<br>Defaults: seed = 9001.<br>Returns: a FLOAT64 value as the cardinality estimate. |
-| [cpc_sketch_to_string](../cpc/sqlx/cpc_sketch_to_string.sqlx) | SCALAR | (sketch BYTES) -> STRING | Returns a summary string that represents the state of the given sketch.<br><br>Param sketch the given sketch as BYTES.<br>Defaults: seed = 9001.<br>Returns: a STRING that represents the state of the given sketch. |
-| [cpc_sketch_get_estimate_seed](../cpc/sqlx/cpc_sketch_get_estimate_seed.sqlx) | SCALAR | (sketch BYTES, seed INT64) -> FLOAT64 | Gets cardinality estimate and bounds from given sketch.<br><br>Param sketch: The given sketch to query as BYTES.<br>Param seed: This is used to confirm that the given sketch was configured with the correct seed.<br>Returns: a FLOAT64 value as the cardinality estimate. |
-| [cpc_sketch_to_string_seed](../cpc/sqlx/cpc_sketch_to_string_seed.sqlx) | SCALAR | (sketch BYTES, seed INT64) -> STRING | Returns a summary string that represents the state of the given sketch.<br><br>Param sketch the given sketch as BYTES.<br>Param seed: This is used to confirm that the given sketch was configured with the correct seed.<br>Returns: a STRING that represents the state of the given sketch. |
-| [cpc_sketch_union](../cpc/sqlx/cpc_sketch_union.sqlx) | SCALAR | (sketchA BYTES, sketchB BYTES) -> BYTES | Computes a sketch that represents the scalar union of the two given sketches.<br><br>Param sketchA: the first sketch as BYTES.<br>Param sketchB: the second sketch as BYTES.<br>Defaults: lg\_k = 12, seed = 9001.<br>Returns: a CPC Sketch, as BYTES. |
-| [cpc_sketch_get_estimate_and_bounds](../cpc/sqlx/cpc_sketch_get_estimate_and_bounds.sqlx) | SCALAR | (sketch BYTES, num_std_devs BYTEINT) -> STRUCT<estimate FLOAT64, lower_bound FLOAT64, upper_bound FLOAT64> | Gets cardinality estimate and bounds from given sketch.<br>  <br>Param sketch: The given sketch to query as bytes.<br>Param num\_std\_devs: The returned bounds will be based on the statistical confidence interval determined by the given number of standard deviations<br>  from the returned estimate. This number may be one of {1,2,3}, where 1 represents 68% confidence, 2 represents 95% confidence and 3 represents 99.7% confidence.<br>  For example, if the given num\_std\_devs = 2 and the returned values are {1000, 990, 1010} that means that with 95% confidence, the true value lies within the range \[990, 1010\].<br>Defaults: seed = 9001.<br>Returns: a STRUCT with 3 FLOAT64 values as {estimate, lower\_bound, upper\_bound}. |
-| [cpc_sketch_union_lgk_seed](../cpc/sqlx/cpc_sketch_union_lgk_seed.sqlx) | SCALAR | (sketchA BYTES, sketchB BYTES, lg_k BYTEINT, seed INT64) -> BYTES | Computes a sketch that represents the scalar union of the two given sketches.<br><br>Param sketchA: the first sketch as BYTES.<br>Param sketchB: the second sketch as BYTES.<br>Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 26\].<br>Param seed: This is used to confirm that the given sketches were configured with the correct seed.<br>Returns: a CPC Sketch, as BYTES. |
-| [cpc_sketch_get_estimate_and_bounds_seed](../cpc/sqlx/cpc_sketch_get_estimate_and_bounds_seed.sqlx) | SCALAR | (sketch BYTES, num_std_devs BYTEINT, seed INT64) -> STRUCT<estimate FLOAT64, lower_bound FLOAT64, upper_bound FLOAT64> | Gets cardinality estimate and bounds from given sketch.<br>  <br>Param sketch: The given sketch to query as bytes.<br>Param num\_std\_devs: The returned bounds will be based on the statistical confidence interval determined by the given number of standard deviations<br>  from the returned estimate. This number may be one of {1,2,3}, where 1 represents 68% confidence, 2 represents 95% confidence and 3 represents 99.7% confidence.<br>  For example, if the given num\_std\_devs = 2 and the returned values are {1000, 990, 1010} that means that with 95% confidence, the true value lies within the range \[990, 1010\].<br>Param seed: This is used to confirm that the given sketch was configured with the correct seed.<br>Returns: a STRUCT with 3 FLOAT64 values as {estimate, lower\_bound, upper\_bound}. |
+## Aggregate Functions
 
-**Examples:**
+### [cpc_sketch_agg_union(sketch BYTES)](../cpc/sqlx/cpc_sketch_agg_union.sqlx)
+Creates a sketch that represents the union of the given column of sketches.
 
+* Param sketch: the column of sketches. Each as BYTES.
+* Defaults: lg\_k = 12, seed = 9001.
+* Returns: a Compact, Compressed CPC Sketch, as BYTES.
+
+### [cpc_sketch_agg_string(str STRING)](../cpc/sqlx/cpc_sketch_agg_string.sqlx)
+Creates a sketch that represents the cardinality of the given STRING column.
+
+* Param str: the STRING column of identifiers.
+* Defaults: lg\_k = 12, seed = 9001.
+* Returns: a Compact, Compressed CPC Sketch, as BYTES 
+
+### [cpc_sketch_agg_int64(value INT64)](../cpc/sqlx/cpc_sketch_agg_int64.sqlx)
+Creates a sketch that represents the cardinality of the given INT64 column.
+
+* Param value: the INT64 column of identifiers.
+* Defaults: lg\_k = 12, seed = 9001.
+* Returns: a Compact, Compressed CPC Sketch, as BYTES 
+
+### [cpc_sketch_agg_string_lgk_seed(str STRING, params STRUCT<lg_k BYTEINT, seed INT64> NOT AGGREGATE)](../cpc/sqlx/cpc_sketch_agg_string_lgk_seed.sqlx)
+Creates a sketch that represents the cardinality of the given STRING column.
+
+* Param str: the STRING column of identifiers.
+* Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 26\].
+* Param seed: the seed to be used by the underlying hash function.
+* Returns: a Compact, Compressed CPC Sketch, as BYTES 
+
+### [cpc_sketch_agg_union_lgk_seed(sketch BYTES, params STRUCT<lg_k BYTEINT, seed INT64> NOT AGGREGATE)](../cpc/sqlx/cpc_sketch_agg_union_lgk_seed.sqlx)
+Creates a sketch that represents the union of the given column of sketches.
+
+* Param sketch: the column of sketches. Each as BYTES.
+* Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 26\].
+* Param seed: This is used to confirm that the given sketches were configured with the correct seed.
+* Returns: a Compact, Compressed CPC Sketch, as BYTES.
+
+### [cpc_sketch_agg_int64_lgk_seed(value INT64, params STRUCT<lg_k BYTEINT, seed INT64> NOT AGGREGATE)](../cpc/sqlx/cpc_sketch_agg_int64_lgk_seed.sqlx)
+Creates a sketch that represents the cardinality of the given INT64 column.
+
+* Param value: the INT64 column of identifiers.
+* Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 26\].
+* Param seed: the seed to be used by the underlying hash function.
+* Returns: a Compact, Compressed CPC Sketch, as BYTES 
+
+## Scalar Functions
+
+### [cpc_sketch_get_estimate(sketch BYTES)](../cpc/sqlx/cpc_sketch_get_estimate.sqlx)
+Gets cardinality estimate and bounds from given sketch.
+
+* Param sketch: The given sketch to query as BYTES.
+* Defaults: seed = 9001.
+* Returns: a FLOAT64 value as the cardinality estimate.
+
+### [cpc_sketch_to_string(sketch BYTES)](../cpc/sqlx/cpc_sketch_to_string.sqlx)
+Returns a summary string that represents the state of the given sketch.
+
+* Param sketch the given sketch as BYTES.
+* Defaults: seed = 9001.
+* Returns: a STRING that represents the state of the given sketch.
+
+### [cpc_sketch_get_estimate_seed(sketch BYTES, seed INT64)](../cpc/sqlx/cpc_sketch_get_estimate_seed.sqlx)
+Gets cardinality estimate and bounds from given sketch.
+
+* Param sketch: The given sketch to query as BYTES.
+* Param seed: This is used to confirm that the given sketch was configured with the correct seed.
+* Returns: a FLOAT64 value as the cardinality estimate.
+
+### [cpc_sketch_to_string_seed(sketch BYTES, seed INT64)](../cpc/sqlx/cpc_sketch_to_string_seed.sqlx)
+Returns a summary string that represents the state of the given sketch.
+
+* Param sketch the given sketch as BYTES.
+* Param seed: This is used to confirm that the given sketch was configured with the correct seed.
+* Returns: a STRING that represents the state of the given sketch.
+
+### [cpc_sketch_union(sketchA BYTES, sketchB BYTES)](../cpc/sqlx/cpc_sketch_union.sqlx)
+Computes a sketch that represents the scalar union of the two given sketches.
+
+* Param sketchA: the first sketch as BYTES.
+* Param sketchB: the second sketch as BYTES.
+* Defaults: lg\_k = 12, seed = 9001.
+* Returns: a CPC Sketch, as BYTES.
+
+### [cpc_sketch_get_estimate_and_bounds(sketch BYTES, num_std_devs BYTEINT)](../cpc/sqlx/cpc_sketch_get_estimate_and_bounds.sqlx)
+Gets cardinality estimate and bounds from given sketch.
+  
+* Param sketch: The given sketch to query as bytes.
+* Param num\_std\_devs: The returned bounds will be based on the statistical confidence interval determined by the given number of standard deviations
+  from the returned estimate. This number may be one of {1,2,3}, where 1 represents 68% confidence, 2 represents 95% confidence and 3 represents 99.7% confidence.
+  For example, if the given num\_std\_devs = 2 and the returned values are {1000, 990, 1010} that means that with 95% confidence, the true value lies within the range \[990, 1010\].
+* Defaults: seed = 9001.
+* Returns: a STRUCT with 3 FLOAT64 values as {estimate, lower\_bound, upper\_bound}.
+
+### [cpc_sketch_get_estimate_and_bounds_seed(sketch BYTES, num_std_devs BYTEINT, seed INT64)](../cpc/sqlx/cpc_sketch_get_estimate_and_bounds_seed.sqlx)
+Gets cardinality estimate and bounds from given sketch.
+  
+* Param sketch: The given sketch to query as bytes.
+* Param num\_std\_devs: The returned bounds will be based on the statistical confidence interval determined by the given number of standard deviations
+  from the returned estimate. This number may be one of {1,2,3}, where 1 represents 68% confidence, 2 represents 95% confidence and 3 represents 99.7% confidence.
+  For example, if the given num\_std\_devs = 2 and the returned values are {1000, 990, 1010} that means that with 95% confidence, the true value lies within the range \[990, 1010\].
+* Param seed: This is used to confirm that the given sketch was configured with the correct seed.
+* Returns: a STRUCT with 3 FLOAT64 values as {estimate, lower\_bound, upper\_bound}.
+
+### [cpc_sketch_union_lgk_seed(sketchA BYTES, sketchB BYTES, lg_k BYTEINT, seed INT64)](../cpc/sqlx/cpc_sketch_union_lgk_seed.sqlx)
+Computes a sketch that represents the scalar union of the two given sketches.
+
+* Param sketchA: the first sketch as BYTES.
+* Param sketchB: the second sketch as BYTES.
+* Param lg\_k: the sketch accuracy/size parameter as an integer in the range \[4, 26\].
+* Param seed: This is used to confirm that the given sketches were configured with the correct seed.
+* Returns: a CPC Sketch, as BYTES.
+
+## Examples
 ```sql
 
 # using defaults

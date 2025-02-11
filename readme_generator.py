@@ -73,7 +73,9 @@ def parse_sqlx(file_content: str, filename: str) -> dict:
   description = description_match.group(1).strip() if description_match else "No description available"
   description = re.compile(r'\n*For more info.*', re.M | re.S).sub('', description) # remove repetitive links
   description = escape_markdown(description)
-  description = description.replace('\n', '<br>')
+  description = description.replace('\nParam', '\n* Param')
+  description = description.replace('\nDefault', '\n* Default')
+  description = description.replace('\nReturn', '\n* Return')
 
   # Extract function arguments and their types
   arg_list = []
@@ -87,10 +89,11 @@ def parse_sqlx(file_content: str, filename: str) -> dict:
   # Determine function type
   function_type = "AGGREGATE" if "AGGREGATE FUNCTION" in file_content else "SCALAR"
   return {
-      "function_name": filename[:-5],  # Remove file extension .sqlx
-      "signature": f"({', '.join([f'{arg[0]} {arg[1]}' for arg in arg_list])}) -> {return_type}",
+      "name": filename[:-5],  # Remove file extension .sqlx
+      "params": f"({', '.join([f'{arg[0]} {arg[1]}' for arg in arg_list])})",
+      "returns": return_type,
       "description": description,
-      "function_type": function_type,
+      "type": function_type,
   }
 
 # Function to walk through directories, parse SQLX files, and collect data for README
@@ -108,16 +111,10 @@ def process_folder(input_folder: str, sketch_type: str) -> dict:
           content = f.read()
 
         # Parse the SQLX content
-        parsed_data = parse_sqlx(content, file)
-        logging.info(f"Parsed data for {file}: {parsed_data}")
-
-        function_index[sketch_type].append({
-            'function_name': parsed_data['function_name'],
-            'signature': parsed_data['signature'],
-            'function_type':parsed_data['function_type'],
-            'description': parsed_data['description'],
-            'path': sqlx_path
-        })
+        data = parse_sqlx(content, file)
+        logging.info(f"Parsed data for {file}: {data}")
+        data['path'] = sqlx_path
+        function_index[sketch_type].append(data)
   return function_index
 
 # Function to generate README content based on the template
@@ -126,21 +123,22 @@ def generate_readme(template_path: str, function_index: dict, examples_path: str
   with open(template_path, 'r') as template_file:
     output_lines = template_file.readlines()
 
-  # Generate the table content
-  output_lines += "\n"
-  output_lines += "| Function Name | Function Type | Signature | Description |\n"
-  output_lines += "|---|---|---|---|\n" # table header
+  output_lines += "\n## Aggregate Functions\n"
 
   # Sort functions by function type (AGGREGATE first, then SCALAR) and then by number of arguments
-  sorted_functions = sorted(function_index, key=lambda x: (x['function_type'], len(x['signature'].split(','))), reverse=False)
+  sorted_functions = sorted(function_index, key=lambda x: (x['type'], len(x['params'].split(','))), reverse=False)
+  is_aggregate = True
   for function in sorted_functions:
-    function_link = f"[{function['function_name']}](../{function['path']})"
-    output_lines += f"| {function_link} | {function['function_type']} | {function['signature']} | {function['description']} |\n"
+    if is_aggregate and function['type'] == 'SCALAR':
+      output_lines += "\n## Scalar Functions\n"
+      is_aggregate = False
+    function_link = f"[{function['name']}{function['params']}](../{function['path']})"
+    output_lines += f"\n### {function_link}\n{function['description']}\n"
 
   # Add examples section
   example_files = [f for f in os.listdir(examples_path) if f.endswith("_test.sql")]
   if example_files:
-    output_lines.append("\n**Examples:**\n\n")
+    output_lines.append("\n## Examples\n")
     for example_file in example_files:
       # Read the example SQL file
       with open(os.path.join(examples_path, example_file), 'r') as f:
