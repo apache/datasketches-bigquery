@@ -126,16 +126,22 @@ def generate_readme(template_path: str, function_index: dict, examples_path: str
   with open(template_path, 'r') as template_file:
     output_lines = template_file.readlines()
 
+  table_header = "| Function Name | Signature | Description |\n|---|---|---|\n"
+
   # Generate the table content
-  output_lines += "\n"
-  output_lines += "| Function Name | Function Type | Signature | Description |\n"
-  output_lines += "|---|---|---|---|\n" # table header
+  output_lines += "\n## Aggregate Functions\n"
+  output_lines += table_header
 
   # Sort functions by function type (AGGREGATE first, then SCALAR) and then by number of arguments
   sorted_functions = sorted(function_index, key=lambda x: (x['function_type'], len(x['signature'].split(','))), reverse=False)
+  is_aggregate = True
   for function in sorted_functions:
+    if is_aggregate and function['function_type'] == 'SCALAR':
+      output_lines += "\n## Scalar Functions\n"
+      output_lines += table_header
+      is_aggregate = False
     function_link = f"[{function['function_name']}](../{function['path']})"
-    output_lines += f"| {function_link} | {function['function_type']} | {function['signature']} | {function['description']} |\n"
+    output_lines += f"| {function_link} | {function['signature']} | {function['description']} |\n"
 
   # Add examples section
   example_files = [f for f in os.listdir(examples_path) if f.endswith("_test.sql")]
