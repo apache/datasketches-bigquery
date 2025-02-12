@@ -23,7 +23,7 @@ Tuple sketches extend the functionality of Theta sketches by adding a Summary ob
 with each distinct key retained by the sketch. When the identifier of an input pair (identifier, value) matches a unique
 key of the sketch, the associated Summary of that key can be modified based on user-defined policy.
 
-The set of all Summary values collected by the sketch represents a uniform random sample  of the unique identifiers
+The set of all Summary values collected by the sketch represents a uniform random sample of the unique identifiers
 as opposed to a uniform random sample of all raw inputs.
 This enables the use of common statistical computations of the Summary values, which can be extrapolated to the entire
 set of unique identifiers.
