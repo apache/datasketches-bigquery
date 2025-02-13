@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, num_std_devs BYTEINT, seed IN
 RETURNS STRUCT<estimate FLOAT64, lower_bound FLOAT64, upper_bound FLOAT64>
 LANGUAGE js
 OPTIONS (
-  library=["${dataform.projectConfig.vars.jsBucket}/theta.js"],
+  library=["${dataform.projectConfig.vars.jsBucket}/theta_sketch.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Gets distinct count estimate and bounds from a given sketch.
 

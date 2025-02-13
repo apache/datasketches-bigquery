@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketch BYTES, seed INT64)
 RETURNS FLOAT64
 LANGUAGE js
 OPTIONS (
-  library=["${dataform.projectConfig.vars.jsBucket}/theta.js"],
+  library=["${dataform.projectConfig.vars.jsBucket}/theta_sketch.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Gets distinct count estimate from a given sketch.
   

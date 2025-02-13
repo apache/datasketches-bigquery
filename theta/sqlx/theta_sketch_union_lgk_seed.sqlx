@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION ${self()}(sketchA BYTES, sketchB BYTES, lg_k BYTEINT,
 RETURNS BYTES
 LANGUAGE js
 OPTIONS (
-  library=["${dataform.projectConfig.vars.jsBucket}/theta.js"],
+  library=["${dataform.projectConfig.vars.jsBucket}/theta_sketch.js"],
   js_parameter_encoding_mode='STANDARD',
   description = '''Computes a sketch that represents the scalar union of the two given sketches.
 
