@@ -341,7 +341,7 @@ This function only applies to Tuple Sketches with an INT64 summary column.
 
 ### [tuple_sketch_int64_filter_low_high(sketch BYTES, low INT64, high INT64)](../tuple/sqlx/tuple_sketch_int64_filter_low_high.sqlx)
 Returns a Tuple Sketch computed from the given sketch filtered by the given low and high values. 
-This returns a compact tuple sketch that contains the subset of rows of the give sketch where the
+This returns a compact tuple sketch that contains the subset of rows of the given sketch where the
 summary column is greater\-than or equal to the given low and less\-than or equal to the given high.
 Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.
 This function only applies to Tuple Sketches with an INT64 summary column.
@@ -354,7 +354,7 @@ This function only applies to Tuple Sketches with an INT64 summary column.
 
 ### [tuple_sketch_int64_filter_low_high_seed(sketch BYTES, low INT64, high INT64, seed INT64)](../tuple/sqlx/tuple_sketch_int64_filter_low_high_seed.sqlx)
 Returns a Tuple Sketch computed from the given sketch filtered by the given low and high values. 
-This returns a compact tuple sketch that contains the subset of rows of the give sketch where the
+This returns a compact tuple sketch that contains the subset of rows of the given sketch where the
 summary column is greater\-than or equal to the given low and less\-than or equal to the given high.
 Note that cardinality estimation accuracy, plots, and error tables are the same as the Theta Sketch.
 This function only applies to Tuple Sketches with an INT64 summary column.
