@@ -19,10 +19,23 @@
 
 # Apache DataSketches Tuple Sketches for Google BigQuery
 
-Tuple sketches extend the functionality of Theta sketches by
-allowing you to associate a summary value with each item in the set. This
-enables calculations like the sum, minimum, or maximum of values associated with
-the distinct items.
+Tuple sketches extend the functionality of Theta sketches by adding a Summary object associated
+with each distinct key retained by the sketch. When the identifier of an input pair (identifier, value) matches a unique
+key of the sketch, the associated Summary of that key can be modified based on user-defined policy.
+
+The set of all Summary values collected by the sketch represents a uniform random sample of the unique identifiers
+as opposed to a uniform random sample of all raw inputs.
+This enables the use of common statistical computations of the Summary values, which can be extrapolated to the entire
+set of unique identifiers.
+
+The underlying C++ library supports Summary objects of any type (including complex types) and arbitrary policies
+of updating Summaries during the sketch building process, and combining these Summaries during union and intersection set operations.
+
+The current set of functions for BigQuery implements Summary objects as INT64 (unsigned in C++) with SUM, MIN, MAX, ONE (constant 1) policies (modes).
+This enables calculations like the sum, average, minimum, or maximum of the Summary values associated with the distinct keys.
+
+This implementation can serve as an example of how to implement Tuple sketch with a Summary type and policy of your choice.
+We are open to suggestions on what Summary types and policies to consider for inclusion here.
 
 Please visit 
 [Tuple Sketches](https://datasketches.apache.org/docs/Tuple/TupleSketches.html) 

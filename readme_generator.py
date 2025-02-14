@@ -123,25 +123,26 @@ def generate_readme(template_path: str, function_index: dict, examples_path: str
   with open(template_path, 'r') as template_file:
     output_lines = template_file.readlines()
 
-  output_lines += "\n## Aggregate Functions\n"
+  output_lines.append("\n## Aggregate Functions\n")
 
   # Sort functions by function type (AGGREGATE first, then SCALAR) and then by number of arguments
   sorted_functions = sorted(function_index, key=lambda x: (x['type'], len(x['params'].split(','))), reverse=False)
   is_aggregate = True
   for function in sorted_functions:
     if is_aggregate and function['type'] == 'SCALAR':
-      output_lines += "\n## Scalar Functions\n"
+      output_lines.append("\n## Scalar Functions\n")
       is_aggregate = False
     function_link = f"[{function['name']}{function['params']}](../{function['path']})"
-    output_lines += f"\n### {function_link}\n{function['description']}\n"
+    output_lines.append(f"\n### {function_link}\n{function['description']}\n")
 
   # Add examples section
-  example_files = [f for f in os.listdir(examples_path) if f.endswith("_test.sql")]
+  example_files = [f for f in os.listdir(examples_path) if f.endswith(".sql")]
   if example_files:
     output_lines.append("\n## Examples\n")
     for example_file in example_files:
-      # Read the example SQL file
-      with open(os.path.join(examples_path, example_file), 'r') as f:
+      full_name = os.path.join(examples_path, example_file)
+      output_lines.append(f"\n### [test/{example_file}](../{full_name})\n")
+      with open(full_name, 'r') as f:
         sql_code = f.read()
 
       # Remove license header from examples
