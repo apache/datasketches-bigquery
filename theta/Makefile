@@ -26,7 +26,7 @@ EMCFLAGS=-I../datasketches-cpp/common/include \
 	-O3 \
 	--bind
 
-ARTIFACTS=theta.mjs theta.js theta.wasm
+ARTIFACTS=theta_sketch.mjs theta_sketch.js theta_sketch.wasm
 
 all: $(ARTIFACTS)
 
