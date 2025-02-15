@@ -123,6 +123,8 @@ Computes a sketch that represents the union of the two given sketches.
 * Returns: an HLL Sketch, as BYTES.
 
 ## Examples
+
+### [test/hll_sketch_test.sql](../hll/test/hll_sketch_test.sql)
 ```sql
 
 # expected 3

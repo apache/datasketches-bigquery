@@ -186,6 +186,8 @@ Returns an approximation to the normalized rank, on the interval \[0.0, 1.0\], o
 * Returns: an approximate rank of the given value.
 
 ## Examples
+
+### [test/req_sketch_float_test.sql](../req/test/req_sketch_float_test.sql)
 ```sql
 
 # using defaults

@@ -183,6 +183,48 @@ Returns a value from the sketch that is the best approximation to a value from t
 * Returns: an approximate quantile associated with the given rank.
 
 ## Examples
+
+### [test/kll_sketch_example.sql](../kll/test/kll_sketch_example.sql)
+```sql
+
+# Creating sample data with 1 million records split into 100 groups of nearly equal size
+
+CREATE OR REPLACE TEMP TABLE sample_data AS
+SELECT
+  CONCAT("group_key_", CAST(RAND() * 100 AS INT64)) as group_key,
+  RAND() AS x
+FROM
+  UNNEST(GENERATE_ARRAY(1, 1000000));
+
+# Creating KLL merge sketches for a group key
+
+CREATE OR REPLACE TEMP TABLE agg_sample_data AS
+SELECT
+  group_key,
+  count(*) AS total_count,
+  bqutil.datasketches.kll_sketch_float_build_k(x, 250) AS kll_sketch
+FROM sample_data
+GROUP BY group_key;
+
+# Merge group based sketches into a single sketch and then get approx quantiles
+
+WITH agg_data AS (
+  SELECT
+    bqutil.datasketches.kll_sketch_float_merge_k(kll_sketch, 250) as merged_kll_sketch,
+    SUM(total_count) as total_count
+  FROM agg_sample_data
+)
+SELECT
+  bqutil.datasketches.kll_sketch_float_get_quantile(merged_kll_sketch, 0.0, true) AS mininum,
+  bqutil.datasketches.kll_sketch_float_get_quantile(merged_kll_sketch, 0.5, true) AS p50,
+  bqutil.datasketches.kll_sketch_float_get_quantile(merged_kll_sketch, 0.75, true) AS p75,
+  bqutil.datasketches.kll_sketch_float_get_quantile(merged_kll_sketch, 0.95, true) AS p95,
+  bqutil.datasketches.kll_sketch_float_get_quantile(merged_kll_sketch, 1.0, true) AS maximum,
+  total_count
+FROM agg_data;
+```
+
+### [test/kll_sketch_test.sql](../kll/test/kll_sketch_test.sql)
 ```sql
 
 create or replace temp table kll_sketch(sketch bytes);
