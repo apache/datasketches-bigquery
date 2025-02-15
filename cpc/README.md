@@ -152,6 +152,8 @@ Computes a sketch that represents the scalar union of the two given sketches.
 * Returns: a CPC Sketch, as BYTES.
 
 ## Examples
+
+### [test/cpc_sketch_test.sql](../cpc/test/cpc_sketch_test.sql)
 ```sql
 
 # using defaults

@@ -72,6 +72,8 @@ If NULL, the maximum error of the sketch is used as a threshold.
 * Returns: an array of frequent items with frequency estimates, lower and upper bounds.
 
 ## Examples
+
+### [test/frequent_strings_sketch_test.sql](../fi/test/frequent_strings_sketch_test.sql)
 ```sql
 
 select bqutil.datasketches.frequent_strings_sketch_to_string(bqutil.datasketches.frequent_strings_sketch_build(str, 1, 5)) from unnest(["a", "b", "c"]) as str;
