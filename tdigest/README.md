@@ -105,6 +105,8 @@ Returns a value from the sketch that is the best approximation to a value from t
 * Returns: an approximate quantile associated with the given rank.
 
 ## Examples
+
+### [test/tdigest_double_test.sql](../tdigest/test/tdigest_double_test.sql)
 ```sql
 
 create or replace temp table tdigest_double(sketch bytes);

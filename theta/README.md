@@ -241,6 +241,8 @@ Computes a sketch that represents the scalar union of the two given sketches.
 * Returns: a Compact, Compressed Theta Sketch, as BYTES.
 
 ## Examples
+
+### [test/theta_sketch_test.sql](../theta/test/theta_sketch_test.sql)
 ```sql
 
 # using defaults
