@@ -70,7 +70,7 @@ export function serialize(state) {
     // for prior transition deserialize-aggregate
     // merge aggregated and serialized state
     if (state.sketch != null && state.serialized != null) {
-      sketch.merge(state.serialized);
+      state.sketch.merge(state.serialized);
     }
     return {
       k: state.k,
