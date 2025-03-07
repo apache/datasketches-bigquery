@@ -54,7 +54,7 @@ export function initialState(params) {
 
 export function aggregate(state, sketch) {
   try {
-    if (state.sketch == null) { // for transition deserialize-aggregate
+    if (state.sketch == null) {
       state.sketch = new Module.req_sketch_float(state.k, state.hra);
     }
     state.sketch.merge(sketch);
@@ -65,12 +65,16 @@ export function aggregate(state, sketch) {
 }
 
 export function serialize(state) {
-  if (state.sketch == null) return state; // for transition deserialize-serialize
+  if (state.sketch == null && state.serialized != null) return state; // for transition deserialize-serialize
   try {
     // for prior transition deserialize-aggregate
     // merge aggregated and serialized state
     if (state.sketch != null && state.serialized != null) {
       state.sketch.merge(state.serialized);
+    } else {
+      if (state.sketch == null) {
+        state.sketch = new Module.req_sketch_float(state.k, state.hra);
+      }
     }
     return {
       k: state.k,

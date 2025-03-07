@@ -73,7 +73,7 @@ export function aggregate(state, value) {
 }
 
 export function serialize(state) {
-  if (state.sketch == null && state.union == null) return state; // for transition deserialize-serialize
+  if (state.sketch == null && state.union == null && state.serialized != null) return state; // for transition deserialize-serialize
   try {
     // for prior transition deserialize-aggregate
     // merge aggregated and serialized state
@@ -87,10 +87,13 @@ export function serialize(state) {
       } finally {
         if (u != null) u.delete();
       }
-    } else if (state.sketch != null) {
-      state.serialized = state.sketch.serializeAsUint8Array();
     } else if (state.union != null) {
       state.serialized = state.union.getResultAsUint8Array();
+    } else {
+      if (state.sketch == null) {
+        state.sketch = new Module.cpc_sketch(state.lg_k, state.seed);
+      }
+      state.serialized = state.sketch.serializeAsUint8Array();
     }
     return {
       lg_k: state.lg_k,

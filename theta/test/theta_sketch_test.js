@@ -20,6 +20,27 @@ const { generate_udf_test, generate_udaf_test } = unit_test_utils;
 
 // using defaults
 
+const theta_empty = `FROM_BASE64('AQMDAAAezJM=')`;
+
+generate_udaf_test("theta_sketch_agg_string", {
+  input_columns: [`str`],
+  input_rows: `SELECT * FROM UNNEST([CAST(NULL AS STRING), CAST(NULL AS STRING), CAST(NULL AS STRING)]) AS str`,
+  expected_output: theta_empty
+});
+
+generate_udaf_test("theta_sketch_agg_int64", {
+  input_columns: [`value`],
+  input_rows: `SELECT * FROM UNNEST([NULL, NULL, NULL]) AS value`,
+  expected_output: theta_empty
+});
+
+generate_udaf_test("theta_sketch_agg_union", {
+  input_columns: [`sketch`],
+  input_rows: `SELECT * FROM UNNEST([CAST(NULL AS BYTES), CAST(NULL AS BYTES), CAST(NULL AS BYTES)]) AS sketch`,
+  expected_output: theta_empty
+});
+
+
 const theta_1 = `FROM_BASE64('AQQDPwEazJMDEIFfUcrcGW6ylF+DQ0nLOjDZ/9ze6gyQ')`;
 
 generate_udaf_test("theta_sketch_agg_string", {
