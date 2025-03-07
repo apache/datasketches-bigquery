@@ -34,6 +34,12 @@ generate_udaf_test("tuple_sketch_int64_agg_int64", {
   expected_output: tuple_empty
 });
 
+generate_udaf_test("tuple_sketch_int64_agg_union", {
+  input_columns: [`sketch`],
+  input_rows: `SELECT * FROM UNNEST([CAST(NULL AS BYTES), CAST(NULL AS BYTES), CAST(NULL AS BYTES)]) AS sketch`,
+  expected_output: tuple_empty
+});
+
 const tuple_1 = `FROM_BASE64('AgMJAQAazJMDAAAAAAAAALcMbuWor0AIAQAAAAAAAACFf0C2icflNAEAAAAAAAAAF8EdUoUHAXsBAAAAAAAAAA==')`;
 
 generate_udaf_test("tuple_sketch_int64_agg_string", {
