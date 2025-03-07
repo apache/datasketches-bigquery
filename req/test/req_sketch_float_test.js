@@ -18,6 +18,20 @@
 
 const { generate_udf_test, generate_udaf_test } = unit_test_utils;
 
+const req_empty = `FROM_BASE64('AgERPAwAAAA=')`;
+
+generate_udaf_test("req_sketch_float_build", {
+  input_columns: [`value`],
+  input_rows: `SELECT * FROM UNNEST([NULL, NULL, NULL, NULL, NULL]) AS value`,
+  expected_output: req_empty
+});
+
+generate_udaf_test("req_sketch_float_merge", {
+  input_columns: [`sketch`],
+  input_rows: `SELECT * FROM UNNEST([CAST(NULL AS BYTES), CAST(NULL AS BYTES), CAST(NULL AS BYTES)]) AS sketch`,
+  expected_output: req_empty
+});
+
 const req_1 = `FROM_BASE64('AgERCAwAAQAAAAAAAAAAAAAAQEEAAwAACgAAAAAAIEEAABBBAAAAQQAA4EAAAMBAAACgQAAAgEAAAEBAAAAAQAAAgD8=')`;
 
 generate_udaf_test("req_sketch_float_build", {

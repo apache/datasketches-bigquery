@@ -76,7 +76,7 @@ export function aggregate(state, sketch) {
 }
 
 export function serialize(state) {
-  if (state.union == null) return state; // for transition deserialize-serialize
+  if (state.union == null && state.serialized != null) return state; // for transition deserialize-serialize
   ensureUnion(state);
   try {
     return {

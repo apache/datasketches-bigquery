@@ -56,12 +56,16 @@ export function aggregate(state, item, weight) {
 }
 
 export function serialize(state) {
-  if (state.sketch == null) return state; // for transition deserialize-serialize
+  if (state.sketch == null && state.serialized != null) return state; // for transition deserialize-serialize
   try {
     // for prior transition deserialize-aggregate
     // merge aggregated and serialized state
     if (state.sketch != null && state.serialized != null) {
       sketch.merge(state.serialized);
+    } else {
+      if (state.sketch == null) {
+        state.sketch = new Module.frequent_strings_sketch(state.lg_max_map_size);
+      }
     }
     return {
       lg_max_map_size: state.lg_max_map_size,

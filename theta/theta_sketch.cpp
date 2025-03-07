@@ -98,10 +98,6 @@ EMSCRIPTEN_BINDINGS(theta_sketch) {
       self.get_result().serialize_compressed(stream);
       return (int) stream.tellp();
     }))
-    .function("getResultAsUint8Array", emscripten::optional_override([](theta_union& self) {
-      auto bytes = self.get_result().serialize();
-      return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));
-    }))
     .function("getResultAsUint8ArrayCompressed", emscripten::optional_override([](theta_union& self) {
       auto bytes = self.get_result().serialize_compressed();
       return Uint8Array.new_(emscripten::typed_memory_view(bytes.size(), bytes.data()));

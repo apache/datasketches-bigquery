@@ -71,23 +71,19 @@ export function aggregate(state, key, value) {
 }
 
 export function serialize(state) {
-  if (state.sketch == null && state.union == null) return state; // for transition deserialize-serialize
+  if (state.sketch == null && state.union == null && state.serialized != null) return state; // for transition deserialize-serialize
   try {
     // for prior transition deserialize-aggregate
     // merge aggregated and serialized state
-    if (state.sketch != null) {
-      if (state.serialized != null) {
-        var u = null;
-        try {
-          u = new Module.tuple_union_int64(state.lg_k, state.seed, state.mode);
-          u.updateWithUpdateSketch(state.sketch);
-          u.updateWithBytes(state.serialized, state.seed);
-          state.serialized = u.getResultAsUint8Array();
-        } finally {
-          if (u != null) u.delete();
-        }
-      } else {
-        state.serialized = state.sketch.serializeAsUint8Array();
+    if (state.sketch != null && state.serialized != null) {
+      var u = null;
+      try {
+        u = new Module.tuple_union_int64(state.lg_k, state.seed, state.mode);
+        u.updateWithUpdateSketch(state.sketch);
+        u.updateWithBytes(state.serialized, state.seed);
+        state.serialized = u.getResultAsUint8Array();
+      } finally {
+        if (u != null) u.delete();
       }
       state.sketch.delete();
       delete state.sketch;
@@ -95,6 +91,13 @@ export function serialize(state) {
       state.serialized = state.union.getResultAsUint8Array();
       state.union.delete();
       delete state.union;
+    } else {
+      if (state.sketch == null) {
+        state.sketch = new Module.update_tuple_sketch_int64(state.lg_k, state.seed, state.p, state.mode);
+      }
+      state.serialized = state.sketch.serializeAsUint8Array();
+      state.sketch.delete();
+      delete state.sketch;
     }
     return state;
   } catch (e) {

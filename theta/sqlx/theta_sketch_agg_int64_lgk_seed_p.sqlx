@@ -65,12 +65,11 @@ export function aggregate(state, value) {
 }
 
 export function serialize(state) {
-  if (state.sketch == null && state.union == null) return state; // for transition deserialize-serialize
+  if (state.sketch == null && state.union == null && state.serialized != null) return state; // for transition deserialize-serialize
   try {
     // for prior transition deserialize-aggregate
     // merge aggregated and serialized state
-    if (state.sketch != null) {
-      if (state.serialized != null) {
+    if (state.sketch != null && state.serialized != null) {
         var u = null;
         try {
           u = new Module.theta_union(state.lg_k, state.seed);
@@ -80,15 +79,19 @@ export function serialize(state) {
         } finally {
           if (u != null) u.delete();
         }
-      } else {
-        state.serialized = state.sketch.serializeAsUint8ArrayCompressed();
-      }
       state.sketch.delete();
       delete state.sketch;
     } else if (state.union != null) {
       state.serialized = state.union.getResultAsUint8ArrayCompressed();
       state.union.delete();
       delete state.union;
+    } else {
+      if (state.sketch == null) {
+        state.sketch = new Module.update_theta_sketch(state.lg_k, state.seed, state.p);
+      }
+      state.serialized = state.sketch.serializeAsUint8ArrayCompressed();
+      state.sketch.delete();
+      delete state.sketch;
     }
     return state;
   } catch (e) {

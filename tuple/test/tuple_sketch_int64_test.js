@@ -20,6 +20,20 @@ const { generate_udf_test, generate_udaf_test } = unit_test_utils;
 
 // using defaults
 
+const tuple_empty = `FROM_BASE64('AQMJAQAezJM=')`;
+
+generate_udaf_test("tuple_sketch_int64_agg_string", {
+  input_columns: [`str`, `1`],
+  input_rows: `SELECT * FROM UNNEST([CAST(NULL AS STRING), CAST(NULL AS STRING), CAST(NULL AS STRING)]) AS str`,
+  expected_output: tuple_empty
+});
+
+generate_udaf_test("tuple_sketch_int64_agg_int64", {
+  input_columns: [`value`, `1`],
+  input_rows: `SELECT * FROM UNNEST([NULL, NULL, NULL]) AS value`,
+  expected_output: tuple_empty
+});
+
 const tuple_1 = `FROM_BASE64('AgMJAQAazJMDAAAAAAAAALcMbuWor0AIAQAAAAAAAACFf0C2icflNAEAAAAAAAAAF8EdUoUHAXsBAAAAAAAAAA==')`;
 
 generate_udaf_test("tuple_sketch_int64_agg_string", {
