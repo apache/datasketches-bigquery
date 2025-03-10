@@ -46,7 +46,7 @@ clean:
 
 upload: all
 	@for file in $(ARTIFACTS); do \
-	  gcloud storage cp $$file $(JS_BUCKET)/ ; \
+	  gcloud storage cp $$file $(JS_BUCKET) ; \
 	done
 
 # some functions (with shorter name) can call other functions (with suffix)
