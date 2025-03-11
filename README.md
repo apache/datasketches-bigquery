@@ -108,21 +108,24 @@ Run the following steps in this repo's root directory to install everything:
 
 ```bash
 gcloud auth application-default login # for authentication
-make          # performs compilation
-make install  # upload to $JS_BUCKET & create functions in $BQ_PROJECT.$BQ_DATASET
-make test     # runs predefined tests in BQ
+make          # compile C++ code and produce .js, .mjs and .wasm artifacts
+make install  # upload artifacts to $JS_BUCKET and create SQLX functions in $BQ_PROJECT.$BQ_DATASET
+make test     # run tests in BigQuery
 ```
+
+The "install" target consists of "upload" and "create", which can be used separately if desired
 
 ### Install Specific DataSketches
 
-To install a specific sketch, change into an individual sketch directory and run
-the following:
+To install a specific sketch use targets of the form dir.target
+For example, to install Theta sketch only:
 
 ```bash
 gcloud auth application-default login # for authentication
-make          # performs compilation
-make install  # upload to $JS_BUCKET 
-make create   # create functions in $BQ_PROJECT.$BQ_DATASET
+make theta          # compile C++ code and produce .js, .mjs and .wasm artifacts
+make theta.install  # upload artifacts to $JS_BUCKET and create SQLX functions in $BQ_PROJECT.$BQ_DATASET
 ```
+
+Currently there is no way to run tests for a specific sketch only. "make example" can be used in an individual sketch directory.
 
 </details>

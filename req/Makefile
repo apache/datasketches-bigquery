@@ -52,7 +52,7 @@ upload: all
 create:
 	cd .. && dataform run --tags req
 
-install: upload
+install: upload create
 
 example:
 	@for file in $(wildcard test/*sql); do \

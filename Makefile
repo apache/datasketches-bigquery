@@ -44,26 +44,42 @@ clean: $(MODCLEAN)
 	$(RM) -r definitions
 	$(RM) -r includes
 
-init:
+init: workflow_settings.yaml
+
+workflow_settings.yaml:
 	(cd cicd && ./init_dataform.sh)
+
+MODUPLOAD = $(addsuffix .upload, $(MODULES))
+
+$(MODUPLOAD): %.upload:
+	$(MAKE) -C $* upload
+
+upload: $(MODUPLOAD)
+
+MODCREATE = $(addsuffix .create, $(MODULES))
+
+$(MODCREATE): %.create: init
+	$(MAKE) -C $* create
+
+create: init
+	dataform run --tags "udfs"
 
 MODINSTALL = $(addsuffix .install, $(MODULES))
 
-$(MODINSTALL): %.install:
+$(MODINSTALL): %.install: init
 	$(MAKE) -C $* install
 
-install: init $(MODINSTALL)
-	dataform run --tags "udfs"
+install: upload create
 
 MODTEST = $(addsuffix .test, $(MODULES))
 
 $(MODTEST): %.test:
 	- $(MAKE) -C $* test
 
-unittest:
+test: init
 	dataform test
-
-test: $(MODTEST) unittest
 
 readme:
 	python3 readme_generator.py
+
+.PHONY: all clean init install upload create

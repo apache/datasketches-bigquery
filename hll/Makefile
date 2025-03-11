@@ -55,7 +55,7 @@ reverse = $(if $(wordlist 2,2,$(1)),$(call reverse,$(wordlist 2,$(words $(1)),$(
 create:
 	cd .. && dataform run --tags "hll"
 
-install: upload
+install: upload create
 
 example:
 	@for file in $(wildcard test/*sql); do \
