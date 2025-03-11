@@ -66,7 +66,7 @@ create: init
 
 MODINSTALL = $(addsuffix .install, $(MODULES))
 
-$(MODINSTALL): %.install:
+$(MODINSTALL): %.install: init
 	$(MAKE) -C $* install
 
 install: upload create
