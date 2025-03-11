@@ -44,7 +44,9 @@ clean: $(MODCLEAN)
 	$(RM) -r definitions
 	$(RM) -r includes
 
-init:
+init: workflow_settings.yaml
+
+workflow_settings.yaml:
 	(cd cicd && ./init_dataform.sh)
 
 MODUPLOAD = $(addsuffix .upload, $(MODULES))
