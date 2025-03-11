@@ -56,7 +56,7 @@ upload: $(MODUPLOAD)
 
 MODCREATE = $(addsuffix .create, $(MODULES))
 
-$(MODCREATE): %.create:
+$(MODCREATE): %.create: init
 	$(MAKE) -C $* create
 
 create: init
