@@ -117,7 +117,7 @@ The "install" target consists of "upload" and "create", which can be used separa
 
 ### Install Specific DataSketches
 
-To install a specific sketch use rargets or the form dir.target.
+To install a specific sketch use targets of the form dir.target
 For example, to install Theta sketch only:
 
 ```bash
