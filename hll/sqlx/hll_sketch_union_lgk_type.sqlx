@@ -37,6 +37,7 @@ For more information:
  - https://datasketches.apache.org/docs/HLL/HllSketches.html
 '''
 ) AS R"""
+if (sketchA == null || sketchB == null) return null
 const default_lg_k = Number(12);
 try {
   return Module.hllUnion(sketchA, sketchB, lg_k ? Number(lg_k) : default_lg_k, tgt_type ? tgt_type : "");

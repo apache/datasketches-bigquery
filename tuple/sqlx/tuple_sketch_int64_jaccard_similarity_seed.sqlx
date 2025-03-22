@@ -40,6 +40,7 @@ For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
  '''
 ) AS R"""
+if (sketchA == null || sketchB == null) return null
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
   const jaccard = Module.tupleInt64JaccardSimilarity(sketchA, sketchB, seed == null ? default_seed : BigInt(seed));

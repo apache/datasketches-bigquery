@@ -57,6 +57,11 @@ generate_udaf_test("kll_sketch_float_merge", {
 });
 
 generate_udf_test("kll_sketch_float_to_string", [{
+  inputs: [ `CAST(NULL AS BYTES)` ],
+  expected_output: null
+}]);
+
+generate_udf_test("kll_sketch_float_to_string", [{
   inputs: [ kll_3 ],
   expected_output: `'''### KLL sketch summary:
    K              : 200
@@ -78,8 +83,18 @@ generate_udf_test("kll_sketch_float_to_string", [{
 }]);
 
 generate_udf_test("kll_sketch_float_get_rank", [{
+  inputs: [ `CAST(NULL AS BYTES)`, 10, true ],
+  expected_output: null
+}]);
+
+generate_udf_test("kll_sketch_float_get_rank", [{
   inputs: [ kll_3, 10, true ],
   expected_output: 0.5
+}]);
+
+generate_udf_test("kll_sketch_float_get_quantile", [{
+  inputs: [ `CAST(NULL AS BYTES)`, 0.5, true ],
+  expected_output: null
 }]);
 
 generate_udf_test("kll_sketch_float_get_quantile", [{
@@ -88,8 +103,18 @@ generate_udf_test("kll_sketch_float_get_quantile", [{
 }]);
 
 generate_udf_test("kll_sketch_float_get_min_value", [{
+  inputs: [ `CAST(NULL AS BYTES)` ],
+  expected_output: null
+}]);
+
+generate_udf_test("kll_sketch_float_get_min_value", [{
   inputs: [ kll_3 ],
   expected_output: 1
+}]);
+
+generate_udf_test("kll_sketch_float_get_max_value", [{
+  inputs: [ `CAST(NULL AS BYTES)` ],
+  expected_output: null
 }]);
 
 generate_udf_test("kll_sketch_float_get_max_value", [{
@@ -98,8 +123,18 @@ generate_udf_test("kll_sketch_float_get_max_value", [{
 }]);
 
 generate_udf_test("kll_sketch_float_get_n", [{
+  inputs: [ `CAST(NULL AS BYTES)` ],
+  expected_output: null
+}]);
+
+generate_udf_test("kll_sketch_float_get_n", [{
   inputs: [ kll_3 ],
   expected_output: 20
+}]);
+
+generate_udf_test("kll_sketch_float_get_num_retained", [{
+  inputs: [ `CAST(NULL AS BYTES)` ],
+  expected_output: null
 }]);
 
 generate_udf_test("kll_sketch_float_get_num_retained", [{
@@ -108,8 +143,18 @@ generate_udf_test("kll_sketch_float_get_num_retained", [{
 }]);
 
 generate_udf_test("kll_sketch_float_get_normalized_rank_error", [{
+  inputs: [ `CAST(NULL AS BYTES)`, true ],
+  expected_output: null
+}]);
+
+generate_udf_test("kll_sketch_float_get_normalized_rank_error", [{
   inputs: [ kll_3, true ],
   expected_output: 0.01651561908528982
+}]);
+
+generate_udf_test("kll_sketch_float_get_pmf", [{
+  inputs: [ `CAST(NULL AS BYTES)`, `[10.0]`, true ],
+  expected_output: `[]`
 }]);
 
 generate_udf_test("kll_sketch_float_get_pmf", [{
@@ -118,8 +163,23 @@ generate_udf_test("kll_sketch_float_get_pmf", [{
 }]);
 
 generate_udf_test("kll_sketch_float_get_cdf", [{
+  inputs: [ `CAST(NULL AS BYTES)`, `[10.0]`, true ],
+  expected_output: `[]`
+}]);
+
+generate_udf_test("kll_sketch_float_get_cdf", [{
   inputs: [ kll_3, `[10.0]`, true ],
   expected_output: `[0.5, 1.0]`
+}]);
+
+generate_udf_test("kll_sketch_float_kolmogorov_smirnov", [{
+  inputs: [ kll_1, `CAST(NULL AS BYTES)`, 0.05 ],
+  expected_output: null
+}]);
+
+generate_udf_test("kll_sketch_float_kolmogorov_smirnov", [{
+  inputs: [ `CAST(NULL AS BYTES)`, kll_2, 0.05 ],
+  expected_output: null
 }]);
 
 generate_udf_test("kll_sketch_float_kolmogorov_smirnov", [{

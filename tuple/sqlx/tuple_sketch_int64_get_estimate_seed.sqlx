@@ -37,6 +37,7 @@ For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
 '''
 ) AS R"""
+if (sketch == null) return null
 try {
   return Module.compact_tuple_sketch_int64.getEstimate(sketch, seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED));
 } catch (e) {
