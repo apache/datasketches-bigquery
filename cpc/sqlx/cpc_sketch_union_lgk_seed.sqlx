@@ -37,6 +37,7 @@ For more information:
  - https://datasketches.apache.org/docs/CPC/CpcSketches.html
 '''
 ) AS R"""
+if (sketchA == null || sketchB == null) return null
 const default_lg_k = Number(12);
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {

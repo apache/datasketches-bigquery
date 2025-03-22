@@ -40,7 +40,6 @@ generate_udaf_test("theta_sketch_agg_union", {
   expected_output: theta_empty
 });
 
-
 const theta_1 = `FROM_BASE64('AQQDPwEazJMDEIFfUcrcGW6ylF+DQ0nLOjDZ/9ze6gyQ')`;
 
 generate_udaf_test("theta_sketch_agg_string", {
@@ -57,6 +56,16 @@ generate_udaf_test("theta_sketch_agg_string", {
   expected_output: theta_2
 });
 
+generate_udf_test("theta_sketch_union", [{
+  inputs: [ theta_1, `CAST(NULL AS BYTES)`],
+  expected_output: null
+}]);
+
+generate_udf_test("theta_sketch_union", [{
+  inputs: [ `CAST(NULL AS BYTES)`, theta_2 ],
+  expected_output: null
+}]);
+
 const theta_union_1 = `FROM_BASE64('AQQDPgEazJMFIQK+o5W4Mt5oB7X3Z6MJcYknIFaWEI3+GlXsNvTgWyADqD2ToYTc')`;
 
 generate_udf_test("theta_sketch_union", [{
@@ -65,8 +74,18 @@ generate_udf_test("theta_sketch_union", [{
 }]);
 
 generate_udf_test("theta_sketch_get_estimate", [{
+  inputs: [ `CAST(NULL AS BYTES)` ],
+  expected_output: null
+}]);
+
+generate_udf_test("theta_sketch_get_estimate", [{
   inputs: [ theta_union_1 ],
   expected_output: 5
+}]);
+
+generate_udf_test("theta_sketch_to_string", [{
+  inputs: [ `CAST(NULL AS BYTES)` ],
+  expected_output: null
 }]);
 
 generate_udf_test("theta_sketch_to_string", [{
@@ -86,6 +105,16 @@ generate_udf_test("theta_sketch_to_string", [{
 '''`
 }]);
 
+generate_udf_test("theta_sketch_intersection", [{
+  inputs: [ theta_1, `CAST(NULL AS BYTES)` ],
+  expected_output: null
+}]);
+
+generate_udf_test("theta_sketch_intersection", [{
+  inputs: [ `CAST(NULL AS BYTES)`, theta_2 ],
+  expected_output: null
+}]);
+
 const theta_intersection = `FROM_BASE64('AQMDAAAazJO3DG7lqK9ACA==')`;
 
 generate_udf_test("theta_sketch_intersection", [{
@@ -98,6 +127,16 @@ generate_udf_test("theta_sketch_get_estimate", [{
   expected_output: 1
 }]);
 
+generate_udf_test("theta_sketch_a_not_b", [{
+  inputs: [ theta_1, `CAST(NULL AS BYTES)` ],
+  expected_output: null
+}]);
+
+generate_udf_test("theta_sketch_a_not_b", [{
+  inputs: [ `CAST(NULL AS BYTES)`, theta_2 ],
+  expected_output: null
+}]);
+
 const theta_a_not_b = `FROM_BASE64('AQQDPwEazJMCacuPE2yA/wsYbP/ub3UGSA==')`;
 
 generate_udf_test("theta_sketch_a_not_b", [{
@@ -108,6 +147,16 @@ generate_udf_test("theta_sketch_a_not_b", [{
 generate_udf_test("theta_sketch_get_estimate", [{
   inputs: [ theta_a_not_b ],
   expected_output: 2
+}]);
+
+generate_udf_test("theta_sketch_jaccard_similarity", [{
+  inputs: [ theta_1, `CAST(NULL AS BYTES)` ],
+  expected_output: null
+}]);
+
+generate_udf_test("theta_sketch_jaccard_similarity", [{
+  inputs: [ `CAST(NULL AS BYTES)`, theta_2 ],
+  expected_output: null
 }]);
 
 generate_udf_test("theta_sketch_jaccard_similarity", [{
@@ -140,13 +189,28 @@ generate_udaf_test("theta_sketch_agg_union", {
 });
 
 generate_udf_test("theta_sketch_get_estimate_and_bounds", [{
+  inputs: [ `CAST(NULL AS BYTES)`, 1 ],
+  expected_output: null
+}]);
+
+generate_udf_test("theta_sketch_get_estimate_and_bounds", [{
   inputs: [ theta_union_2, 3 ],
   expected_output: `STRUCT(19736.541348415347 AS estimate, 18927.112205958525 AS lower_bound, 20580.437426810073 AS upper_bound)`
 }]);
 
 generate_udf_test("theta_sketch_get_theta", [{
+  inputs: [ `CAST(NULL AS BYTES)` ],
+  expected_output: null
+}]);
+
+generate_udf_test("theta_sketch_get_theta", [{
   inputs: [ theta_union_2 ],
   expected_output: 0.20753382913916013
+}]);
+
+generate_udf_test("theta_sketch_get_num_retained", [{
+  inputs: [ `CAST(NULL AS BYTES)` ],
+  expected_output: null
 }]);
 
 generate_udf_test("theta_sketch_get_num_retained", [{
