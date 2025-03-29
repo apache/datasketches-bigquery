@@ -36,7 +36,8 @@ For more information:
  - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
  '''
 ) AS R"""
-if (sketchA == null || sketchB == null) return null
+if (sketchA == null) return null;
+if (sketchB == null) return sketchA;
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
   return Module.thetaAnotBCompressed(sketchA, sketchB, seed ? BigInt(seed) : default_seed);

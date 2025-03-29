@@ -57,13 +57,18 @@ generate_udaf_test("hll_sketch_agg_string", {
 });
 
 generate_udf_test("hll_sketch_union", [{
-  inputs: [ hll_1, `CAST(NULL AS BYTES)` ],
+  inputs: [ `CAST(NULL AS BYTES)`, `CAST(NULL AS BYTES)` ],
   expected_output: null
 }]);
 
 generate_udf_test("hll_sketch_union", [{
+  inputs: [ hll_1, `CAST(NULL AS BYTES)` ],
+  expected_output: hll_1
+}]);
+
+generate_udf_test("hll_sketch_union", [{
   inputs: [ `CAST(NULL AS BYTES)`, hll_2 ],
-  expected_output: null
+  expected_output: hll_2
 }]);
 
 const hll_union_1 = `FROM_BASE64('AgEHDAMIBQAvgjsECv+ABG8Z3AbAv2oSnXrQCw==')`;

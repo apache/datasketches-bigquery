@@ -57,13 +57,24 @@ generate_udaf_test("cpc_sketch_agg_string", {
 });
 
 generate_udf_test("cpc_sketch_union", [{
-  inputs: [ cpc_1, `CAST(NULL AS BYTES)` ],
+  inputs: [ `CAST(NULL AS BYTES)`, `CAST(NULL AS BYTES)` ],
   expected_output: null
 }]);
 
+// this one is slightly different form cpc_1: merged is true, KXP and HIP are invalid
+const cpc_1_merged = `FROM_BASE64('BAEQCwAKzJMDAAAAAgAAAL4VGG4DAAAA')`;
+
+generate_udf_test("cpc_sketch_union", [{
+  inputs: [ cpc_1, `CAST(NULL AS BYTES)` ],
+  expected_output: cpc_1_merged
+}]);
+
+// this one is slightly different form cpc_2: merged is true, KXP and HIP are invalid
+const cpc_2_merged = `FROM_BASE64('BAEQCwAKzJMDAAAAAgAAAL6ty+NIAAAA')`;
+
 generate_udf_test("cpc_sketch_union", [{
   inputs: [ `CAST(NULL AS BYTES)`, cpc_2 ],
-  expected_output: null
+  expected_output: cpc_2_merged
 }]);
 
 const cpc_union_1 = `FROM_BASE64('BAEQCwAKzJMFAAAAAgAAAHwTuG5g27UF')`;

@@ -53,7 +53,7 @@ For more information:
  - https://datasketches.apache.org/docs/REQ/ReqSketch.html
 '''
 ) AS R"""
-if (sketch == null) return null
+if (sketch == null) return null;
 try {
   var sketchObject = null;
   try {
