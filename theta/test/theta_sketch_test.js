@@ -111,6 +111,11 @@ generate_udf_test("theta_sketch_to_string", [{
 }]);
 
 generate_udf_test("theta_sketch_intersection", [{
+  inputs: [ `CAST(NULL AS BYTES)`, `CAST(NULL AS BYTES)` ],
+  expected_output: null
+}]);
+
+generate_udf_test("theta_sketch_intersection", [{
   inputs: [ theta_1, `CAST(NULL AS BYTES)` ],
   expected_output: null
 }]);
@@ -157,6 +162,11 @@ generate_udf_test("theta_sketch_a_not_b", [{
 generate_udf_test("theta_sketch_get_estimate", [{
   inputs: [ theta_a_not_b ],
   expected_output: 2
+}]);
+
+generate_udf_test("theta_sketch_jaccard_similarity", [{
+  inputs: [ `CAST(NULL AS BYTES)`, `CAST(NULL AS BYTES)` ],
+  expected_output: null
 }]);
 
 generate_udf_test("theta_sketch_jaccard_similarity", [{

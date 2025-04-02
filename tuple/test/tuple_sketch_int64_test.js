@@ -57,13 +57,18 @@ generate_udaf_test("tuple_sketch_int64_agg_string", {
 });
 
 generate_udf_test("tuple_sketch_int64_union", [{
-  inputs: [ tuple_1, `CAST(NULL AS BYTES)` ],
+  inputs: [ `CAST(NULL AS BYTES)`, `CAST(NULL AS BYTES)` ],
   expected_output: null
 }]);
 
 generate_udf_test("tuple_sketch_int64_union", [{
+  inputs: [ tuple_1, `CAST(NULL AS BYTES)` ],
+  expected_output: tuple_1
+}]);
+
+generate_udf_test("tuple_sketch_int64_union", [{
   inputs: [ `CAST(NULL AS BYTES)`, tuple_2 ],
-  expected_output: null
+  expected_output: tuple_2
 }]);
 
 const tuple_union_1 = `FROM_BASE64('AgMJAQAazJMFAAAAAAAAALcMbuWor0AIAgAAAAAAAABOPehbCCvBLgEAAAAAAAAAhX9AtonH5TQBAAAAAAAAAOBfNe11HQBzAQAAAAAAAAAXwR1ShQcBewEAAAAAAAAA')`;
@@ -106,6 +111,11 @@ generate_udf_test("tuple_sketch_int64_to_string", [{
 }]);
 
 generate_udf_test("tuple_sketch_int64_intersection", [{
+  inputs: [ `CAST(NULL AS BYTES)`, `CAST(NULL AS BYTES)` ],
+  expected_output: null
+}]);
+
+generate_udf_test("tuple_sketch_int64_intersection", [{
   inputs: [ tuple_1, `CAST(NULL AS BYTES)` ],
   expected_output: null
 }]);
@@ -128,13 +138,18 @@ generate_udf_test("tuple_sketch_int64_get_estimate", [{
 }]);
 
 generate_udf_test("tuple_sketch_int64_a_not_b", [{
-  inputs: [ tuple_1, `CAST(NULL AS BYTES)` ],
+  inputs: [ `CAST(NULL AS BYTES)`, `CAST(NULL AS BYTES)` ],
   expected_output: null
 }]);
 
 generate_udf_test("tuple_sketch_int64_a_not_b", [{
   inputs: [ `CAST(NULL AS BYTES)`, tuple_2 ],
   expected_output: null
+}]);
+
+generate_udf_test("tuple_sketch_int64_a_not_b", [{
+  inputs: [ tuple_1, `CAST(NULL AS BYTES)` ],
+  expected_output: tuple_1
 }]);
 
 const tuple_a_not_b = `FROM_BASE64('AgMJAQAazJMCAAAAAAAAAIV/QLaJx+U0AQAAAAAAAAAXwR1ShQcBewEAAAAAAAAA')`;
@@ -147,6 +162,11 @@ generate_udf_test("tuple_sketch_int64_a_not_b", [{
 generate_udf_test("tuple_sketch_int64_get_estimate", [{
   inputs: [ tuple_a_not_b ],
   expected_output: 2
+}]);
+
+generate_udf_test("tuple_sketch_int64_jaccard_similarity", [{
+  inputs: [ `CAST(NULL AS BYTES)`, `CAST(NULL AS BYTES)` ],
+  expected_output: null
 }]);
 
 generate_udf_test("tuple_sketch_int64_jaccard_similarity", [{
