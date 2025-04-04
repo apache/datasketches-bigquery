@@ -38,6 +38,7 @@ For more information:
  - https://datasketches.apache.org/docs/KLL/KLLSketch.html
 '''
 ) AS R"""
+if (sketchA == null || sketchB == null) return null;
 try {
   return Module.kolmogorovSmirnovTest(sketchA, sketchB, pvalue);
 } catch (e) {

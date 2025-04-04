@@ -38,12 +38,20 @@ For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
 '''
 ) AS R"""
-const default_lg_k = Number(Module.DEFAULT_LG_K);
-const default_seed = BigInt(Module.DEFAULT_SEED);
+if (sketchA == null && sketchB == null) return null;
+lg_k = lg_k ? Number(lg_k) : Number(Module.DEFAULT_LG_K);
+seed = seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED);
+mode = mode ? mode : "";
+var u = null;
 try {
-  return Module.tupleUnionInt64(sketchA, sketchB, lg_k ? Number(lg_k) : default_lg_k, seed ? BigInt(seed) : default_seed, mode ? mode : "");
+  u = new Module.tuple_union_int64(lg_k, seed, mode);
+  if (sketchA != null) u.updateWithBytes(sketchA, seed);
+  if (sketchB != null) u.updateWithBytes(sketchB, seed);
+  return u.getResultAsUint8Array();
 } catch (e) {
   if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
+} finally {
+  if (u != null) u.delete();
 }
 """;

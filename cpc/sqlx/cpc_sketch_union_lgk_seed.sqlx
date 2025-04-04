@@ -37,12 +37,19 @@ For more information:
  - https://datasketches.apache.org/docs/CPC/CpcSketches.html
 '''
 ) AS R"""
-const default_lg_k = Number(12);
-const default_seed = BigInt(Module.DEFAULT_SEED);
+if (sketchA == null && sketchB == null) return null;
+lg_k = lg_k ? Number(lg_k) : Number(12);
+seed = seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED);
+var u = null;
 try {
-  return Module.cpcUnion(sketchA, sketchB, lg_k ? Number(lg_k) : default_lg_k, seed ? BigInt(seed) : default_seed);
+  u = new Module.cpc_union(lg_k, seed);
+  if (sketchA != null) u.updateWithBytes(sketchA, seed);
+  if (sketchB != null) u.updateWithBytes(sketchB, seed);
+  return u.getResultAsUint8Array();
 } catch (e) {
   if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
+} finally {
+  if (u != null) u.delete();
 }
 """;

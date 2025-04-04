@@ -37,11 +37,18 @@ For more information:
  - https://datasketches.apache.org/docs/HLL/HllSketches.html
 '''
 ) AS R"""
+if (sketchA == null && sketchB == null) return null;
 const default_lg_k = Number(12);
+var u = null;
 try {
-  return Module.hllUnion(sketchA, sketchB, lg_k ? Number(lg_k) : default_lg_k, tgt_type ? tgt_type : "");
+  u = new Module.hll_union(lg_k ? Number(lg_k) : default_lg_k);
+  if (sketchA != null) u.updateWithBytes(sketchA);
+  if (sketchB != null) u.updateWithBytes(sketchB);
+  return u.getResultAsUint8Array(tgt_type ? tgt_type : "");
 } catch (e) {
   if (e.message != null) throw e;
   throw new Error(Module.getExceptionMessage(e));
+} finally {
+  if (u != null) u.delete();
 }
 """;

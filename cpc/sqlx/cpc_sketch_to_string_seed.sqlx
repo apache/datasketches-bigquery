@@ -35,6 +35,7 @@ For more information:
  - https://datasketches.apache.org/docs/CPC/CpcSketches.html
 '''
 ) AS R"""
+if (sketch == null) return null;
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
   return Module.cpc_sketch.toString(sketch, seed ? BigInt(seed) : default_seed);

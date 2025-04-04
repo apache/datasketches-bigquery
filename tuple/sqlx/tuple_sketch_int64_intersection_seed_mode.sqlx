@@ -38,6 +38,7 @@ For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html 
 '''
 ) AS R"""
+if (sketchA == null || sketchB == null) return null
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
   return Module.tupleIntersectionInt64(sketchA, sketchB, seed ? BigInt(seed) : default_seed, mode ? mode : "");

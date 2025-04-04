@@ -38,6 +38,7 @@ For more information:
  - https://datasketches.apache.org/docs/Frequency/FrequencySketches.html
 '''
 ) AS R"""
+if (sketch == null) return null;
 try {
   return Module.frequent_strings_sketch.getResult(sketch, error_type, threshold ? threshold : 0);
 } catch (e) {

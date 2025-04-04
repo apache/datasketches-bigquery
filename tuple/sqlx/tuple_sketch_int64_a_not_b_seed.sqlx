@@ -38,6 +38,8 @@ For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
 '''
 ) AS R"""
+if (sketchA == null) return null;
+if (sketchB == null) return sketchA;
 try {
   return Module.tupleAnotBInt64(sketchA, sketchB, seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED));
 } catch (e) {

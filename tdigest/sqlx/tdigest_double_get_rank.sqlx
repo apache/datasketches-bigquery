@@ -35,6 +35,7 @@ For more information:
  - https://datasketches.apache.org/docs/tdigest/tdigest.html
 '''
 ) AS R"""
+if (sketch == null) return null;
 try {
   var sketchObject = null;
   try {

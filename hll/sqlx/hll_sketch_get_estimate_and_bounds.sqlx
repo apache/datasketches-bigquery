@@ -37,6 +37,7 @@ For more information:
  - https://datasketches.apache.org/docs/HLL/HllSketches.html
 '''
 ) AS R"""
+if (sketch == null) return null;
 try {
   const result = Module.hll_sketch.getEstimateAndBounds(sketch, Number(num_std_devs));
   return {

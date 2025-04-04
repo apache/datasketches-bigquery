@@ -41,6 +41,7 @@ For more information:
  - https://datasketches.apache.org/docs/Theta/ThetaSketches.html
 '''
 ) AS R"""
+if (sketch == null) return null;
 const default_seed = BigInt(Module.DEFAULT_SEED);
 try {
   const result = Module.compact_theta_sketch.getEstimateAndBoundsFromBytes(sketch, Number(num_std_devs), seed ? BigInt(seed) : default_seed);

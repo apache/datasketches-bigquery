@@ -43,6 +43,7 @@ For more information:
  - https://datasketches.apache.org/docs/Tuple/TupleSketches.html
 '''
 ) AS R"""
+if (sketch == null) return null
 try {
   return Module.compact_tuple_sketch_int64.getEstimateAndBounds(sketch, Number(num_std_devs), seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED));
 } catch (e) {

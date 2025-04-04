@@ -38,6 +38,7 @@ For more information:
  - https://datasketches.apache.org/docs/CPC/CpcSketches.html
 '''
 ) AS R"""
+if (sketch == null) return null;
 try {
   const result = Module.cpc_sketch.getEstimateAndBounds(sketch, Number(num_std_devs), seed ? BigInt(seed) : BigInt(Module.DEFAULT_SEED));
   return {

@@ -34,6 +34,7 @@ For more information:
  - https://datasketches.apache.org/docs/HLL/HllSketches.html
 '''
 ) AS R"""
+if (sketch == null) return null;
 try {
   return Module.hll_sketch.getEstimate(sketch);
 } catch (e) {
