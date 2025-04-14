@@ -77,11 +77,17 @@ export function aggregate(state, sketch) {
 
 export function serialize(state) {
   if (state.union == null && state.serialized != null) return state; // for transition deserialize-serialize
-  ensureUnion(state);
   try {
-    state.serialized = state.union.getResultAsUint8Array();
-    state.union.delete();
-    delete state.union;
+    if (state.union != null) {
+      if (state.serialized != null) {
+        state.union.updateWithBytes(state.serialized, state.seed);
+      }
+      state.serialized = state.union.getResultAsUint8Array();
+      state.union.delete();
+      delete state.union;
+    } else {
+      state.serialized = null;
+    }
     return state;
   } catch (e) {
     if (e.message != null) throw e;

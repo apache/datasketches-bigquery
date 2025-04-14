@@ -18,18 +18,16 @@
 
 const { generate_udf_test, generate_udaf_test } = unit_test_utils;
 
-const fi_empty = `FROM_BASE64('AQEKBQMFAAA=')`;
-
 generate_udaf_test("frequent_strings_sketch_build", {
   input_columns: [`str`, `1`, `5 NOT AGGREGATE`],
   input_rows: `SELECT * FROM UNNEST([CAST(NULL AS STRING), CAST(NULL AS STRING), CAST(NULL AS STRING)]) AS str`,
-  expected_output: fi_empty
+  expected_output: null
 });
 
 generate_udaf_test("frequent_strings_sketch_merge", {
   input_columns: [`sketch`, `5 NOT AGGREGATE`],
   input_rows: `SELECT * FROM UNNEST([CAST(NULL AS BYTES), CAST(NULL AS BYTES), CAST(NULL AS BYTES)]) AS sketch`,
-  expected_output: fi_empty
+  expected_output: null
 });
 
 const fi_1 = `FROM_BASE64('BAEKBQMAAAADAAAAAAAAAAMAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAAAAAAAQAAAAAAAAABAAAAYQEAAABiAQAAAGM=')`;

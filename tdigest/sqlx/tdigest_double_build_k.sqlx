@@ -60,24 +60,26 @@ export function aggregate(state, value) {
 export function serialize(state) {
   if (state.sketch == null && state.serialized != null) return state; // for transition deserialize-serialize
   try {
-    // for prior transition deserialize-aggregate
-    // merge aggregated and serialized state
-    if (state.sketch != null && state.serialized != null) {
-      state.sketch.merge(state.serialized);
+    if (state.sketch != null) {
+      // for prior transition deserialize-aggregate
+      // merge aggregated and serialized state
+      if (state.serialized != null) state.sketch.merge(state.serialized);
+      state.serialized = state.sketch.serializeAsUint8Array();
     } else {
-      if (state.sketch == null) {
-        state.sketch = new Module.tdigest_double(state.k);
-      }
+      state.serialized = null;
     }
     return {
       k: state.k,
-      serialized: state.sketch.serializeAsUint8Array()
+      serialized: state.serialized
     };
   } catch (e) {
     if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));
   } finally {
-    state.sketch.delete();
+    if (state.sketch != null) {
+      state.sketch.delete();
+      delete state.sketch;
+    }
   }
 }
 

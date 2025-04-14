@@ -96,14 +96,26 @@ export function aggregate(state, sketch) {
 
 export function serialize(state) {
   if (state.union == null && state.serialized != null) return state; // for transition deserialize-serialize
-  ensureUnion(state);
   try {
-    reserveBuffer(Module.compact_theta_sketch.getMaxSerializedSizeBytes(state.lg_k));
-    var size = state.union.getResultStreamCompressed(buffer.ptr, buffer.size);
+    if (state.union != null) {
+      // for prior transition deserialize-aggregate
+      // merge aggregated and serialized state
+      if (state.serialized != null) {
+        reserveBuffer(state.serialized.length);
+        Module.HEAPU8.subarray(buffer.ptr, buffer.ptr + state.serialized.length).set(state.serialized);
+        state.union.updateWithBuffer(buffer.ptr, state.serialized.length, state.seed);
+        delete state.serialized;
+      }
+      reserveBuffer(Module.compact_theta_sketch.getMaxSerializedSizeBytes(state.lg_k));
+      var size = state.union.getResultStreamCompressed(buffer.ptr, buffer.size);
+      state.serialized = Module.HEAPU8.slice(buffer.ptr, buffer.ptr + size);
+    } else {
+      state.serialized = null;
+    }
     return {
       lg_k: state.lg_k,
       seed: state.seed,
-      serialized: Module.HEAPU8.slice(buffer.ptr, buffer.ptr + size)
+      serialized: state.serialized
     };
   } catch (e) {
     if (e.message != null) throw e;

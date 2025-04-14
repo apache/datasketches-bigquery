@@ -78,19 +78,30 @@ export function aggregate(state, sketch) {
 
 export function serialize(state) {
   if (state.union == null && state.serialized != null) return state; // for transition deserialize-serialize
-  ensureUnion(state);
+  if (state.union != null) {
+    // for prior transition deserialize-aggregate
+    // merge aggregated and serialized state
+    if (state.serialized != null) {
+      state.union.updateWithBytes(state.serialized, state.seed);
+    }
+    state.serialized = state.union.getResultAsUint8Array();
+  } else {
+    state.serialized = null;
+  }
   try {
     return {
       lg_k: state.lg_k,
       seed: state.seed,
-      serialized: state.union.getResultAsUint8Array()
+      serialized: state.serialized
     };
   } catch (e) {
     if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));
   } finally {
-    state.union.delete();
-    state.union = null;
+    if (state.union != null) {
+      state.union.delete();
+      delete state.union;
+    }
   }
 }
 

@@ -41,15 +41,10 @@ const default_k = Number(Module.DEFAULT_K);
 
 // UDAF interface
 export function initialState(params) {
-  try {
-    return {
-      k: params.k == null ? default_k : Number(params.k),
-      hra: params.hra == null ? true : params.hra
-    };
-  } catch (e) {
-    if (e.message != null) throw e;
-    throw new Error(Module.getExceptionMessage(e));
-  }
+  return {
+    k: params.k == null ? default_k : Number(params.k),
+    hra: params.hra == null ? true : params.hra
+  };
 }
 
 export function aggregate(state, sketch) {
@@ -67,25 +62,27 @@ export function aggregate(state, sketch) {
 export function serialize(state) {
   if (state.sketch == null && state.serialized != null) return state; // for transition deserialize-serialize
   try {
-    // for prior transition deserialize-aggregate
-    // merge aggregated and serialized state
-    if (state.sketch != null && state.serialized != null) {
-      state.sketch.merge(state.serialized);
+    if (state.sketch != null) {
+      // for prior transition deserialize-aggregate
+      // merge aggregated and serialized state
+      if (state.serialized != null) state.sketch.merge(state.serialized);
+      state.serialized = state.sketch.serializeAsUint8Array();
     } else {
-      if (state.sketch == null) {
-        state.sketch = new Module.req_sketch_float(state.k, state.hra);
-      }
+      state.serialized = null;
     }
     return {
       k: state.k,
       hra: state.hra,
-      serialized: state.sketch.serializeAsUint8Array()
+      serialized: state.serialized
     };
   } catch (e) {
     if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));
   } finally {
-    state.sketch.delete();
+    if (state.sketch != null) {
+      state.sketch.delete();
+      delete state.sketch;
+    }
   }
 }
 
