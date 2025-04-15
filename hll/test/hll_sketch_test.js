@@ -20,24 +20,22 @@ const { generate_udf_test, generate_udaf_test } = unit_test_utils;
 
 // using defaults
 
-const hll_empty = `FROM_BASE64('AgEHDAMMAAA=')`;
-
 generate_udaf_test("hll_sketch_agg_string", {
   input_columns: [`str`],
   input_rows: `SELECT * FROM UNNEST([CAST(NULL AS STRING), CAST(NULL AS STRING), CAST(NULL AS STRING)]) AS str`,
-  expected_output: hll_empty
+  expected_output: null
 });
 
 generate_udaf_test("hll_sketch_agg_int64", {
   input_columns: [`value`],
   input_rows: `SELECT * FROM UNNEST([NULL, NULL, NULL]) AS value`,
-  expected_output: hll_empty
+  expected_output: null
 });
 
 generate_udaf_test("hll_sketch_agg_union", {
   input_columns: [`sketch`],
   input_rows: `SELECT * FROM UNNEST([CAST(NULL AS BYTES), CAST(NULL AS BYTES), CAST(NULL AS BYTES)]) AS sketch`,
-  expected_output: hll_empty
+  expected_output: null
 });
 
 const hll_1 = `FROM_BASE64('AgEHDAMIAwAvgjsECv+ABG8Z3AY=')`;

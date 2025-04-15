@@ -91,13 +91,12 @@ export function serialize(state) {
       state.serialized = state.union.getResultAsUint8Array();
       state.union.delete();
       delete state.union;
-    } else {
-      if (state.sketch == null) {
-        state.sketch = new Module.update_tuple_sketch_int64(state.lg_k, state.seed, state.p, state.mode);
-      }
+    } else if (state.sketch != null) {
       state.serialized = state.sketch.serializeAsUint8Array();
       state.sketch.delete();
       delete state.sketch;
+    } else {
+      state.serialized = null;
     }
     return state;
   } catch (e) {

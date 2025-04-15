@@ -89,11 +89,10 @@ export function serialize(state) {
       }
     } else if (state.union != null) {
       state.serialized = state.union.getResultAsUint8Array();
-    } else {
-      if (state.sketch == null) {
-        state.sketch = new Module.cpc_sketch(state.lg_k, state.seed);
-      }
+    } else if (state.sketch != null) {
       state.serialized = state.sketch.serializeAsUint8Array();
+    } else {
+      state.serialized = null;
     }
     return {
       lg_k: state.lg_k,

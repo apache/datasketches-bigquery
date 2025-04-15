@@ -88,11 +88,10 @@ export function serialize(state) {
       }
     } else if (state.union != null) {
       state.serialized = state.union.getResultAsUint8Array(state.tgt_type);
-    } else {
-      if (state.sketch == null) {
-        state.sketch = new Module.hll_sketch(state.lg_k, state.tgt_type);
-      }
+    } else if (state.sketch != null) {
       state.serialized = state.sketch.serializeAsUint8Array();
+    } else {
+      state.serialized = null;
     }
     return {
       lg_k: state.lg_k,

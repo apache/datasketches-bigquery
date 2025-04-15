@@ -40,21 +40,14 @@ const default_k = Number(Module.DEFAULT_K);
 
 // UDAF interface
 export function initialState(k) {
-  try {
-    var state = {
-      k: k == null ? default_k : Number(k),
-    };
-    state.sketch = new Module.kll_sketch_float(state.k);
-    return state;
-  } catch (e) {
-    if (e.message != null) throw e;
-    throw new Error(Module.getExceptionMessage(e));
-  }
+  return {
+    k: k == null ? default_k : Number(k)
+  };
 }
 
 export function aggregate(state, sketch) {
   try {
-    if (state.sketch == null) { // for transition deserialize-aggregate
+    if (state.sketch == null) {
       state.sketch = new Module.kll_sketch_float(state.k);
     }
     state.sketch.merge(sketch);
@@ -65,22 +58,28 @@ export function aggregate(state, sketch) {
 }
 
 export function serialize(state) {
-  if (state.sketch == null) return state; // for transition deserialize-serialize
+  if (state.sketch == null && state.serialized != null) return state; // for transition deserialize-serialize
   try {
-    // for prior transition deserialize-aggregate
-    // merge aggregated and serialized state
-    if (state.sketch != null && state.serialized != null) {
-      state.sketch.merge(state.serialized);
+    if (state.sketch != null) {
+      // for prior transition deserialize-aggregate
+      // merge aggregated and serialized state
+      if (state.serialized != null) state.sketch.merge(state.serialized);
+      state.serialized = state.sketch.serializeAsUint8Array();
+    } else {
+      state.serialized = null;
     }
     return {
       k: state.k,
-      serialized: state.sketch.serializeAsUint8Array()
+      serialized: state.serialized
     };
   } catch (e) {
     if (e.message != null) throw e;
     throw new Error(Module.getExceptionMessage(e));
   } finally {
-    state.sketch.delete();
+    if (state.sketch != null) {
+      state.sketch.delete();
+      delete state.sketch;
+    }
   }
 }
 

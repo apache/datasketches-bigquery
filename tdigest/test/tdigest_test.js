@@ -18,18 +18,16 @@
 
 const { generate_udf_test, generate_udaf_test } = unit_test_utils;
 
-const td_empty = `FROM_BASE64('AQEUyAABAAA=')`;
-
 generate_udaf_test("tdigest_double_build", {
   input_columns: [`value`],
   input_rows: `SELECT * FROM UNNEST([NULL, NULL, NULL, NULL, NULL]) AS value`,
-  expected_output: td_empty
+  expected_output: null
 });
 
 generate_udaf_test("tdigest_double_merge", {
   input_columns: [`sketch`],
   input_rows: `SELECT * FROM UNNEST([CAST(NULL AS BYTES), CAST(NULL AS BYTES), CAST(NULL AS BYTES)]) AS sketch`,
-  expected_output: td_empty
+  expected_output: null
 });
 
 const td_1 = `FROM_BASE64('AgEUyAAEAAAKAAAAAAAAAAAAAAAAAPA/AAAAAAAAJEAAAAAAAADwPwEAAAAAAAAAAAAAAAAAAEABAAAAAAAAAAAAAAAAAAhAAQAAAAAAAAAAAAAAAAAQQAEAAAAAAAAAAAAAAAAAFEABAAAAAAAAAAAAAAAAABhAAQAAAAAAAAAAAAAAAAAcQAEAAAAAAAAAAAAAAAAAIEABAAAAAAAAAAAAAAAAACJAAQAAAAAAAAAAAAAAAAAkQAEAAAAAAAAA')`;

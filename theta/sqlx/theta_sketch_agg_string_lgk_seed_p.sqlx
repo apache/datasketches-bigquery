@@ -85,13 +85,12 @@ export function serialize(state) {
       state.serialized = state.union.getResultAsUint8ArrayCompressed();
       state.union.delete();
       delete state.union;
-    } else {
-      if (state.sketch == null) {
-        state.sketch = new Module.update_theta_sketch(state.lg_k, state.seed, state.p);
-      }
+    } else if (state.sketch != null) {
       state.serialized = state.sketch.serializeAsUint8ArrayCompressed();
       state.sketch.delete();
       delete state.sketch;
+    } else {
+      state.serialized = null;
     }
     return state;
   } catch (e) {
