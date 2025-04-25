@@ -24,7 +24,8 @@ EMCFLAGS=-I../datasketches-cpp/common/include \
 	-sENVIRONMENT=shell \
 	-sTOTAL_MEMORY=1024MB \
 	-O3 \
-	--bind
+	--bind \
+	-sEXPORTED_RUNTIME_METHODS=[HEAPU8]
 
 ARTIFACTS=theta_sketch.mjs theta_sketch.js theta_sketch.wasm
 
