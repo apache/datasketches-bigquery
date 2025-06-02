@@ -41,7 +41,7 @@ page for how to contact us.
 - Requires [Emscripten (emcc compiler)](https://emscripten.org/)
 
   ```bash
-  git clone https://github.com/emscripten-core/emsdk.git \
+  git clone --branch 4.0.7 --single-branch https://github.com/emscripten-core/emsdk.git \
   && cd emsdk \
   && ./emsdk install latest \
   && ./emsdk activate latest \
