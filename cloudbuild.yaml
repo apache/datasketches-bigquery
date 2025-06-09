@@ -8,14 +8,12 @@ steps:
   args:
     - '-c'
     - |
-      apt-get install -y wget unzip
       git clone --branch 4.0.7 --single-branch https://github.com/emscripten-core/emsdk.git
       cd emsdk
       ./emsdk install latest
       ./emsdk activate latest
       source ./emsdk_env.sh
       cd ..
-      git submodule update --init --recursive
       make
       make install
       make test
