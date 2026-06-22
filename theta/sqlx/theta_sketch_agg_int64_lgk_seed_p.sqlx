@@ -98,7 +98,7 @@ export function serialize(state) {
     throw new Error(Module.getExceptionMessage(e));
   } finally {
     if (state.sketch != null) state.sketch.delete();
-    if (state.union != null) state.unon.delete();
+    if (state.union != null) state.union.delete();
   }
 }
 
