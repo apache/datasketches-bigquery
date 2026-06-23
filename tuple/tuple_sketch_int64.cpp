@@ -99,7 +99,7 @@ EMSCRIPTEN_BINDINGS(tuple_sketch_int64) {
   }));
 
   emscripten::constant("DEFAULT_LG_K", datasketches::theta_constants::DEFAULT_LG_K);
-  emscripten::constant("DEFAULT_SEED", datasketches::DEFAULT_SEED);
+  emscripten::constant("DEFAULT_SEED", (int64_t) datasketches::DEFAULT_SEED);
 
   emscripten::class_<update_tuple_sketch_int64>("update_tuple_sketch_int64")
     .constructor(emscripten::optional_override([](uint8_t lg_k, uint64_t seed, float p, const std::string& mode_str) {

@@ -43,7 +43,7 @@ EMSCRIPTEN_BINDINGS(theta_sketch) {
   }));
 
   emscripten::constant("DEFAULT_LG_K", datasketches::theta_constants::DEFAULT_LG_K);
-  emscripten::constant("DEFAULT_SEED", datasketches::DEFAULT_SEED);
+  emscripten::constant("DEFAULT_SEED", (int64_t) datasketches::DEFAULT_SEED);
 
   emscripten::class_<update_theta_sketch>("update_theta_sketch")
     .constructor(emscripten::optional_override([](uint8_t lg_k, uint64_t seed, float p) {

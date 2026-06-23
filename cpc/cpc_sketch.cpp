@@ -33,7 +33,7 @@ EMSCRIPTEN_BINDINGS(cpc_sketch) {
   }));
 
   emscripten::constant("DEFAULT_LG_K", datasketches::cpc_constants::DEFAULT_LG_K);
-  emscripten::constant("DEFAULT_SEED", datasketches::DEFAULT_SEED);
+  emscripten::constant("DEFAULT_SEED", (int64_t) datasketches::DEFAULT_SEED);
 
   emscripten::class_<datasketches::cpc_sketch>("cpc_sketch")
     .constructor(emscripten::optional_override([](uint8_t lg_k, uint64_t seed) {
