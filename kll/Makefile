@@ -25,7 +25,7 @@ EMCFLAGS=-I../datasketches-cpp/common/include \
 	-sTOTAL_MEMORY=1024MB \
 	-O3 \
 	--bind \
-	--pre-js crypto.js
+	--post-js random_override.js
 
 ARTIFACTS=kll_sketch_float.mjs kll_sketch_float.js kll_sketch_float.wasm
 

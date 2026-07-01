@@ -216,3 +216,28 @@ generate_udaf_test("kll_sketch_float_merge_k", {
   input_rows: `SELECT * FROM UNNEST([${kll_4}, ${kll_5}]) AS sketch`,
   expected_output: kll_6
 });
+
+
+// Build a sketch from far more than k (=200) values to force KLL compaction,
+// which draws random bits via the WASM RNG (randomFill). This exercises the
+// code path that throws "os is not defined" when the RNG is unavailable (the
+// emscripten d8 os.system path). The serialized bytes are non-deterministic
+// because compaction is randomized, but N, min and max are exact regardless,
+// so these assertions are deterministic.
+const udf_db = `\`${dataform.projectConfig.defaultDatabase}.${dataform.projectConfig.defaultSchema}\``;
+const kll_compacted = `(SELECT ${udf_db}.kll_sketch_float_build(CAST(value AS FLOAT64)) FROM UNNEST(GENERATE_ARRAY(1, 10000)) AS value)`;
+
+generate_udf_test("kll_sketch_float_get_n", [{
+  inputs: [ kll_compacted ],
+  expected_output: 10000
+}]);
+
+generate_udf_test("kll_sketch_float_get_min_value", [{
+  inputs: [ kll_compacted ],
+  expected_output: 1
+}]);
+
+generate_udf_test("kll_sketch_float_get_max_value", [{
+  inputs: [ kll_compacted ],
+  expected_output: 10000
+}]);
