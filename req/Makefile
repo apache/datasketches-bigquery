@@ -25,18 +25,18 @@ EMCFLAGS=-I../datasketches-cpp/common/include \
 	-sTOTAL_MEMORY=1024MB \
 	-O3 \
 	--bind \
-	--pre-js crypto.js
+	--post-js random_override.js
 
 ARTIFACTS=req_sketch_float.mjs req_sketch_float.js req_sketch_float.wasm
 
 all: $(ARTIFACTS)
 
 %.mjs: %.cpp
-	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o $@
+	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -sSINGLE_FILE_BINARY_ENCODE=0 -o $@
 
 # this rule creates a non-es6 loadable library
 %.js: %.cpp
-	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o $@
+	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -sSINGLE_FILE_BINARY_ENCODE=0 -o $@
 
 %.wasm: %.cpp
 	$(EMCC) $< $(EMCFLAGS) -sSTANDALONE_WASM=1 -o $@

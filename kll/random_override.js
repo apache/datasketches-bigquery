@@ -17,4 +17,8 @@
  * under the License.
  */
 
-var crypto = { getRandomValues: (array) => { for (var i = 0; i < array.length; i++) array[i] = (Math.random()*256)|0 } };
+// Injected as --post-js so it overrides Emscripten's WASI randomFill after it
+// is defined. With -sENVIRONMENT=shell, Emscripten's randomFill defaults to the
+// d8-only os.system("/dev/urandom") path, and BigQuery's V8 has no os global
+// (nor Web Crypto), so it throws "os is not defined". Supply a plain JS RNG.
+randomFill = (view) => { for (var i = 0; i < view.length; i++) view[i] = (Math.random() * 256) | 0; return 0; };

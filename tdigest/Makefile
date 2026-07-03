@@ -31,11 +31,11 @@ ARTIFACTS=tdigest_double.mjs tdigest_double.js tdigest_double.wasm
 all: $(ARTIFACTS)
 
 %.mjs: %.cpp
-	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o $@
+	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -sSINGLE_FILE_BINARY_ENCODE=0 -o $@
 
 # this rule creates a non-es6 loadable library
 %.js: %.cpp
-	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -o $@
+	$(EMCC) $< $(EMCFLAGS) -sSINGLE_FILE=1 -sSINGLE_FILE_BINARY_ENCODE=0 -o $@
 
 %.wasm: %.cpp
 	$(EMCC) $< $(EMCFLAGS) -sSTANDALONE_WASM=1 -o $@
